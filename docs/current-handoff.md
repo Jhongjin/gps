@@ -29,7 +29,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 
 Applied in production Supabase:
 
-- migrations through `009_check_in_events.sql`
+- migrations through `010_check_in_session_ownership.sql`
 
 Verified in production Supabase:
 
@@ -38,6 +38,11 @@ Verified in production Supabase:
 - `list_circle_check_ins_installed = true`
 - `latest_locations_raw_select_hardened = true`
 - `broad_latest_locations_select_removed = true`
+- `check_in_session_link_guard_installed = true`
+- `check_in_session_subject_predicate_installed = true`
+- `check_in_session_error_installed = true`
+- `check_in_session_expiry_guard_installed = true`
+- rollback-only RLS/RPC negative tests: 8 assertions passed
 
 Current local limitation:
 
@@ -45,6 +50,6 @@ Current local limitation:
 
 ## Next Backend Priority
 
-1. Add or run authenticated negative tests for check-in list access and direct `latest_locations` reads.
-2. Confirm `perform_check_in` cannot end a companion session for another subject.
-3. Decide place-alert target write RPC and companion-only route-tail RPC from `supabase/migration-backlog.md`.
+1. Decide place-alert target write RPC shape and guardian-safe consent gates.
+2. Decide whether to add `get_active_companion_route_tail` for high-frequency companion-only paths.
+3. Add negative tests for future place alert target writes after that RPC exists.

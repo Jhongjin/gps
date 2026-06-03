@@ -7,7 +7,10 @@ Date: 2026-06-03
 Applied through the Supabase SQL Editor on 2026-06-03:
 
 - `migrations/009_check_in_events.sql`
+- `migrations/010_check_in_session_ownership.sql`
 - `verification_after_009.sql`
+- `verification_after_010.sql`
+- `negative_tests_after_010.sql`
 
 Purpose:
 
@@ -27,6 +30,8 @@ Expected verification:
 Result:
 
 - all expected verification fields returned `true`
+- check-in session ownership hardening returned all `verification_after_010.sql` fields as `true`
+- rollback-only RLS/RPC negative test returned `all_negative_tests_passed = true` across 8 assertions
 
 ## Next Candidate: Place Alert Target Writes
 
@@ -63,10 +68,13 @@ Recommended path:
 2. Add `get_active_companion_route_tail` later for high-frequency companion paths.
 3. After `perform_check_in`, companion-specific route views should stop because the session is `ended`.
 
-## Negative Tests To Add
+## Completed Negative Tests
 
 - unauthorized user cannot list another circle's check-ins
 - direct `latest_locations` select no longer exposes another member's raw coordinates
 - `perform_check_in` cannot end a companion session for another subject
+
+## Negative Tests To Add
+
 - place alert target write RPC rejects a target outside the circle
 - place alert target write RPC rejects or gates minor targets without guardian-safe consent

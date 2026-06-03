@@ -21,6 +21,7 @@ The following SQL migration files were applied through the Supabase SQL Editor:
 - `supabase/migrations/007_location_upload_rls_hardening.sql`
 - `supabase/migrations/008_circle_member_route_tail_rpc.sql`
 - `supabase/migrations/009_check_in_events.sql`
+- `supabase/migrations/010_check_in_session_ownership.sql`
 
 ## SQL Editor Bundle
 
@@ -66,6 +67,32 @@ Post-apply verification:
 - `latest_locations_raw_select_hardened = true`
 - `broad_latest_locations_select_removed = true`
 
+## Check-In Session Ownership Hardening
+
+The following SQL Editor migration was applied on 2026-06-03:
+
+- `supabase/migrations/010_check_in_session_ownership.sql`
+- `supabase/verification_after_010.sql`
+- `supabase/negative_tests_after_010.sql`
+
+Purpose:
+
+- reject check-ins that try to attach another member's companion session
+- only end a companion session when it belongs to the caller subject
+- require supplied companion sessions to still be pending or active and unexpired
+
+Post-apply verification:
+
+- `check_in_session_link_guard_installed = true`
+- `check_in_session_subject_predicate_installed = true`
+- `check_in_session_error_installed = true`
+- `check_in_session_expiry_guard_installed = true`
+
+Rollback-only negative test:
+
+- `all_negative_tests_passed = true`
+- 8 assertions passed for check-in visibility, raw latest-location RLS, outsider denial, and other-subject companion session rejection
+
 ## Verification
 
 Verification checked 25 expected objects:
@@ -83,6 +110,7 @@ Result:
 - Circle creation RPC check: `function_installed = true`, `authenticated_can_execute = true`, `circle_created_allowed = true`
 - Location idempotency check: `idempotency_column_installed = true`, `idempotency_index_installed = true`
 - Check-in events check: all `verification_after_009.sql` assertions returned `true`
+- Check-in session ownership check: all `verification_after_010.sql` and rollback-only negative test assertions returned `true`
 
 Key verified objects:
 
@@ -112,4 +140,4 @@ Key verified objects:
 - Create a real app signup from the Flutter auth gate and confirm profiles/ad preferences are auto-created.
 - Create test users through Supabase Auth and confirm profiles/ad preferences are auto-created.
 - Create a small seed circle through the app/RPC flow and confirm owner membership plus default sharing policy are created.
-- Run RLS negative tests for unauthorized location reads and invite reuse.
+- Run future RLS negative tests for place alert target writes after that RPC is introduced.
