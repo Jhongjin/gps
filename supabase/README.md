@@ -22,6 +22,7 @@ Current production project:
 - Pending SQL Editor application:
   - `migrations/012_place_alert_management_rpcs.sql`
   - `migrations/013_active_companion_route_tail_rpc.sql`
+  - `migrations/014_place_alert_quiet_hours_rpc.sql`
 - Read-only verification queries:
   - `verification_after_008.sql`
   - `verification_after_009.sql`
@@ -29,11 +30,13 @@ Current production project:
   - `verification_after_011.sql`
   - `verification_after_012.sql`
   - `verification_after_013.sql`
+  - `verification_after_014.sql`
 - Rollback-only negative test:
   - `negative_tests_after_010.sql`
   - `negative_tests_after_011.sql`
   - `negative_tests_after_012.sql`
   - `negative_tests_after_013.sql`
+  - `negative_tests_after_014.sql`
 - Migration backlog: `migration-backlog.md`
 
 ## Role In The Architecture

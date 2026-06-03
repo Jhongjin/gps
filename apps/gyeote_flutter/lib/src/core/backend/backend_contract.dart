@@ -322,6 +322,11 @@ abstract interface class PlaceAlertRepository {
     required bool enabled,
   });
 
+  Future<PlaceAlertRule> setPlaceAlertQuietHours({
+    required String alertId,
+    required PlaceAlertQuietHours quietHours,
+  });
+
   Future<void> deletePlaceAlert(String alertId);
 }
 

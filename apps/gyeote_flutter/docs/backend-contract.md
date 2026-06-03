@@ -134,9 +134,10 @@ After a successful save on Android/iOS, `MapScreen` reloads visible alert rules 
 Pause/resume and deletion are creator-scoped RPCs:
 
 - `set_place_alert_enabled`
+- `set_place_alert_quiet_hours`
 - `delete_place_alert`
 
-After a pause, resume, or delete action, the app reloads the circle rules and re-syncs native geofences. An empty geofence list is sent to native so stale OS regions are removed.
+After a pause, resume, quiet-hours edit, or delete action, the app reloads the circle rules. Pause/resume/delete actions also re-sync native geofences. An empty geofence list is sent to native so stale OS regions are removed.
 
 ## Check-In Events
 

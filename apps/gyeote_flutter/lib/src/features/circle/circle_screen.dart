@@ -349,6 +349,42 @@ class _CircleScreenState extends State<CircleScreen> {
     }
   }
 
+  Future<void> _cyclePlaceAlertQuietHours(PlaceAlertRule alert) async {
+    final repository = widget.placeAlertRepository;
+    if (repository == null) {
+      setState(() => _placeAlertMessage = 'Supabase 연결 후 조용한 시간을 변경할 수 있습니다.');
+      return;
+    }
+
+    final nextQuietHours = _nextPlaceAlertQuietHours(alert.quietHours);
+    setState(() {
+      _busyPlaceAlertIds.add(alert.id);
+      _placeAlertMessage = null;
+    });
+
+    try {
+      await repository.setPlaceAlertQuietHours(
+        alertId: alert.id,
+        quietHours: nextQuietHours,
+      );
+      await _loadPlaceAlerts(alert.circleId);
+      if (!mounted) {
+        return;
+      }
+      setState(() =>
+          _placeAlertMessage = '조용한 시간을 ${nextQuietHours.summary}(으)로 변경했습니다.');
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _placeAlertMessage = '조용한 시간을 변경하지 못했습니다.');
+    } finally {
+      if (mounted) {
+        setState(() => _busyPlaceAlertIds.remove(alert.id));
+      }
+    }
+  }
+
   Future<void> _confirmDeletePlaceAlert(PlaceAlertRule alert) async {
     final confirmed = await showDialog<bool>(
       context: context,
@@ -541,6 +577,7 @@ class _CircleScreenState extends State<CircleScreen> {
           message: _placeAlertMessage,
           busyAlertIds: _busyPlaceAlertIds,
           onToggleEnabled: _setPlaceAlertEnabled,
+          onCycleQuietHours: _cyclePlaceAlertQuietHours,
           onDelete: _confirmDeletePlaceAlert,
         ),
       ],
@@ -949,6 +986,7 @@ class _PlaceAlertCard extends StatelessWidget {
     required this.message,
     required this.busyAlertIds,
     required this.onToggleEnabled,
+    required this.onCycleQuietHours,
     required this.onDelete,
   });
 
@@ -958,6 +996,7 @@ class _PlaceAlertCard extends StatelessWidget {
   final String? message;
   final Set<String> busyAlertIds;
   final ValueChanged<PlaceAlertRule> onToggleEnabled;
+  final ValueChanged<PlaceAlertRule> onCycleQuietHours;
   final ValueChanged<PlaceAlertRule> onDelete;
 
   @override
@@ -975,6 +1014,7 @@ class _PlaceAlertCard extends StatelessWidget {
         message: message,
         busyAlertIds: busyAlertIds,
         onToggleEnabled: onToggleEnabled,
+        onCycleQuietHours: onCycleQuietHours,
         onDelete: onDelete,
       ),
     );
@@ -989,6 +1029,7 @@ class _PlaceAlertCardBody extends StatelessWidget {
     required this.message,
     required this.busyAlertIds,
     required this.onToggleEnabled,
+    required this.onCycleQuietHours,
     required this.onDelete,
   });
 
@@ -998,6 +1039,7 @@ class _PlaceAlertCardBody extends StatelessWidget {
   final String? message;
   final Set<String> busyAlertIds;
   final ValueChanged<PlaceAlertRule> onToggleEnabled;
+  final ValueChanged<PlaceAlertRule> onCycleQuietHours;
   final ValueChanged<PlaceAlertRule> onDelete;
 
   @override
@@ -1067,6 +1109,7 @@ class _PlaceAlertCardBody extends StatelessWidget {
             enabled: alert.enabled,
             isBusy: busyAlertIds.contains(alert.id),
             onToggleEnabled: () => onToggleEnabled(alert),
+            onCycleQuietHours: () => onCycleQuietHours(alert),
             onDelete: () => onDelete(alert),
           ),
       ],
@@ -1130,6 +1173,7 @@ class _AlertRule extends StatelessWidget {
     this.enabled = true,
     this.isBusy = false,
     this.onToggleEnabled,
+    this.onCycleQuietHours,
     this.onDelete,
   });
 
@@ -1138,6 +1182,7 @@ class _AlertRule extends StatelessWidget {
   final bool enabled;
   final bool isBusy;
   final VoidCallback? onToggleEnabled;
+  final VoidCallback? onCycleQuietHours;
   final VoidCallback? onDelete;
 
   @override
@@ -1178,6 +1223,17 @@ class _AlertRule extends StatelessWidget {
                                 ? Icons.pause_circle_outline
                                 : Icons.play_circle_outline),
                             onPressed: onToggleEnabled,
+                          ),
+                        ),
+                      ],
+                      if (onCycleQuietHours != null) ...[
+                        const SizedBox(width: 2),
+                        Tooltip(
+                          message: '조용한 시간 변경',
+                          child: IconButton(
+                            visualDensity: VisualDensity.compact,
+                            icon: const Icon(Icons.bedtime_outlined),
+                            onPressed: onCycleQuietHours,
                           ),
                         ),
                       ],
@@ -1295,6 +1351,30 @@ String _placeAlertBody(PlaceAlertRule alert) {
     eventLabel,
     if (quietHoursLabel != null) quietHoursLabel,
   ].join(' · ');
+}
+
+PlaceAlertQuietHours _nextPlaceAlertQuietHours(PlaceAlertQuietHours current) {
+  if (!current.enabled) {
+    return const PlaceAlertQuietHours(
+      enabled: true,
+      start: '22:00',
+      end: '07:00',
+      timeZone: 'Asia/Seoul',
+      label: '야간',
+    );
+  }
+
+  if (current.label == '야간') {
+    return const PlaceAlertQuietHours(
+      enabled: true,
+      start: '09:00',
+      end: '17:00',
+      timeZone: 'Asia/Seoul',
+      label: '수업/근무',
+    );
+  }
+
+  return const PlaceAlertQuietHours.none();
 }
 
 bool _placeAlertMessageIsError(String message) {

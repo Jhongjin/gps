@@ -47,8 +47,9 @@ Make place alerts useful without making them feel like covert monitoring.
 - Native geofence enter/exit events are consumed by Flutter and surfaced as user-facing place alert status copy.
 - Android shows a local notification for saved-place enter/exit transitions without coordinates, place names, or member identifiers.
 - iOS source schedules the same privacy-safe local notification from region enter/exit callbacks; Xcode/device validation is still required.
+- `CircleScreen` can cycle quiet-hours presets for saved rules through the creator-scoped `set_place_alert_quiet_hours` RPC.
 
 ## Next Implementation
 
 - Apply `012_place_alert_management_rpcs.sql` to production Supabase and run the matching verification/negative tests.
-- Add quiet-hours editing after notification delivery rules are implemented.
+- Apply `013_active_companion_route_tail_rpc.sql` and `014_place_alert_quiet_hours_rpc.sql`, then run their matching verification/negative tests.

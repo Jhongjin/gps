@@ -25,6 +25,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 - Android saved place alerts register through Google Play Services Geofencing API and emit native enter/exit transition events.
 - Place alert pause/resume/delete UI and creator-scoped RPC SQL are implemented locally.
 - Place alert creation supports quiet-hours presets and circle rule cards display the saved summary.
+- Saved place alert quiet-hours presets can be cycled from `CircleScreen` through local creator-scoped RPC SQL.
 - Native place-alert enter/exit events update the in-app status copy without showing internal geofence ids.
 - Android native place-alert transitions also show a privacy-safe local notification when notification permission is granted.
 - iOS region enter/exit callbacks schedule matching privacy-safe local notifications in source; this Windows workspace cannot compile iOS.
@@ -61,10 +62,10 @@ Verified in production Supabase:
 Current local limitation:
 
 - `supabase` CLI and `psql` are still not configured in this workspace; production DDL was applied through the Supabase SQL Editor browser session.
-- `012_place_alert_management_rpcs.sql` and `013_active_companion_route_tail_rpc.sql` are prepared locally but not applied to production yet because the current in-app Browser session has no Supabase login cookie.
+- `012_place_alert_management_rpcs.sql`, `013_active_companion_route_tail_rpc.sql`, and `014_place_alert_quiet_hours_rpc.sql` are prepared locally but not applied to production yet because the current in-app Browser session has no Supabase login cookie.
 
 ## Next Backend Priority
 
-1. Apply the pending production SQL bundle, then run `verification_after_012.sql`, `negative_tests_after_012.sql`, `verification_after_013.sql`, and `negative_tests_after_013.sql`.
-2. Add quiet-hours editing after notification delivery rules are implemented.
-3. Add push/local notification delivery rules for place-alert transitions.
+1. Apply the pending production SQL bundle, then run verification/negative tests for `012`, `013`, and `014`.
+2. Add server-side place-alert event ingestion/dedupe for native geofence transitions.
+3. Add push notification delivery rules after event ingestion is server-side.

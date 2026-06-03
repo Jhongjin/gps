@@ -256,6 +256,22 @@ class SupabasePlaceAlertRepository implements PlaceAlertRepository {
   }
 
   @override
+  Future<PlaceAlertRule> setPlaceAlertQuietHours({
+    required String alertId,
+    required PlaceAlertQuietHours quietHours,
+  }) async {
+    final rows = await _client.rpc(
+      'set_place_alert_quiet_hours',
+      params: {
+        'alert_id': alertId,
+        'quiet_hours': quietHours.toJson(),
+      },
+    );
+    final map = Map<String, Object?>.from((rows as List).first);
+    return _placeAlertRuleFromRow(map);
+  }
+
+  @override
   Future<void> deletePlaceAlert(String alertId) async {
     await _client.rpc(
       'delete_place_alert',
