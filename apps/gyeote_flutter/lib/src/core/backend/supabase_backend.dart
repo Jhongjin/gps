@@ -272,6 +272,26 @@ class SupabasePlaceAlertRepository implements PlaceAlertRepository {
   }
 
   @override
+  Future<void> recordPlaceAlertEvent({
+    required String alertId,
+    required PlaceAlertEventType eventType,
+    DateTime? occurredAt,
+    String? dedupeKey,
+  }) async {
+    await _client.rpc(
+      'record_place_alert_event',
+      params: {
+        'alert_id': alertId,
+        'event_kind': _placeAlertEventTypeToJson(eventType),
+        'event_occurred_at':
+            (occurredAt ?? DateTime.now()).toUtc().toIso8601String(),
+        'client_dedupe_key': dedupeKey,
+        'event_metadata': {'source': 'geofence'},
+      },
+    );
+  }
+
+  @override
   Future<void> deletePlaceAlert(String alertId) async {
     await _client.rpc(
       'delete_place_alert',
@@ -666,6 +686,19 @@ PlaceAlertQuietHours _placeAlertQuietHoursFromJson(Object? value) {
     timeZone: value['timeZone']?.toString(),
     label: value['label']?.toString(),
   );
+}
+
+String _placeAlertEventTypeToJson(PlaceAlertEventType eventType) {
+  switch (eventType) {
+    case PlaceAlertEventType.arrived:
+      return 'arrived';
+    case PlaceAlertEventType.departed:
+      return 'departed';
+    case PlaceAlertEventType.late:
+      return 'late';
+    case PlaceAlertEventType.longStay:
+      return 'long_stay';
+  }
 }
 
 CheckInEvent _checkInEventFromRow(

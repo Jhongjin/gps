@@ -58,6 +58,9 @@ Prepared files:
 - `migrations/014_place_alert_quiet_hours_rpc.sql`
 - `verification_after_014.sql`
 - `negative_tests_after_014.sql`
+- `migrations/015_place_alert_event_ingest_rpc.sql`
+- `verification_after_015.sql`
+- `negative_tests_after_015.sql`
 
 Production apply is still pending because the current in-app Browser session is not logged into Supabase Studio.
 

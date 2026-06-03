@@ -8,6 +8,13 @@ enum CompanionSessionStatus {
   cancelled,
 }
 
+enum PlaceAlertEventType {
+  arrived,
+  departed,
+  late,
+  longStay,
+}
+
 enum DataRequestType {
   export,
   deleteHistory,
@@ -325,6 +332,13 @@ abstract interface class PlaceAlertRepository {
   Future<PlaceAlertRule> setPlaceAlertQuietHours({
     required String alertId,
     required PlaceAlertQuietHours quietHours,
+  });
+
+  Future<void> recordPlaceAlertEvent({
+    required String alertId,
+    required PlaceAlertEventType eventType,
+    DateTime? occurredAt,
+    String? dedupeKey,
   });
 
   Future<void> deletePlaceAlert(String alertId);

@@ -29,6 +29,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 - Native place-alert enter/exit events update the in-app status copy without showing internal geofence ids.
 - Android native place-alert transitions also show a privacy-safe local notification when notification permission is granted.
 - iOS region enter/exit callbacks schedule matching privacy-safe local notifications in source; this Windows workspace cannot compile iOS.
+- Authenticated Flutter clients record native place-alert transitions through local `015_place_alert_event_ingest_rpc.sql` RPC SQL.
 - Native permission snapshot surfaced in Privacy/안심 screen on Android/iOS.
 - History safety summary plus filters for `전체`, `확인`, `장소`, `동행`, and `데이터`.
 - Widget smoke tests for shell, history filters, and privacy permission/battery controls.
@@ -62,10 +63,10 @@ Verified in production Supabase:
 Current local limitation:
 
 - `supabase` CLI and `psql` are still not configured in this workspace; production DDL was applied through the Supabase SQL Editor browser session.
-- `012_place_alert_management_rpcs.sql`, `013_active_companion_route_tail_rpc.sql`, and `014_place_alert_quiet_hours_rpc.sql` are prepared locally but not applied to production yet because the current in-app Browser session has no Supabase login cookie.
+- `012_place_alert_management_rpcs.sql`, `013_active_companion_route_tail_rpc.sql`, `014_place_alert_quiet_hours_rpc.sql`, and `015_place_alert_event_ingest_rpc.sql` are prepared locally but not applied to production yet because the current in-app Browser session has no Supabase login cookie.
 
 ## Next Backend Priority
 
-1. Apply the pending production SQL bundle, then run verification/negative tests for `012`, `013`, and `014`.
-2. Add server-side place-alert event ingestion/dedupe for native geofence transitions.
-3. Add push notification delivery rules after event ingestion is server-side.
+1. Apply the pending production SQL bundle, then run verification/negative tests for `012` through `015`.
+2. Add push notification delivery rules after event ingestion is production-applied.
+3. Add real-device Android/iOS QA for geofence event delivery and dedupe.

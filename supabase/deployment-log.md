@@ -29,6 +29,7 @@ Prepared but not yet applied:
 - `supabase/migrations/012_place_alert_management_rpcs.sql`
 - `supabase/migrations/013_active_companion_route_tail_rpc.sql`
 - `supabase/migrations/014_place_alert_quiet_hours_rpc.sql`
+- `supabase/migrations/015_place_alert_event_ingest_rpc.sql`
 
 ## SQL Editor Bundle
 

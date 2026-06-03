@@ -391,6 +391,7 @@ class _MapScreenState extends State<MapScreen> {
             _bridgeStatus = message;
             _placeAlertStatusMessage = message;
           });
+          unawaited(_recordPlaceAlertTransition(event, type));
         } else if (type == 'service.statusChanged') {
           final status = '${event['status'] ?? ''}';
           final statusText = _serviceStatusText(event);
@@ -421,6 +422,37 @@ class _MapScreenState extends State<MapScreen> {
         }
       },
     );
+  }
+
+  Future<void> _recordPlaceAlertTransition(
+    Map<Object?, Object?> event,
+    String type,
+  ) async {
+    final repository = widget.placeAlertRepository;
+    final eventType = _placeAlertEventTypeFromGeofenceType(type);
+    if (repository == null ||
+        eventType == null ||
+        widget.backendConfig?.hasSupabase != true ||
+        Supabase.instance.client.auth.currentSession == null) {
+      return;
+    }
+
+    final occurredAt =
+        DateTime.tryParse('${event['recordedAt']}') ?? DateTime.now();
+    final geofenceIds = _geofenceIdsFromEvent(event);
+    for (final alertId in geofenceIds) {
+      try {
+        await repository.recordPlaceAlertEvent(
+          alertId: alertId,
+          eventType: eventType,
+          occurredAt: occurredAt,
+          dedupeKey:
+              '$alertId:${eventType.name}:${occurredAt.toUtc().toIso8601String().substring(0, 16)}',
+        );
+      } catch (_) {
+        // Native transition UX should not be blocked by best-effort audit upload.
+      }
+    }
   }
 
   Future<void> _startCompanionSession(Duration duration) async {
@@ -2118,6 +2150,37 @@ String _geofenceStatusText(String type) {
     default:
       return '저장한 장소 반경 변화가 감지됐습니다.';
   }
+}
+
+PlaceAlertEventType? _placeAlertEventTypeFromGeofenceType(String type) {
+  switch (type) {
+    case 'geofence.entered':
+      return PlaceAlertEventType.arrived;
+    case 'geofence.exited':
+      return PlaceAlertEventType.departed;
+    default:
+      return null;
+  }
+}
+
+List<String> _geofenceIdsFromEvent(Map<Object?, Object?> event) {
+  final ids = event['geofenceIds'];
+  if (ids is List) {
+    final parsed = ids
+        .map((id) => id?.toString())
+        .whereType<String>()
+        .where((id) => id.isNotEmpty)
+        .toList(growable: false);
+    if (parsed.isNotEmpty) {
+      return parsed;
+    }
+  }
+
+  final id = event['geofenceId']?.toString();
+  if (id == null || id.isEmpty) {
+    return const [];
+  }
+  return [id];
 }
 
 class _MapPin extends StatelessWidget {

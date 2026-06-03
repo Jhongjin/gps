@@ -139,6 +139,8 @@ Pause/resume and deletion are creator-scoped RPCs:
 
 After a pause, resume, quiet-hours edit, or delete action, the app reloads the circle rules. Pause/resume/delete actions also re-sync native geofences. An empty geofence list is sent to native so stale OS regions are removed.
 
+When Flutter receives a native geofence enter/exit event while authenticated, it calls `record_place_alert_event`. The RPC writes a coordinate-free `place_alert_events` row for the authenticated target member only and dedupes repeated transitions.
+
 ## Check-In Events
 
 Manual check-in uses `perform_check_in`. The RPC writes a short `check_in_events` row without raw or shared coordinates and ends the caller's companion session when a `companionSessionId` is provided.
@@ -168,7 +170,12 @@ RPC names:
 - `accept_circle_invite`
 - `get_circle_latest_locations`
 - `get_circle_member_route_tail`
+- `get_active_companion_route_tail`
 - `create_place_alert_with_targets`
+- `set_place_alert_enabled`
+- `set_place_alert_quiet_hours`
+- `delete_place_alert`
+- `record_place_alert_event`
 - `perform_check_in`
 - `list_circle_check_ins`
 - `record_viewer_log`
