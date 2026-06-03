@@ -64,8 +64,8 @@ Display before the Android background location permission request:
 ## Current Implementation Notes
 
 - Flutter map: real map surface, member pins, route tails, stale-state copy, accuracy/precision rings, and non-saving place-radius preview.
-- Native location: Android debug build and iOS source bridge include permission snapshots, companion sessions, SOS fix request, geofence registration hooks, and encrypted upload queues.
-- Backend: Supabase migrations through `008` are applied; `009_check_in_events.sql` is prepared for coordinate-free check-ins and raw-location select hardening, but still pending DB application.
+- Native location: Android debug build and iOS source bridge include permission snapshots, companion sessions, SOS fix request, saved-place geofence registration, and encrypted upload queues.
+- Backend: Supabase migrations through `011_place_alert_target_rpc.sql` are applied, including coordinate-free check-ins, raw-location select hardening, and guarded place alert creation.
 - Ads: ad preferences are stored with precise-location ads forced off; no ad SDK is wired into SOS, permissions, privacy, active companion, or data deletion flows.
 
 ## Data Safety / App Privacy Draft

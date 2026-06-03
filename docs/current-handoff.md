@@ -4,7 +4,7 @@ Date: 2026-06-03
 
 ## Latest Preview
 
-`http://127.0.0.1:4174/?v=1780220654147`
+`http://127.0.0.1:4174/?v=1780229000000`
 
 ## Verified
 
@@ -21,6 +21,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 - Circle creation, invites, invite acceptance, empty states, place alert read state, and check-in status card.
 - Companion mode session creation, consent, activation, native session config, manual `도착 확인`, and session ending.
 - Android encrypted bounded native upload queue and iOS source implementation for the same queue.
+- Android saved place alerts register through Google Play Services Geofencing API and emit native enter/exit transition events.
 - Native permission snapshot surfaced in Privacy/안심 screen on Android/iOS.
 - History safety summary plus filters for `전체`, `확인`, `장소`, `동행`, and `데이터`.
 - Widget smoke tests for shell, history filters, and privacy permission/battery controls.
@@ -57,6 +58,6 @@ Current local limitation:
 
 ## Next Backend Priority
 
-1. Replace Android geofence bridge acknowledgement with real Geofencing API registration.
+1. Add pause/delete RPCs for place alerts.
 2. Decide whether to add `get_active_companion_route_tail` for high-frequency companion-only paths.
-3. Add pause/delete RPCs for place alerts.
+3. Add quiet-hours editing after notification delivery rules are implemented.

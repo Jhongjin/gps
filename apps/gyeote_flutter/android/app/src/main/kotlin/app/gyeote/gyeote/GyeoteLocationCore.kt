@@ -9,6 +9,7 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import com.google.android.gms.location.Geofence
 import io.flutter.plugin.common.EventChannel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -148,6 +149,22 @@ object GyeoteLocationPayloads {
         )
     }
 
+    fun emitGeofenceTransition(
+        context: Context,
+        locationManager: LocationManager,
+        eventType: String,
+        transition: Int,
+        requestIds: List<String>,
+    ) {
+        GyeoteLocationEvents.emit(
+            baseEvent(context, locationManager, eventType) +
+                ("source" to "geofence") +
+                ("geofenceTransition" to geofenceTransitionLabel(transition)) +
+                ("geofenceIds" to requestIds) +
+                ("geofenceId" to requestIds.firstOrNull()),
+        )
+    }
+
     fun canCollect(allowSos: Boolean): Boolean {
         val policy = GyeoteLocationState.sharingPolicy
         val enabled = policy["enabled"] as? Boolean ?: true
@@ -233,6 +250,15 @@ object GyeoteLocationPayloads {
         return when (provider) {
             LocationManager.GPS_PROVIDER -> "gps"
             LocationManager.NETWORK_PROVIDER -> "network"
+            else -> "unknown"
+        }
+    }
+
+    private fun geofenceTransitionLabel(transition: Int): String {
+        return when (transition) {
+            Geofence.GEOFENCE_TRANSITION_ENTER -> "enter"
+            Geofence.GEOFENCE_TRANSITION_EXIT -> "exit"
+            Geofence.GEOFENCE_TRANSITION_DWELL -> "dwell"
             else -> "unknown"
         }
     }

@@ -40,9 +40,9 @@ Make place alerts useful without making them feel like covert monitoring.
 - `MapScreen` can save a place alert when a real Supabase circle and live server member ids are available.
 - Direct client inserts into `place_alerts` are blocked; targets are written only by the RPC after same-circle, shareability, and guardian checks.
 - After save, Android/iOS builds ask the native bridge to register up to 20 enabled arrival/departure geofences.
+- Android now registers those rules through Google Play Services Geofencing API and emits `geofence.entered` / `geofence.exited` when the OS delivers transitions.
 
 ## Next Implementation
 
-- Replace the Android geofence bridge acknowledgement with real Geofencing API registration.
 - Add pause/delete flows through creator-scoped RPCs.
 - Add quiet-hours editing after notification delivery rules are implemented.

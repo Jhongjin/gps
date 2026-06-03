@@ -2,11 +2,15 @@ package app.gyeote.gyeote
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationServices
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.EventChannel
@@ -68,9 +72,7 @@ class MainActivity : FlutterActivity() {
                         result.success(location?.let { GyeoteLocationPayloads.locationPayload(this, locationManager, it) })
                     }
                     "registerGeofences" -> {
-                        // Region monitoring is owned by the next Android native queue.
-                        GyeoteLocationPayloads.emitStatus(this, locationManager, "geofences_registered")
-                        result.success(null)
+                        registerGeofences(call.arguments, result)
                     }
                     "flushPendingLocations" -> {
                         GyeoteLocationUploadQueue.flushAsync(applicationContext, locationManager, force = true)
@@ -152,6 +154,106 @@ class MainActivity : FlutterActivity() {
         } else {
             startService(intent)
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun registerGeofences(arguments: Any?, result: MethodChannel.Result) {
+        if (!GyeoteLocationPayloads.hasForegroundLocationPermission(this) ||
+            !GyeoteLocationPayloads.hasBackgroundLocationPermission(this)
+        ) {
+            result.error("permission_denied", "Background location permission is required for place alerts.", null)
+            return
+        }
+
+        val payload = arguments as? Map<*, *> ?: throw IllegalArgumentException("registerGeofences requires a map payload.")
+        val rawGeofences = payload["geofences"] as? List<*> ?: emptyList<Any?>()
+        val geofences = rawGeofences
+            .mapNotNull { geofenceFromPayload(it as? Map<*, *>) }
+            .take(20)
+
+        val client = LocationServices.getGeofencingClient(this)
+        val pendingIntent = geofencePendingIntent()
+
+        client.removeGeofences(pendingIntent).addOnCompleteListener {
+            if (geofences.isEmpty()) {
+                GyeoteLocationPayloads.emitStatus(
+                    this,
+                    locationManager,
+                    "geofences_registered",
+                    mapOf("registeredCount" to 0),
+                )
+                result.success(null)
+                return@addOnCompleteListener
+            }
+
+            val request = GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+                .addGeofences(geofences)
+                .build()
+
+            client.addGeofences(request, pendingIntent)
+                .addOnSuccessListener {
+                    GyeoteLocationPayloads.emitStatus(
+                        this,
+                        locationManager,
+                        "geofences_registered",
+                        mapOf("registeredCount" to geofences.size),
+                    )
+                    result.success(null)
+                }
+                .addOnFailureListener { error ->
+                    GyeoteLocationPayloads.emitError(
+                        this,
+                        locationManager,
+                        "geofence_registration_failed",
+                        error.message ?: "Could not register geofences.",
+                        mapOf("registeredCount" to 0),
+                    )
+                    result.error("geofence_registration_failed", error.message, null)
+                }
+        }
+    }
+
+    private fun geofenceFromPayload(payload: Map<*, *>?): Geofence? {
+        if (payload == null) {
+            return null
+        }
+
+        val id = payload["id"] as? String ?: return null
+        val center = payload["center"] as? Map<*, *> ?: return null
+        val latitude = (center["latitude"] as? Number)?.toDouble() ?: return null
+        val longitude = (center["longitude"] as? Number)?.toDouble() ?: return null
+        val radiusM = (payload["radiusM"] as? Number)?.toFloat() ?: return null
+        val notifyOnArrival = payload["notifyOnArrival"] as? Boolean ?: true
+        val notifyOnDeparture = payload["notifyOnDeparture"] as? Boolean ?: true
+        var transitionTypes = 0
+        if (notifyOnArrival) transitionTypes = transitionTypes or Geofence.GEOFENCE_TRANSITION_ENTER
+        if (notifyOnDeparture) transitionTypes = transitionTypes or Geofence.GEOFENCE_TRANSITION_EXIT
+        if (transitionTypes == 0) {
+            return null
+        }
+
+        return Geofence.Builder()
+            .setRequestId(id.take(100))
+            .setCircularRegion(
+                latitude.coerceIn(-90.0, 90.0),
+                longitude.coerceIn(-180.0, 180.0),
+                radiusM.coerceIn(50f, 5000f),
+            )
+            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+            .setNotificationResponsiveness(2 * 60 * 1000)
+            .setTransitionTypes(transitionTypes)
+            .build()
+    }
+
+    private fun geofencePendingIntent(): PendingIntent {
+        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
+            .setAction("app.gyeote.GEOFENCE_TRANSITION")
+        var flags = PendingIntent.FLAG_UPDATE_CURRENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            flags = flags or PendingIntent.FLAG_MUTABLE
+        }
+        return PendingIntent.getBroadcast(this, 4201, intent, flags)
     }
 
     @SuppressLint("MissingPermission")
