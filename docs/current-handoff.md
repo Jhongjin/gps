@@ -30,6 +30,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 - Android native place-alert transitions also show a privacy-safe local notification when notification permission is granted.
 - iOS region enter/exit callbacks schedule matching privacy-safe local notifications in source; this Windows workspace cannot compile iOS.
 - Authenticated Flutter clients record native place-alert transitions through local `015_place_alert_event_ingest_rpc.sql` RPC SQL.
+- A `SafeAdSlot` placeholder is isolated to the history surface after the activity list; safety-critical screens remain ad-free.
 - Native permission snapshot surfaced in Privacy/안심 screen on Android/iOS.
 - History safety summary plus filters for `전체`, `확인`, `장소`, `동행`, and `데이터`.
 - Widget smoke tests for shell, history filters, and privacy permission/battery controls.

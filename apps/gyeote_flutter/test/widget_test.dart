@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gyeote/src/app/gyeote_app.dart';
 import 'package:gyeote/src/core/backend/backend_config.dart';
@@ -32,6 +33,12 @@ void main() {
     expect(find.text('장소'), findsWidgets);
     expect(find.text('동행'), findsWidgets);
     expect(find.text('데이터'), findsWidgets);
+    await tester.scrollUntilVisible(
+      find.text('스폰서'),
+      220,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('스폰서'), findsOneWidget);
   });
 
   testWidgets('map place alert draft exposes quiet hour presets',

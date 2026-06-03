@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_models.dart';
 import '../../theme/gyeote_theme.dart';
+import '../ads/safe_ad_slot.dart';
 
 enum _HistoryFilter {
   all,
@@ -186,6 +187,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
           )
         else
           for (final event in visibleEvents) _HistoryRow(event: event),
+        const SizedBox(height: 12),
+        const SafeAdSlot(placement: 'history_after_activity'),
       ],
     );
   }

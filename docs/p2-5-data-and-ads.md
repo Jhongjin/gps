@@ -36,6 +36,7 @@ Rules:
 
 - no precise-location ad targeting
 - no ads in SOS, permission, privacy save/delete, onboarding consent, or active companion mode
+- `SafeAdSlot` is available for low-risk surfaces such as history after the activity list; it does not receive raw/shared coordinates or member identifiers.
 - personalized ads default off for minors
 - sensitive categories blocked
 - rewarded ads can reduce ad frequency, never unlock safety features
