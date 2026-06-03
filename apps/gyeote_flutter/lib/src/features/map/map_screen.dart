@@ -230,18 +230,28 @@ class _MapScreenState extends State<MapScreen> {
       return tracks;
     }
 
+    final companionSessionId =
+        _isCompanionActive ? _activeCompanionSessionId : null;
+
     return Future.wait(
       tracks.map((track) async {
         if (track.isStale) {
           return track;
         }
         try {
-          final routePoints = await repository.getMemberRouteTail(
-            circleId: circleId,
-            profileId: track.id,
-            limit: 24,
-            since: const Duration(hours: 2),
-          );
+          final routePoints = companionSessionId == null
+              ? await repository.getMemberRouteTail(
+                  circleId: circleId,
+                  profileId: track.id,
+                  limit: 24,
+                  since: const Duration(hours: 2),
+                )
+              : await repository.getActiveCompanionRouteTail(
+                  companionSessionId: companionSessionId,
+                  profileId: track.id,
+                  limit: 60,
+                  since: const Duration(minutes: 45),
+                );
           final routeTail = routePoints
               .map(
                 (point) => LatLng(
@@ -256,7 +266,8 @@ class _MapScreenState extends State<MapScreen> {
           }
           return track.copyWith(
             routeTail: routeTail,
-            meta: '${track.meta} · 경로 ${routeTail.length}개 샘플',
+            meta:
+                '${track.meta} · ${companionSessionId == null ? '경로' : '동행 경로'} ${routeTail.length}개 샘플',
           );
         } catch (_) {
           return track;

@@ -85,6 +85,8 @@ MVP implementation polls `get_circle_latest_locations` every five seconds throug
 
 For route tails, `MapScreen` calls `get_circle_member_route_tail` per visible member through `CircleRepository.getMemberRouteTail`. The RPC returns only shared coordinates, is bounded by `route_limit`, and requires the viewer to be authorized for the target circle/member.
 
+When companion mode is active and the app has an active `companionSessionId`, `MapScreen` calls `get_active_companion_route_tail` instead. That RPC only returns `location_history` rows with the matching `companion_session_id`, an active unexpired session, and consented non-revoked session members.
+
 Replace the polling stream with an authorized private Realtime channel after the first device QA pass.
 
 Expected event shape:
@@ -114,6 +116,8 @@ Companion mode must be session-based:
 The database trigger prevents changing `circle_id`, `subject_profile_id`, or `started_by` after creation.
 
 Current app flow: `MapScreen` creates a companion session for the current user in the active circle, records self consent, activates the session, and passes `companionSessionId` to the native bridge. Native upload queues include that id on `location_history` rows while the session is active.
+
+Companion activation writes `started_at` so session-scoped route tails can exclude older ordinary history samples.
 
 ## Place Alerts
 

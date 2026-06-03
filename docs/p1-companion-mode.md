@@ -54,12 +54,12 @@ Expanded panel:
 
 Live route samples are session data. They should expire quickly unless the user explicitly saves them to history.
 
-Current implementation note: the Flutter map now creates a Supabase companion session for the active circle, records the current user's consent, activates the session, and sends `companionSessionId` to the native location bridge. Android and iOS native upload queues attach that id to history rows during the active session.
+Current implementation note: the Flutter map now creates a Supabase companion session for the active circle, records the current user's consent, activates the session with `started_at`, and sends `companionSessionId` to the native location bridge. Android and iOS native upload queues attach that id to history rows during the active session.
 
 Default retention proposal:
 
 - live presence: seconds to minutes
-- companion route tail: active session only
+- companion route tail: active session only through `get_active_companion_route_tail`
 - daily safety summary: 30 days by default
 - raw route export/delete: user controlled
 

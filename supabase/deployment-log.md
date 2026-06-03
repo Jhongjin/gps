@@ -27,6 +27,7 @@ The following SQL migration files were applied through the Supabase SQL Editor:
 Prepared but not yet applied:
 
 - `supabase/migrations/012_place_alert_management_rpcs.sql`
+- `supabase/migrations/013_active_companion_route_tail_rpc.sql`
 
 ## SQL Editor Bundle
 

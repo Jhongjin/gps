@@ -236,6 +236,13 @@ abstract interface class CircleRepository {
     Duration since = const Duration(hours: 2),
   });
 
+  Future<List<MemberRoutePoint>> getActiveCompanionRouteTail({
+    required String companionSessionId,
+    required String profileId,
+    int limit = 60,
+    Duration since = const Duration(minutes: 45),
+  });
+
   Stream<List<MemberLocationSnapshot>> watchLatestLocations(String circleId);
 }
 

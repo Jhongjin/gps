@@ -38,7 +38,7 @@ Result:
 - place alert target RPC returned all `verification_after_011.sql` fields as `true`
 - rollback-only place alert negative test returned `all_place_alert_tests_passed = true` across 8 assertions
 
-## Pending Production Apply: Place Alert Management RPCs
+## Pending Production Apply: Place Alert Management And Companion Route RPCs
 
 Current state:
 
@@ -52,27 +52,26 @@ Prepared files:
 - `migrations/012_place_alert_management_rpcs.sql`
 - `verification_after_012.sql`
 - `negative_tests_after_012.sql`
+- `migrations/013_active_companion_route_tail_rpc.sql`
+- `verification_after_013.sql`
+- `negative_tests_after_013.sql`
 
 Production apply is still pending because the current in-app Browser session is not logged into Supabase Studio.
 
-## Next Candidate: Route Tail Semantics
+## Route Tail Semantics
 
 Current state:
 
 - `get_circle_member_route_tail` returns bounded shared-coordinate history for authorized viewers.
+- `get_active_companion_route_tail` is prepared locally for active, unexpired, consented companion sessions.
 - App-side check-in clears the live route tail after `도착 확인`.
-- Backend does not yet distinguish ordinary recent route tail from active companion route tail.
+- Backend SQL now distinguishes ordinary recent route tail from active companion route tail after production apply.
 
-Decision needed:
-
-- keep ordinary recent route tails for normal map context, or
-- add a companion-only route-tail RPC that requires `companion_sessions.status = active`
-
-Recommended path:
+Decision:
 
 1. Keep `get_circle_member_route_tail` as the low-frequency map tail.
-2. Add `get_active_companion_route_tail` later for high-frequency companion paths.
-3. After `perform_check_in`, companion-specific route views should stop because the session is `ended`.
+2. Use `get_active_companion_route_tail` for high-frequency companion paths.
+3. After `perform_check_in`, companion-specific route views stop because the session is `ended`.
 
 ## Completed Negative Tests
 

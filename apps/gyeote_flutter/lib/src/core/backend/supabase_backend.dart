@@ -112,6 +112,29 @@ class SupabaseCircleRepository implements CircleRepository {
   }
 
   @override
+  Future<List<MemberRoutePoint>> getActiveCompanionRouteTail({
+    required String companionSessionId,
+    required String profileId,
+    int limit = 60,
+    Duration since = const Duration(minutes: 45),
+  }) async {
+    final rows = await _client.rpc(
+      'get_active_companion_route_tail',
+      params: {
+        'target_session_id': companionSessionId,
+        'subject_profile_id': profileId,
+        'route_limit': limit,
+        'since_at': DateTime.now().subtract(since).toUtc().toIso8601String(),
+      },
+    );
+
+    return (rows as List).map((row) {
+      final map = Map<String, Object?>.from(row);
+      return _memberRoutePointFromRow(map);
+    }).toList(growable: false);
+  }
+
+  @override
   Stream<List<MemberLocationSnapshot>> watchLatestLocations(
       String circleId) async* {
     yield await listLatestLocations(circleId);
@@ -462,6 +485,7 @@ class SupabaseCompanionRepository implements CompanionRepository {
   Future<void> activateSession(String sessionId) async {
     await _client.from('companion_sessions').update({
       'status': 'active',
+      'started_at': DateTime.now().toUtc().toIso8601String(),
     }).eq('id', sessionId);
   }
 
