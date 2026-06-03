@@ -142,6 +142,7 @@ class PlaceAlertRule {
     required this.notifyOnDeparture,
     required this.notifyOnLate,
     required this.notifyOnLongStay,
+    required this.quietHours,
     required this.enabled,
     required this.targetCount,
   });
@@ -155,8 +156,57 @@ class PlaceAlertRule {
   final bool notifyOnDeparture;
   final bool notifyOnLate;
   final bool notifyOnLongStay;
+  final PlaceAlertQuietHours quietHours;
   final bool enabled;
   final int targetCount;
+}
+
+class PlaceAlertQuietHours {
+  const PlaceAlertQuietHours({
+    required this.enabled,
+    this.start,
+    this.end,
+    this.timeZone,
+    this.label,
+  });
+
+  const PlaceAlertQuietHours.none()
+      : enabled = false,
+        start = null,
+        end = null,
+        timeZone = null,
+        label = null;
+
+  final bool enabled;
+  final String? start;
+  final String? end;
+  final String? timeZone;
+  final String? label;
+
+  String get summary {
+    if (!enabled) {
+      return '없음';
+    }
+    final timeLabel = start != null && end != null ? '$start-$end' : '설정됨';
+    final labelText = label;
+    if (labelText == null || labelText.isEmpty) {
+      return timeLabel;
+    }
+    return '$labelText $timeLabel';
+  }
+
+  Map<String, Object?> toJson() {
+    if (!enabled) {
+      return {};
+    }
+    return {
+      'enabled': enabled,
+      'start': start,
+      'end': end,
+      'timeZone': timeZone,
+      'label': label,
+    };
+  }
 }
 
 class PlaceAlertDraft {
@@ -170,6 +220,7 @@ class PlaceAlertDraft {
     this.notifyOnDeparture = true,
     this.notifyOnLate = false,
     this.notifyOnLongStay = false,
+    this.quietHours = const PlaceAlertQuietHours.none(),
   });
 
   final String circleId;
@@ -181,6 +232,7 @@ class PlaceAlertDraft {
   final bool notifyOnDeparture;
   final bool notifyOnLate;
   final bool notifyOnLongStay;
+  final PlaceAlertQuietHours quietHours;
 }
 
 class CheckInEvent {

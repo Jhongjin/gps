@@ -43,6 +43,7 @@ Make place alerts useful without making them feel like covert monitoring.
 - Android now registers those rules through Google Play Services Geofencing API and emits `geofence.entered` / `geofence.exited` when the OS delivers transitions.
 - Creator-scoped pause/resume and delete RPCs are prepared in `012_place_alert_management_rpcs.sql`.
 - `CircleScreen` has pause/resume/delete actions and re-syncs native geofences after each change.
+- `MapScreen` can save quiet-hours presets during creation and `CircleScreen` displays the saved quiet-hours summary.
 
 ## Next Implementation
 

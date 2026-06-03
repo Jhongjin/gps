@@ -14,6 +14,12 @@ import '../../core/location/place_alert_geofence_sync.dart';
 import '../../theme/gyeote_theme.dart';
 import 'map_models.dart';
 
+enum _PlaceQuietHoursPreset {
+  none,
+  night,
+  schoolOrWork,
+}
+
 class MapScreen extends StatefulWidget {
   MapScreen({
     super.key,
@@ -68,6 +74,7 @@ class _MapScreenState extends State<MapScreen> {
   bool _placeNotifyDeparture = true;
   bool _placeNotifyLate = false;
   bool _placeNotifyLongStay = false;
+  _PlaceQuietHoursPreset _placeQuietHoursPreset = _PlaceQuietHoursPreset.none;
   int _placeDraftRadiusM = 300;
   int _routeTailRequestSerial = 0;
   Set<String> _placeDraftTargetIds = const {};
@@ -725,6 +732,7 @@ class _MapScreenState extends State<MapScreen> {
           notifyOnDeparture: _placeNotifyDeparture,
           notifyOnLate: _placeNotifyLate,
           notifyOnLongStay: _placeNotifyLongStay,
+          quietHours: _quietHoursFromPreset(_placeQuietHoursPreset),
         ),
       );
       if (!mounted) {
@@ -881,6 +889,7 @@ class _MapScreenState extends State<MapScreen> {
           notifyDeparture: _placeNotifyDeparture,
           notifyLate: _placeNotifyLate,
           notifyLongStay: _placeNotifyLongStay,
+          quietHoursPreset: _placeQuietHoursPreset,
           statusMessage: _placeAlertStatusMessage,
           canSave: canSavePlaceAlert,
           isSaving: _isSavingPlaceAlert,
@@ -896,6 +905,8 @@ class _MapScreenState extends State<MapScreen> {
           onNotifyLateChanged: (value) => _setPlaceNotification(late: value),
           onNotifyLongStayChanged: (value) =>
               _setPlaceNotification(longStay: value),
+          onQuietHoursPresetChanged: (value) =>
+              setState(() => _placeQuietHoursPreset = value),
           onSave: () => _savePlaceAlert(
             center: draftPlacePoint,
             candidates: placeTargetCandidates,
@@ -1466,6 +1477,7 @@ class _PlaceDraftPanel extends StatelessWidget {
     required this.notifyDeparture,
     required this.notifyLate,
     required this.notifyLongStay,
+    required this.quietHoursPreset,
     required this.statusMessage,
     required this.canSave,
     required this.isSaving,
@@ -1476,6 +1488,7 @@ class _PlaceDraftPanel extends StatelessWidget {
     required this.onNotifyDepartureChanged,
     required this.onNotifyLateChanged,
     required this.onNotifyLongStayChanged,
+    required this.onQuietHoursPresetChanged,
     required this.onSave,
   });
 
@@ -1488,6 +1501,7 @@ class _PlaceDraftPanel extends StatelessWidget {
   final bool notifyDeparture;
   final bool notifyLate;
   final bool notifyLongStay;
+  final _PlaceQuietHoursPreset quietHoursPreset;
   final String? statusMessage;
   final bool canSave;
   final bool isSaving;
@@ -1498,6 +1512,7 @@ class _PlaceDraftPanel extends StatelessWidget {
   final ValueChanged<bool> onNotifyDepartureChanged;
   final ValueChanged<bool> onNotifyLateChanged;
   final ValueChanged<bool> onNotifyLongStayChanged;
+  final ValueChanged<_PlaceQuietHoursPreset> onQuietHoursPresetChanged;
   final Future<void> Function() onSave;
 
   @override
@@ -1640,6 +1655,41 @@ class _PlaceDraftPanel extends StatelessWidget {
                 onSelected: onNotifyLongStayChanged,
               ),
             ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: SegmentedButton<_PlaceQuietHoursPreset>(
+              showSelectedIcon: false,
+              segments: const [
+                ButtonSegment(
+                  value: _PlaceQuietHoursPreset.none,
+                  icon: Icon(Icons.notifications_none_outlined),
+                  label: Text('없음'),
+                ),
+                ButtonSegment(
+                  value: _PlaceQuietHoursPreset.night,
+                  icon: Icon(Icons.bedtime_outlined),
+                  label: Text('야간'),
+                ),
+                ButtonSegment(
+                  value: _PlaceQuietHoursPreset.schoolOrWork,
+                  icon: Icon(Icons.work_history_outlined),
+                  label: Text('수업'),
+                ),
+              ],
+              selected: {quietHoursPreset},
+              onSelectionChanged: (values) {
+                if (values.isNotEmpty) {
+                  onQuietHoursPresetChanged(values.first);
+                }
+              },
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            _quietHoursPresetCopy(quietHoursPreset),
+            style: const TextStyle(color: GyeoteColors.muted, fontSize: 12),
           ),
           if (statusMessage != null) ...[
             const SizedBox(height: 10),
@@ -2014,6 +2064,40 @@ class _MemberSafetyNote extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+PlaceAlertQuietHours _quietHoursFromPreset(_PlaceQuietHoursPreset preset) {
+  switch (preset) {
+    case _PlaceQuietHoursPreset.none:
+      return const PlaceAlertQuietHours.none();
+    case _PlaceQuietHoursPreset.night:
+      return const PlaceAlertQuietHours(
+        enabled: true,
+        start: '22:00',
+        end: '07:00',
+        timeZone: 'Asia/Seoul',
+        label: '야간',
+      );
+    case _PlaceQuietHoursPreset.schoolOrWork:
+      return const PlaceAlertQuietHours(
+        enabled: true,
+        start: '09:00',
+        end: '17:00',
+        timeZone: 'Asia/Seoul',
+        label: '수업/근무',
+      );
+  }
+}
+
+String _quietHoursPresetCopy(_PlaceQuietHoursPreset preset) {
+  switch (preset) {
+    case _PlaceQuietHoursPreset.none:
+      return '중요한 도착/이탈 알림을 항상 받을 수 있습니다.';
+    case _PlaceQuietHoursPreset.night:
+      return '22:00-07:00에는 긴급하지 않은 장소 알림을 조용히 처리합니다.';
+    case _PlaceQuietHoursPreset.schoolOrWork:
+      return '09:00-17:00에는 반복적인 장소 알림을 줄이는 preset입니다.';
   }
 }
 

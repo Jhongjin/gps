@@ -207,7 +207,7 @@ class SupabasePlaceAlertRepository implements PlaceAlertRepository {
     final rows = await _client
         .from('place_alerts')
         .select(
-          'id, circle_id, name, center_lat, center_lng, radius_m, notify_on_arrival, notify_on_departure, notify_on_late, notify_on_long_stay, enabled, place_alert_targets(profile_id)',
+          'id, circle_id, name, center_lat, center_lng, radius_m, notify_on_arrival, notify_on_departure, notify_on_late, notify_on_long_stay, quiet_hours, enabled, place_alert_targets(profile_id)',
         )
         .eq('circle_id', circleId)
         .order('created_at', ascending: false);
@@ -232,7 +232,7 @@ class SupabasePlaceAlertRepository implements PlaceAlertRepository {
         'notify_departure': draft.notifyOnDeparture,
         'notify_late': draft.notifyOnLate,
         'notify_long_stay': draft.notifyOnLongStay,
-        'quiet_hours': <String, Object?>{},
+        'quiet_hours': draft.quietHours.toJson(),
       },
     );
     final map = Map<String, Object?>.from((rows as List).first);
@@ -628,12 +628,27 @@ PlaceAlertRule _placeAlertRuleFromRow(Map<String, Object?> map) {
     notifyOnDeparture: map['notify_on_departure'] == true,
     notifyOnLate: map['notify_on_late'] == true,
     notifyOnLongStay: map['notify_on_long_stay'] == true,
+    quietHours: _placeAlertQuietHoursFromJson(map['quiet_hours']),
     enabled: map['enabled'] != false,
     targetCount: targetCount is num
         ? targetCount.toInt()
         : targets is List
             ? targets.length
             : 0,
+  );
+}
+
+PlaceAlertQuietHours _placeAlertQuietHoursFromJson(Object? value) {
+  if (value is! Map || value['enabled'] != true) {
+    return const PlaceAlertQuietHours.none();
+  }
+
+  return PlaceAlertQuietHours(
+    enabled: true,
+    start: value['start']?.toString(),
+    end: value['end']?.toString(),
+    timeZone: value['timeZone']?.toString(),
+    label: value['label']?.toString(),
   );
 }
 

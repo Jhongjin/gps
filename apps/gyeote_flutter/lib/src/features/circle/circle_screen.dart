@@ -1284,10 +1284,17 @@ String _placeAlertBody(PlaceAlertRule alert) {
     if (alert.notifyOnLate) '늦음 확인',
     if (alert.notifyOnLongStay) '오래 머무름',
   ];
+  final quietHoursLabel =
+      alert.quietHours.enabled ? '조용한 시간 ${alert.quietHours.summary}' : null;
   final targetLabel =
       alert.targetCount == 0 ? '대상 미지정' : '${alert.targetCount}명';
   final eventLabel = events.isEmpty ? '알림 조건 없음' : events.join('/');
-  return '$targetLabel · 반경 ${alert.radiusM}m · $eventLabel';
+  return [
+    targetLabel,
+    '반경 ${alert.radiusM}m',
+    eventLabel,
+    if (quietHoursLabel != null) quietHoursLabel,
+  ].join(' · ');
 }
 
 bool _placeAlertMessageIsError(String message) {

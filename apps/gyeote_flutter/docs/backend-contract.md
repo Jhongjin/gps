@@ -125,6 +125,8 @@ Companion activation writes `started_at` so session-scoped route tails can exclu
 
 `MapScreen` creates new rules through `create_place_alert_with_targets`. The app sends the selected map radius, place name, target profile ids from the live circle location stream, and event toggles. Demo ids are never saved.
 
+The create flow also sends a structured `quiet_hours` json object. MVP presets are empty, night `22:00-07:00`, and school/work `09:00-17:00` in `Asia/Seoul`.
+
 Direct `place_alerts` inserts are blocked by RLS. The RPC validates circle membership, target membership, current shareability, and minor guardian ownership before inserting `place_alerts` and `place_alert_targets` atomically.
 
 After a successful save on Android/iOS, `MapScreen` reloads visible alert rules and calls `LocationBridge.registerGeofences` with up to 20 enabled arrival/departure rules. iOS maps those to `CLCircularRegion`; Android registers the same rules through Google Play Services Geofencing API and emits `geofence.entered` / `geofence.exited` transition events back through the native event bridge.

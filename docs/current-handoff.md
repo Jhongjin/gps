@@ -24,6 +24,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 - Android encrypted bounded native upload queue and iOS source implementation for the same queue.
 - Android saved place alerts register through Google Play Services Geofencing API and emit native enter/exit transition events.
 - Place alert pause/resume/delete UI and creator-scoped RPC SQL are implemented locally.
+- Place alert creation supports quiet-hours presets and circle rule cards display the saved summary.
 - Native permission snapshot surfaced in Privacy/안심 screen on Android/iOS.
 - History safety summary plus filters for `전체`, `확인`, `장소`, `동행`, and `데이터`.
 - Widget smoke tests for shell, history filters, and privacy permission/battery controls.
