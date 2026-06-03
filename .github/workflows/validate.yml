@@ -1,0 +1,71 @@
+name: Validate
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  flutter:
+    name: Flutter scaffold
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/gyeote_flutter
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Test
+        run: flutter test
+
+  static:
+    name: Static repository checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JSON
+        run: |
+          python -m json.tool package.json >/dev/null
+          python -m json.tool app.json >/dev/null
+
+      - name: Block stale names and mojibake
+        run: |
+          ! grep -RInE 'AnsimLink|ansimlink|안심링크|怨|쒗|꾩|묎|곸|뿉' README.md DESIGN.md App.tsx app.json package.json src prototype docs apps supabase .env.example
+
+      - name: Block emoji UI regressions
+        run: |
+          ! grep -RInE '🚨|🔔|🛡️|📍|🗺️|👥|🕒|➕' prototype src App.tsx app.json DESIGN.md docs apps supabase
+
+  supabase:
+    name: Supabase migrations
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase
+        run: supabase start
+
+      - name: Apply migrations
+        run: supabase db reset
