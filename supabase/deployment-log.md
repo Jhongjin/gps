@@ -1,6 +1,6 @@
 # Supabase Deployment Log
 
-Date: 2026-05-30
+Date: 2026-06-03
 
 Project:
 
@@ -20,6 +20,7 @@ The following SQL migration files were applied through the Supabase SQL Editor:
 - `supabase/migrations/006_location_history_idempotency.sql`
 - `supabase/migrations/007_location_upload_rls_hardening.sql`
 - `supabase/migrations/008_circle_member_route_tail_rpc.sql`
+- `supabase/migrations/009_check_in_events.sql`
 
 ## SQL Editor Bundle
 
@@ -43,12 +44,11 @@ Additional read-only verification query:
 
 - `supabase/verification_after_008.sql`
 
-## Prepared Next
+## Check-In Events Migration
 
-The next SQL Editor bundle has been prepared but not yet applied in the current browser session:
+The following SQL Editor migration was applied on 2026-06-03:
 
 - `supabase/migrations/009_check_in_events.sql`
-- `supabase/pending_production_migrations.sql`
 - `supabase/verification_after_009.sql`
 
 Purpose:
@@ -58,12 +58,13 @@ Purpose:
 - end the caller's companion session from the check-in RPC
 - restrict direct `latest_locations` table reads to the owner row so circle views keep using shared-coordinate RPCs
 
-Local apply status:
+Post-apply verification:
 
-- `supabase` CLI: unavailable in this workspace
-- `psql`: unavailable in this workspace
-- available environment: publishable client configuration only, not sufficient for DDL
-- in-app Supabase dashboard session: currently not authenticated
+- `check_in_events_installed = true`
+- `perform_check_in_installed = true`
+- `list_circle_check_ins_installed = true`
+- `latest_locations_raw_select_hardened = true`
+- `broad_latest_locations_select_removed = true`
 
 ## Verification
 
@@ -81,6 +82,7 @@ Result:
 - Auth bootstrap check: `function_installed = true`, `trigger_installed = true`
 - Circle creation RPC check: `function_installed = true`, `authenticated_can_execute = true`, `circle_created_allowed = true`
 - Location idempotency check: `idempotency_column_installed = true`, `idempotency_index_installed = true`
+- Check-in events check: all `verification_after_009.sql` assertions returned `true`
 
 Key verified objects:
 

@@ -1,11 +1,13 @@
 # Supabase Migration Backlog
 
-Date: 2026-05-31
+Date: 2026-06-03
 
-## Apply First
+## Applied
 
-1. `migrations/009_check_in_events.sql`
-2. `verification_after_009.sql`
+Applied through the Supabase SQL Editor on 2026-06-03:
+
+- `migrations/009_check_in_events.sql`
+- `verification_after_009.sql`
 
 Purpose:
 
@@ -21,6 +23,10 @@ Expected verification:
 - `list_circle_check_ins_installed = true`
 - `latest_locations_raw_select_hardened = true`
 - `broad_latest_locations_select_removed = true`
+
+Result:
+
+- all expected verification fields returned `true`
 
 ## Next Candidate: Place Alert Target Writes
 

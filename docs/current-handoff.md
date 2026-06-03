@@ -1,6 +1,6 @@
 # Current Handoff
 
-Date: 2026-05-31
+Date: 2026-06-03
 
 ## Latest Preview
 
@@ -29,22 +29,22 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 
 Applied in production Supabase:
 
-- migrations through `008_circle_member_route_tail_rpc.sql`
+- migrations through `009_check_in_events.sql`
 
-Prepared but not applied:
+Verified in production Supabase:
 
-- `supabase/migrations/009_check_in_events.sql`
-- `supabase/pending_production_migrations.sql`
-- `supabase/verification_after_009.sql`
+- `check_in_events_installed = true`
+- `perform_check_in_installed = true`
+- `list_circle_check_ins_installed = true`
+- `latest_locations_raw_select_hardened = true`
+- `broad_latest_locations_select_removed = true`
 
-Reason:
+Current local limitation:
 
-- current local session has no Supabase CLI, `psql`, service role key, DB password, or authenticated Supabase dashboard session.
+- `supabase` CLI and `psql` are still not configured in this workspace; production DDL was applied through the Supabase SQL Editor browser session.
 
 ## Next Backend Priority
 
-1. Apply `009_check_in_events.sql`.
-2. Run `verification_after_009.sql`.
-3. Test unauthorized users cannot list another circle's check-ins.
-4. Confirm direct `latest_locations` select no longer exposes another member's raw coordinates.
-5. Decide place-alert target write RPC and companion-only route-tail RPC from `supabase/migration-backlog.md`.
+1. Add or run authenticated negative tests for check-in list access and direct `latest_locations` reads.
+2. Confirm `perform_check_in` cannot end a companion session for another subject.
+3. Decide place-alert target write RPC and companion-only route-tail RPC from `supabase/migration-backlog.md`.
