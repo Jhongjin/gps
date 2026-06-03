@@ -383,6 +383,14 @@ class _MapScreenState extends State<MapScreen> {
           });
         } else if (type == 'permission.changed') {
           setState(() => _bridgeStatus = '위치 권한 상태 확인됨');
+        } else if (type == 'geofence.entered' ||
+            type == 'geofence.exited' ||
+            type == 'geofence.transition') {
+          final message = _geofenceStatusText(type);
+          setState(() {
+            _bridgeStatus = message;
+            _placeAlertStatusMessage = message;
+          });
         } else if (type == 'service.statusChanged') {
           final status = '${event['status'] ?? ''}';
           final statusText = _serviceStatusText(event);
@@ -2098,6 +2106,17 @@ String _quietHoursPresetCopy(_PlaceQuietHoursPreset preset) {
       return '22:00-07:00에는 긴급하지 않은 장소 알림을 조용히 처리합니다.';
     case _PlaceQuietHoursPreset.schoolOrWork:
       return '09:00-17:00에는 반복적인 장소 알림을 줄이는 preset입니다.';
+  }
+}
+
+String _geofenceStatusText(String type) {
+  switch (type) {
+    case 'geofence.entered':
+      return '저장한 장소 반경에 도착했습니다.';
+    case 'geofence.exited':
+      return '저장한 장소 반경을 벗어났습니다.';
+    default:
+      return '저장한 장소 반경 변화가 감지됐습니다.';
   }
 }
 

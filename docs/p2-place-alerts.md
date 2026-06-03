@@ -44,6 +44,7 @@ Make place alerts useful without making them feel like covert monitoring.
 - Creator-scoped pause/resume and delete RPCs are prepared in `012_place_alert_management_rpcs.sql`.
 - `CircleScreen` has pause/resume/delete actions and re-syncs native geofences after each change.
 - `MapScreen` can save quiet-hours presets during creation and `CircleScreen` displays the saved quiet-hours summary.
+- Native geofence enter/exit events are consumed by Flutter and surfaced as user-facing place alert status copy.
 
 ## Next Implementation
 
