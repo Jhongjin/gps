@@ -57,6 +57,6 @@ Current local limitation:
 
 ## Next Backend Priority
 
-1. Add native geofence registration for saved place alerts.
+1. Replace Android geofence bridge acknowledgement with real Geofencing API registration.
 2. Decide whether to add `get_active_companion_route_tail` for high-frequency companion-only paths.
 3. Add pause/delete RPCs for place alerts.

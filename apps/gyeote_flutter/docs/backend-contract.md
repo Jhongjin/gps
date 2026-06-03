@@ -123,6 +123,8 @@ Current app flow: `MapScreen` creates a companion session for the current user i
 
 Direct `place_alerts` inserts are blocked by RLS. The RPC validates circle membership, target membership, current shareability, and minor guardian ownership before inserting `place_alerts` and `place_alert_targets` atomically.
 
+After a successful save on Android/iOS, `MapScreen` reloads visible alert rules and calls `LocationBridge.registerGeofences` with up to 20 enabled arrival/departure rules. iOS currently maps those to `CLCircularRegion`; Android acknowledges the bridge call and still needs the native Geofencing API queue.
+
 ## Check-In Events
 
 Manual check-in uses `perform_check_in`. The RPC writes a short `check_in_events` row without raw or shared coordinates and ends the caller's companion session when a `companionSessionId` is provided.

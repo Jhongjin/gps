@@ -723,6 +723,7 @@ class _MapScreenState extends State<MapScreen> {
             '${alert.name} 저장됨 · 대상 ${alert.targetCount}명';
         _isPlaceDraftVisible = true;
       });
+      await _syncPlaceAlertGeofences(circleId);
     } catch (_) {
       if (mounted) {
         setState(() => _placeAlertStatusMessage =
@@ -731,6 +732,46 @@ class _MapScreenState extends State<MapScreen> {
     } finally {
       if (mounted) {
         setState(() => _isSavingPlaceAlert = false);
+      }
+    }
+  }
+
+  Future<void> _syncPlaceAlertGeofences(String circleId) async {
+    final repository = widget.placeAlertRepository;
+    if (!_supportsNativeLocation || repository == null) {
+      return;
+    }
+
+    try {
+      final alerts = await repository.listPlaceAlerts(circleId);
+      final geofences = alerts
+          .where((alert) =>
+              alert.enabled &&
+              (alert.notifyOnArrival || alert.notifyOnDeparture))
+          .take(20)
+          .map(
+            (alert) => GeofenceSpec(
+              id: alert.id,
+              center: alert.center,
+              radiusM: alert.radiusM.toDouble(),
+              notifyOnArrival: alert.notifyOnArrival,
+              notifyOnDeparture: alert.notifyOnDeparture,
+            ),
+          )
+          .toList(growable: false);
+
+      if (geofences.isEmpty) {
+        return;
+      }
+
+      await widget.locationBridge.requestAlways();
+      await widget.locationBridge.registerGeofences(geofences);
+      if (mounted) {
+        setState(() => _bridgeStatus = '장소 알림 반경 ${geofences.length}개 기기 등록됨');
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() => _bridgeStatus = '장소 알림은 저장됨 · 기기 반경 등록 대기 중');
       }
     }
   }
