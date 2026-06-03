@@ -45,6 +45,7 @@ Make place alerts useful without making them feel like covert monitoring.
 - `CircleScreen` has pause/resume/delete actions and re-syncs native geofences after each change.
 - `MapScreen` can save quiet-hours presets during creation and `CircleScreen` displays the saved quiet-hours summary.
 - Native geofence enter/exit events are consumed by Flutter and surfaced as user-facing place alert status copy.
+- Android shows a local notification for saved-place enter/exit transitions without coordinates, place names, or member identifiers.
 
 ## Next Implementation
 

@@ -106,6 +106,7 @@ Approximate sharing, history deletion, and ad isolation depend on this separatio
   - `android/app/src/main/kotlin/app/gyeote/gyeote/GeofenceBroadcastReceiver.kt`
   - Covers permission snapshot, foreground/background permission requests, notification-backed foreground location service, last known location, live location events, SOS single fix, sharing policy checks, and Google Play Services Geofencing API registration for saved place alerts.
   - Flutter consumes `geofence.entered` / `geofence.exited` events and surfaces a user-facing place-alert status without exposing internal geofence ids.
+  - Android shows a privacy-safe local notification for saved-place enter/exit transitions when notification permission is granted.
   - Native upload settings, Android Keystore encrypted bounded queue, and PostgREST flush are implemented in `GyeoteLocationUploadQueue.kt`.
   - Upload failures preserve pending samples, emit queue status to Flutter, and retry with bounded exponential backoff. `configureUpload` and manual `flushPendingLocations` force a fresh attempt after token refresh or user action.
   - Native token refresh remains before production-scale background upload.
