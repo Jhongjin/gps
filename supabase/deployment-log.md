@@ -22,6 +22,7 @@ The following SQL migration files were applied through the Supabase SQL Editor:
 - `supabase/migrations/008_circle_member_route_tail_rpc.sql`
 - `supabase/migrations/009_check_in_events.sql`
 - `supabase/migrations/010_check_in_session_ownership.sql`
+- `supabase/migrations/011_place_alert_target_rpc.sql`
 
 ## SQL Editor Bundle
 
@@ -93,6 +94,36 @@ Rollback-only negative test:
 - `all_negative_tests_passed = true`
 - 8 assertions passed for check-in visibility, raw latest-location RLS, outsider denial, and other-subject companion session rejection
 
+## Place Alert Target Creation RPC
+
+The following SQL Editor migration was applied on 2026-06-03:
+
+- `supabase/migrations/011_place_alert_target_rpc.sql`
+- `supabase/verification_after_011.sql`
+- `supabase/negative_tests_after_011.sql`
+
+Purpose:
+
+- create place alerts and target rows atomically through one RPC
+- block broad direct `place_alerts` inserts from clients
+- require every target to be a same-circle member
+- require non-self targets to be shareable by current privacy policy
+- require minor targets to be self or guarded by the creator
+
+Post-apply verification:
+
+- `place_alert_create_rpc_installed = true`
+- `place_alert_create_rpc_granted = true`
+- `direct_place_alert_insert_blocked = true`
+- `broad_place_alert_insert_removed = true`
+- `minor_guardian_check_installed = true`
+- `shareability_check_installed = true`
+
+Rollback-only negative test:
+
+- `all_place_alert_tests_passed = true`
+- 8 assertions passed for direct insert denial, target validation, guardian checks, outsider denial, and valid member/minor creation
+
 ## Verification
 
 Verification checked 25 expected objects:
@@ -111,6 +142,7 @@ Result:
 - Location idempotency check: `idempotency_column_installed = true`, `idempotency_index_installed = true`
 - Check-in events check: all `verification_after_009.sql` assertions returned `true`
 - Check-in session ownership check: all `verification_after_010.sql` and rollback-only negative test assertions returned `true`
+- Place alert target RPC check: all `verification_after_011.sql` and rollback-only negative test assertions returned `true`
 
 Key verified objects:
 
@@ -140,4 +172,4 @@ Key verified objects:
 - Create a real app signup from the Flutter auth gate and confirm profiles/ad preferences are auto-created.
 - Create test users through Supabase Auth and confirm profiles/ad preferences are auto-created.
 - Create a small seed circle through the app/RPC flow and confirm owner membership plus default sharing policy are created.
-- Run future RLS negative tests for place alert target writes after that RPC is introduced.
+- Wire Flutter place alert creation UI to `create_place_alert_with_targets`.

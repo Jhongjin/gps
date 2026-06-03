@@ -8,9 +8,12 @@ Applied through the Supabase SQL Editor on 2026-06-03:
 
 - `migrations/009_check_in_events.sql`
 - `migrations/010_check_in_session_ownership.sql`
+- `migrations/011_place_alert_target_rpc.sql`
 - `verification_after_009.sql`
 - `verification_after_010.sql`
 - `negative_tests_after_010.sql`
+- `verification_after_011.sql`
+- `negative_tests_after_011.sql`
 
 Purpose:
 
@@ -32,21 +35,23 @@ Result:
 - all expected verification fields returned `true`
 - check-in session ownership hardening returned all `verification_after_010.sql` fields as `true`
 - rollback-only RLS/RPC negative test returned `all_negative_tests_passed = true` across 8 assertions
+- place alert target RPC returned all `verification_after_011.sql` fields as `true`
+- rollback-only place alert negative test returned `all_place_alert_tests_passed = true` across 8 assertions
 
-## Next Candidate: Place Alert Target Writes
+## Next Candidate: Place Alert App UI
 
 Current state:
 
-- `place_alerts` can be inserted by circle members.
-- `place_alert_targets` is read-only from the client.
-- Flutter intentionally keeps place alerts read-only and only shows a radius preview.
+- `place_alerts` direct client inserts are blocked.
+- `place_alert_targets` remains read-only from the client.
+- `create_place_alert_with_targets` atomically validates and writes alert targets.
+- Flutter still shows read-only rules and a radius preview.
 
-Before enabling creation:
+Before enabling creation in Flutter:
 
-- add an RPC such as `create_place_alert_with_targets`
-- require creator circle membership
-- require each target profile to be in the same circle
-- decide guardian-safe consent rules for minors before allowing guardian-created targets
+- add a compact creation sheet with name, radius, event toggles, and target selector
+- default target to self or currently selected member, never silently all members
+- show copy explaining guardian/minor target rules
 - do not expose exact home/school/workplace addresses in notification payloads
 
 ## Next Candidate: Route Tail Semantics
@@ -73,8 +78,10 @@ Recommended path:
 - unauthorized user cannot list another circle's check-ins
 - direct `latest_locations` select no longer exposes another member's raw coordinates
 - `perform_check_in` cannot end a companion session for another subject
+- place alert target write RPC rejects a target outside the circle
+- place alert target write RPC rejects or gates minor targets without guardian-safe consent
 
 ## Negative Tests To Add
 
-- place alert target write RPC rejects a target outside the circle
-- place alert target write RPC rejects or gates minor targets without guardian-safe consent
+- native geofence registration rejects alerts outside the signed-in user's visible circles
+- future alert update/delete RPCs reject non-creators and targets outside the circle

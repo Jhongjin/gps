@@ -1,6 +1,6 @@
 # P2 Place Alerts Plan
 
-Date: 2026-05-30
+Date: 2026-06-03
 
 ## Goal
 
@@ -34,6 +34,14 @@ Make place alerts useful without making them feel like covert monitoring.
 ## Current Implementation
 
 - `PlaceAlertRepository.listPlaceAlerts` reads circle-scoped rules from Supabase under RLS.
+- `PlaceAlertRepository.createPlaceAlert` writes through `create_place_alert_with_targets`.
 - `CircleScreen` shows real alert rules when present and a backend-aware empty state when the circle has no rules.
-- `MapScreen` includes a non-saving radius preview for 100m, 300m, and 500m place alerts.
-- Rule creation is intentionally deferred until the map radius selector, target member selector, and target write policy are implemented.
+- `MapScreen` includes radius preview for 100m, 300m, and 500m place alerts.
+- `MapScreen` can save a place alert when a real Supabase circle and live server member ids are available.
+- Direct client inserts into `place_alerts` are blocked; targets are written only by the RPC after same-circle, shareability, and guardian checks.
+
+## Next Implementation
+
+- Register saved alerts with Android Geofencing API and iOS region monitoring.
+- Add pause/delete flows through creator-scoped RPCs.
+- Add quiet-hours editing after notification delivery rules are implemented.

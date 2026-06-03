@@ -159,6 +159,30 @@ class PlaceAlertRule {
   final int targetCount;
 }
 
+class PlaceAlertDraft {
+  const PlaceAlertDraft({
+    required this.circleId,
+    required this.name,
+    required this.center,
+    required this.radiusM,
+    required this.targetProfileIds,
+    this.notifyOnArrival = true,
+    this.notifyOnDeparture = true,
+    this.notifyOnLate = false,
+    this.notifyOnLongStay = false,
+  });
+
+  final String circleId;
+  final String name;
+  final Coordinate center;
+  final int radiusM;
+  final List<String> targetProfileIds;
+  final bool notifyOnArrival;
+  final bool notifyOnDeparture;
+  final bool notifyOnLate;
+  final bool notifyOnLongStay;
+}
+
 class CheckInEvent {
   const CheckInEvent({
     required this.id,
@@ -231,6 +255,8 @@ abstract interface class InvitationRepository {
 
 abstract interface class PlaceAlertRepository {
   Future<List<PlaceAlertRule>> listPlaceAlerts(String circleId);
+
+  Future<PlaceAlertRule> createPlaceAlert(PlaceAlertDraft draft);
 }
 
 abstract interface class CheckInRepository {

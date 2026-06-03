@@ -193,6 +193,28 @@ class SupabasePlaceAlertRepository implements PlaceAlertRepository {
         .map((row) => _placeAlertRuleFromRow(Map<String, Object?>.from(row)))
         .toList(growable: false);
   }
+
+  @override
+  Future<PlaceAlertRule> createPlaceAlert(PlaceAlertDraft draft) async {
+    final rows = await _client.rpc(
+      'create_place_alert_with_targets',
+      params: {
+        'target_circle_id': draft.circleId,
+        'alert_name': draft.name.trim(),
+        'target_center_lat': draft.center.latitude,
+        'target_center_lng': draft.center.longitude,
+        'target_radius_m': draft.radiusM,
+        'target_profile_ids': draft.targetProfileIds,
+        'notify_arrival': draft.notifyOnArrival,
+        'notify_departure': draft.notifyOnDeparture,
+        'notify_late': draft.notifyOnLate,
+        'notify_long_stay': draft.notifyOnLongStay,
+        'quiet_hours': <String, Object?>{},
+      },
+    );
+    final map = Map<String, Object?>.from((rows as List).first);
+    return _placeAlertRuleFromRow(map);
+  }
 }
 
 class SupabaseCheckInRepository implements CheckInRepository {
@@ -544,6 +566,7 @@ RegisteredDevice _registeredDeviceFromRow(Map<String, Object?> map) {
 
 PlaceAlertRule _placeAlertRuleFromRow(Map<String, Object?> map) {
   final targets = map['place_alert_targets'];
+  final targetCount = map['target_count'];
   return PlaceAlertRule(
     id: '${map['id']}',
     circleId: '${map['circle_id']}',
@@ -558,7 +581,11 @@ PlaceAlertRule _placeAlertRuleFromRow(Map<String, Object?> map) {
     notifyOnLate: map['notify_on_late'] == true,
     notifyOnLongStay: map['notify_on_long_stay'] == true,
     enabled: map['enabled'] != false,
-    targetCount: targets is List ? targets.length : 0,
+    targetCount: targetCount is num
+        ? targetCount.toInt()
+        : targets is List
+            ? targets.length
+            : 0,
   );
 }
 

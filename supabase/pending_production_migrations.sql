@@ -1,7 +1,7 @@
 -- No unapplied production migrations at this time.
 --
 -- Last applied SQL Editor migration:
--- - migrations/010_check_in_session_ownership.sql
+-- - migrations/011_place_alert_target_rpc.sql
 --
 -- When preparing the next production rollout, replace this file with the
 -- idempotent SQL bundle to paste into the Supabase SQL Editor.

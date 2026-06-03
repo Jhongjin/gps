@@ -18,12 +18,15 @@ Current production project:
   - `migrations/008_circle_member_route_tail_rpc.sql`
   - `migrations/009_check_in_events.sql`
   - `migrations/010_check_in_session_ownership.sql`
+  - `migrations/011_place_alert_target_rpc.sql`
 - Read-only verification queries:
   - `verification_after_008.sql`
   - `verification_after_009.sql`
   - `verification_after_010.sql`
+  - `verification_after_011.sql`
 - Rollback-only negative test:
   - `negative_tests_after_010.sql`
+  - `negative_tests_after_011.sql`
 - Migration backlog: `migration-backlog.md`
 
 ## Role In The Architecture

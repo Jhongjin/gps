@@ -20,6 +20,7 @@ class MapScreen extends StatefulWidget {
     this.deviceRepository,
     this.companionRepository,
     this.checkInRepository,
+    this.placeAlertRepository,
     this.backendConfig,
     this.onOpenCircle,
     LocationBridge? locationBridge,
@@ -29,6 +30,7 @@ class MapScreen extends StatefulWidget {
   final DeviceRepository? deviceRepository;
   final CompanionRepository? companionRepository;
   final CheckInRepository? checkInRepository;
+  final PlaceAlertRepository? placeAlertRepository;
   final BackendConfig? backendConfig;
   final VoidCallback? onOpenCircle;
   final LocationBridge locationBridge;
@@ -49,6 +51,7 @@ class _MapScreenState extends State<MapScreen> {
   String? _bridgeStatus;
   String? _uploadStatus;
   String? _checkInStatusMessage;
+  String? _placeAlertStatusMessage;
   int? _uploadPendingCount;
   bool? _hasServerCircle;
   String? _activeCircleId;
@@ -58,9 +61,16 @@ class _MapScreenState extends State<MapScreen> {
   bool _isCompanionActive = false;
   bool _isUploadFlushRunning = false;
   bool _isCheckingIn = false;
+  bool _isSavingPlaceAlert = false;
   bool _isPlaceDraftVisible = false;
+  bool _placeNotifyArrival = true;
+  bool _placeNotifyDeparture = true;
+  bool _placeNotifyLate = false;
+  bool _placeNotifyLongStay = false;
   int _placeDraftRadiusM = 300;
   int _routeTailRequestSerial = 0;
+  Set<String> _placeDraftTargetIds = const {};
+  final _placeAlertNameController = TextEditingController(text: '새 장소');
 
   @override
   void initState() {
@@ -100,6 +110,7 @@ class _MapScreenState extends State<MapScreen> {
     _locationSubscription?.cancel();
     _deviceLocationSubscription?.cancel();
     _authSubscription?.cancel();
+    _placeAlertNameController.dispose();
     super.dispose();
   }
 
@@ -159,6 +170,8 @@ class _MapScreenState extends State<MapScreen> {
           }
           setState(() {
             _serverTracks = tracks;
+            _placeDraftTargetIds =
+                _reconciledPlaceTargetIds(_placeDraftTargetIds, tracks);
             _isLoading = false;
             _loadError = null;
           });
@@ -598,6 +611,130 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  Set<String> _reconciledPlaceTargetIds(
+    Set<String> current,
+    List<MapMemberTrack> candidates,
+  ) {
+    final candidateIds = candidates.map((member) => member.id).toSet();
+    final kept = current.where(candidateIds.contains).toSet();
+    if (kept.isNotEmpty) {
+      return kept;
+    }
+
+    for (final member in candidates) {
+      if (member.isCurrentUser) {
+        return {member.id};
+      }
+    }
+
+    if (candidates.isNotEmpty) {
+      return {candidates.first.id};
+    }
+    return const {};
+  }
+
+  void _togglePlaceTarget(String profileId, bool selected) {
+    setState(() {
+      final next = {..._placeDraftTargetIds};
+      if (selected) {
+        next.add(profileId);
+      } else {
+        next.remove(profileId);
+      }
+      _placeDraftTargetIds = next;
+    });
+  }
+
+  void _setPlaceNotification({
+    bool? arrival,
+    bool? departure,
+    bool? late,
+    bool? longStay,
+  }) {
+    setState(() {
+      final nextArrival = arrival ?? _placeNotifyArrival;
+      final nextDeparture = departure ?? _placeNotifyDeparture;
+      final nextLate = late ?? _placeNotifyLate;
+      final nextLongStay = longStay ?? _placeNotifyLongStay;
+      if (!(nextArrival || nextDeparture || nextLate || nextLongStay)) {
+        _placeAlertStatusMessage = '알림 조건을 하나 이상 선택해 주세요.';
+        return;
+      }
+      _placeNotifyArrival = nextArrival;
+      _placeNotifyDeparture = nextDeparture;
+      _placeNotifyLate = nextLate;
+      _placeNotifyLongStay = nextLongStay;
+      _placeAlertStatusMessage = null;
+    });
+  }
+
+  Future<void> _savePlaceAlert({
+    required LatLng center,
+    required List<MapMemberTrack> candidates,
+  }) async {
+    final repository = widget.placeAlertRepository;
+    final circleId = _activeCircleId;
+    final targetIds = _reconciledPlaceTargetIds(
+      _placeDraftTargetIds,
+      candidates,
+    ).toList(growable: false);
+    final name = _placeAlertNameController.text.trim();
+
+    if (repository == null || circleId == null) {
+      setState(() => _placeAlertStatusMessage = 'Supabase 연결 후 저장할 수 있습니다.');
+      return;
+    }
+    if (targetIds.isEmpty) {
+      setState(() => _placeAlertStatusMessage = '대상 멤버를 선택해 주세요.');
+      return;
+    }
+    if (name.isEmpty) {
+      setState(() => _placeAlertStatusMessage = '장소 이름을 입력해 주세요.');
+      return;
+    }
+
+    setState(() {
+      _isSavingPlaceAlert = true;
+      _placeAlertStatusMessage = '장소 알림 저장 중';
+    });
+
+    try {
+      final alert = await repository.createPlaceAlert(
+        PlaceAlertDraft(
+          circleId: circleId,
+          name: name,
+          center: Coordinate(
+            latitude: center.latitude,
+            longitude: center.longitude,
+          ),
+          radiusM: _placeDraftRadiusM,
+          targetProfileIds: targetIds,
+          notifyOnArrival: _placeNotifyArrival,
+          notifyOnDeparture: _placeNotifyDeparture,
+          notifyOnLate: _placeNotifyLate,
+          notifyOnLongStay: _placeNotifyLongStay,
+        ),
+      );
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _placeAlertStatusMessage =
+            '${alert.name} 저장됨 · 대상 ${alert.targetCount}명';
+        _isPlaceDraftVisible = true;
+      });
+    } catch (_) {
+      if (mounted) {
+        setState(() => _placeAlertStatusMessage =
+            '장소 알림을 저장하지 못했습니다. 대상과 공유 범위를 확인해 주세요.');
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSavingPlaceAlert = false);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final demoTracks = demoMapTracks();
@@ -610,6 +747,15 @@ class _MapScreenState extends State<MapScreen> {
             ? _serverTracks
             : demoTracks;
     final tracks = _mergeDeviceTrack(baseTracks);
+    final placeTargetCandidates =
+        isLive ? baseTracks : const <MapMemberTrack>[];
+    final effectivePlaceTargetIds =
+        _reconciledPlaceTargetIds(_placeDraftTargetIds, placeTargetCandidates);
+    final canSavePlaceAlert = widget.placeAlertRepository != null &&
+        _activeCircleId != null &&
+        placeTargetCandidates.isNotEmpty &&
+        effectivePlaceTargetIds.isNotEmpty &&
+        !_isSavingPlaceAlert;
     final circleTitle = _circleName ?? '우리 서클';
     final companionConfig = _companionConfig(const Duration(minutes: 15));
     final draftPlacePoint = tracks.isEmpty
@@ -689,12 +835,34 @@ class _MapScreenState extends State<MapScreen> {
         ),
         const SizedBox(height: 12),
         _PlaceDraftPanel(
+          nameController: _placeAlertNameController,
           radiusM: _placeDraftRadiusM,
           isVisible: _isPlaceDraftVisible,
+          targetCandidates: placeTargetCandidates,
+          selectedTargetIds: effectivePlaceTargetIds,
+          notifyArrival: _placeNotifyArrival,
+          notifyDeparture: _placeNotifyDeparture,
+          notifyLate: _placeNotifyLate,
+          notifyLongStay: _placeNotifyLongStay,
+          statusMessage: _placeAlertStatusMessage,
+          canSave: canSavePlaceAlert,
+          isSaving: _isSavingPlaceAlert,
           onVisibilityChanged: (visible) =>
               setState(() => _isPlaceDraftVisible = visible),
           onRadiusChanged: (radius) =>
               setState(() => _placeDraftRadiusM = radius),
+          onTargetChanged: _togglePlaceTarget,
+          onNotifyArrivalChanged: (value) =>
+              _setPlaceNotification(arrival: value),
+          onNotifyDepartureChanged: (value) =>
+              _setPlaceNotification(departure: value),
+          onNotifyLateChanged: (value) => _setPlaceNotification(late: value),
+          onNotifyLongStayChanged: (value) =>
+              _setPlaceNotification(longStay: value),
+          onSave: () => _savePlaceAlert(
+            center: draftPlacePoint,
+            candidates: placeTargetCandidates,
+          ),
         ),
         if (hasNoCircle) ...[
           const SizedBox(height: 12),
@@ -1252,19 +1420,53 @@ class _MapOnboardingPanel extends StatelessWidget {
 
 class _PlaceDraftPanel extends StatelessWidget {
   const _PlaceDraftPanel({
+    required this.nameController,
     required this.radiusM,
     required this.isVisible,
+    required this.targetCandidates,
+    required this.selectedTargetIds,
+    required this.notifyArrival,
+    required this.notifyDeparture,
+    required this.notifyLate,
+    required this.notifyLongStay,
+    required this.statusMessage,
+    required this.canSave,
+    required this.isSaving,
     required this.onVisibilityChanged,
     required this.onRadiusChanged,
+    required this.onTargetChanged,
+    required this.onNotifyArrivalChanged,
+    required this.onNotifyDepartureChanged,
+    required this.onNotifyLateChanged,
+    required this.onNotifyLongStayChanged,
+    required this.onSave,
   });
 
+  final TextEditingController nameController;
   final int radiusM;
   final bool isVisible;
+  final List<MapMemberTrack> targetCandidates;
+  final Set<String> selectedTargetIds;
+  final bool notifyArrival;
+  final bool notifyDeparture;
+  final bool notifyLate;
+  final bool notifyLongStay;
+  final String? statusMessage;
+  final bool canSave;
+  final bool isSaving;
   final ValueChanged<bool> onVisibilityChanged;
   final ValueChanged<int> onRadiusChanged;
+  final void Function(String profileId, bool selected) onTargetChanged;
+  final ValueChanged<bool> onNotifyArrivalChanged;
+  final ValueChanged<bool> onNotifyDepartureChanged;
+  final ValueChanged<bool> onNotifyLateChanged;
+  final ValueChanged<bool> onNotifyLongStayChanged;
+  final Future<void> Function() onSave;
 
   @override
   Widget build(BuildContext context) {
+    final hasTargets = targetCandidates.isNotEmpty;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -1295,17 +1497,23 @@ class _PlaceDraftPanel extends StatelessWidget {
                     Text('장소 반경',
                         style: TextStyle(fontWeight: FontWeight.w900)),
                     SizedBox(height: 2),
-                    Text('저장 전 미리보기 · 대상 선택 필요',
+                    Text('도착/이탈 규칙 저장',
                         style:
                             TextStyle(color: GyeoteColors.muted, fontSize: 12)),
                   ],
                 ),
               ),
-              Switch(
-                value: isVisible,
-                onChanged: onVisibilityChanged,
-              ),
+              Switch(value: isVisible, onChanged: onVisibilityChanged),
             ],
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: nameController,
+            textInputAction: TextInputAction.done,
+            decoration: const InputDecoration(
+              labelText: '장소 이름',
+              prefixIcon: Icon(Icons.place_outlined),
+            ),
           ),
           const SizedBox(height: 12),
           SizedBox(
@@ -1338,7 +1546,121 @@ class _PlaceDraftPanel extends StatelessWidget {
               },
             ),
           ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (!hasTargets)
+                const _PlaceDraftHint(text: '실제 서클 위치가 연결되면 저장할 수 있습니다.'),
+              for (final member in targetCandidates)
+                FilterChip(
+                  avatar: CircleAvatar(
+                    backgroundColor: member.tone.withValues(alpha: 0.16),
+                    child: Text(
+                      member.name.substring(0, 1),
+                      style: TextStyle(
+                        color: member.tone,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  label: Text(member.isCurrentUser ? '나' : member.name),
+                  selected: selectedTargetIds.contains(member.id),
+                  onSelected: (selected) =>
+                      onTargetChanged(member.id, selected),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              FilterChip(
+                avatar: const Icon(Icons.login_outlined, size: 18),
+                label: const Text('도착'),
+                selected: notifyArrival,
+                onSelected: onNotifyArrivalChanged,
+              ),
+              FilterChip(
+                avatar: const Icon(Icons.logout_outlined, size: 18),
+                label: const Text('이탈'),
+                selected: notifyDeparture,
+                onSelected: onNotifyDepartureChanged,
+              ),
+              FilterChip(
+                avatar: const Icon(Icons.schedule_outlined, size: 18),
+                label: const Text('늦음'),
+                selected: notifyLate,
+                onSelected: onNotifyLateChanged,
+              ),
+              FilterChip(
+                avatar: const Icon(Icons.timelapse_outlined, size: 18),
+                label: const Text('오래 머무름'),
+                selected: notifyLongStay,
+                onSelected: onNotifyLongStayChanged,
+              ),
+            ],
+          ),
+          if (statusMessage != null) ...[
+            const SizedBox(height: 10),
+            Text(
+              statusMessage!,
+              style: TextStyle(
+                color: statusMessage!.contains('못했습니다') ||
+                        statusMessage!.contains('선택') ||
+                        statusMessage!.contains('입력')
+                    ? GyeoteColors.danger
+                    : GyeoteColors.primary,
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+          ],
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: canSave
+                  ? () async {
+                      await onSave();
+                    }
+                  : null,
+              icon: isSaving
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.notifications_active_outlined),
+              label: Text(isSaving ? '저장 중' : '장소 알림 저장'),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _PlaceDraftHint extends StatelessWidget {
+  const _PlaceDraftHint({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: GyeoteColors.surfaceAlt,
+        border: Border.all(color: GyeoteColors.border),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(color: GyeoteColors.muted, fontSize: 12),
       ),
     );
   }

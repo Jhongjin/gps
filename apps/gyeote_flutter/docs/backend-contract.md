@@ -119,7 +119,9 @@ Current app flow: `MapScreen` creates a companion session for the current user i
 
 `CircleScreen` reads `place_alerts` through `PlaceAlertRepository.listPlaceAlerts`. The query is scoped by the active circle and includes only the visible rule metadata plus `place_alert_targets(profile_id)` for target counts.
 
-The current app intentionally shows a read-only list and empty state. Creation/editing should open only after the map radius selector, target-member selector, and target write RLS are in place, so the app never saves a sensitive home/school/workplace rule with unclear consent.
+`MapScreen` creates new rules through `create_place_alert_with_targets`. The app sends the selected map radius, place name, target profile ids from the live circle location stream, and event toggles. Demo ids are never saved.
+
+Direct `place_alerts` inserts are blocked by RLS. The RPC validates circle membership, target membership, current shareability, and minor guardian ownership before inserting `place_alerts` and `place_alert_targets` atomically.
 
 ## Check-In Events
 
@@ -150,6 +152,9 @@ RPC names:
 - `accept_circle_invite`
 - `get_circle_latest_locations`
 - `get_circle_member_route_tail`
+- `create_place_alert_with_targets`
+- `perform_check_in`
+- `list_circle_check_ins`
 - `record_viewer_log`
 
 ## Ads And Analytics

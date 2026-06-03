@@ -17,7 +17,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 
 ## Implemented In Flutter
 
-- Real map with OSM tiles, member markers, route tails, precision/accuracy rings, stale-state copy, and place-radius preview.
+- Real map with OSM tiles, member markers, route tails, precision/accuracy rings, stale-state copy, and place-alert radius creation flow.
 - Circle creation, invites, invite acceptance, empty states, place alert read state, and check-in status card.
 - Companion mode session creation, consent, activation, native session config, manual `도착 확인`, and session ending.
 - Android encrypted bounded native upload queue and iOS source implementation for the same queue.
@@ -29,7 +29,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 
 Applied in production Supabase:
 
-- migrations through `010_check_in_session_ownership.sql`
+- migrations through `011_place_alert_target_rpc.sql`
 
 Verified in production Supabase:
 
@@ -43,6 +43,13 @@ Verified in production Supabase:
 - `check_in_session_error_installed = true`
 - `check_in_session_expiry_guard_installed = true`
 - rollback-only RLS/RPC negative tests: 8 assertions passed
+- `place_alert_create_rpc_installed = true`
+- `place_alert_create_rpc_granted = true`
+- `direct_place_alert_insert_blocked = true`
+- `broad_place_alert_insert_removed = true`
+- `minor_guardian_check_installed = true`
+- `shareability_check_installed = true`
+- rollback-only place alert negative tests: 8 assertions passed
 
 Current local limitation:
 
@@ -50,6 +57,6 @@ Current local limitation:
 
 ## Next Backend Priority
 
-1. Decide place-alert target write RPC shape and guardian-safe consent gates.
+1. Add native geofence registration for saved place alerts.
 2. Decide whether to add `get_active_companion_route_tail` for high-frequency companion-only paths.
-3. Add negative tests for future place alert target writes after that RPC exists.
+3. Add pause/delete RPCs for place alerts.

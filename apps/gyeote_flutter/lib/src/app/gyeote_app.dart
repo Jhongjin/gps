@@ -42,6 +42,7 @@ class _GyeoteAppState extends State<GyeoteApp> {
         deviceRepository: backend?.devices,
         companionRepository: backend?.companions,
         checkInRepository: backend?.checkIns,
+        placeAlertRepository: backend?.placeAlerts,
         backendConfig: widget.backendConfig,
         locationBridge: _locationBridge,
         onOpenCircle: () => setState(() => _tabIndex = 1),
