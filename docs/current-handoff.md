@@ -63,7 +63,7 @@ Verified in production Supabase:
 Current local limitation:
 
 - `supabase` CLI and `psql` are still not configured in this workspace; production DDL was applied through the Supabase SQL Editor browser session.
-- `012_place_alert_management_rpcs.sql`, `013_active_companion_route_tail_rpc.sql`, `014_place_alert_quiet_hours_rpc.sql`, and `015_place_alert_event_ingest_rpc.sql` are prepared locally but not applied to production yet because the current in-app Browser session has no Supabase login cookie.
+- `012_place_alert_management_rpcs.sql`, `013_active_companion_route_tail_rpc.sql`, `014_place_alert_quiet_hours_rpc.sql`, and `015_place_alert_event_ingest_rpc.sql` are prepared locally but not applied to production yet. The Supabase SQL Editor is visible in the in-app Browser, but automated editor input is blocked by the Browser virtual clipboard limitation.
 
 ## Next Backend Priority
 
