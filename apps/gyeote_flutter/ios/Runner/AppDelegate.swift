@@ -146,10 +146,12 @@ final class GyeoteLocationBridge: NSObject, FlutterPlugin, FlutterStreamHandler,
 
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     emitRegion("geofence.entered", region: region)
+    showPlaceAlertNotification(for: "geofence.entered")
   }
 
   func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
     emitRegion("geofence.exited", region: region)
+    showPlaceAlertNotification(for: "geofence.exited")
   }
 
   private func startLocationSession(_ config: [String: Any?]?) {
@@ -365,6 +367,38 @@ final class GyeoteLocationBridge: NSObject, FlutterPlugin, FlutterStreamHandler,
 
   private func requestNotificationAuthorization() {
     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
+  }
+
+  private func showPlaceAlertNotification(for eventType: String) {
+    let center = UNUserNotificationCenter.current()
+    center.getNotificationSettings { settings in
+      guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
+        return
+      }
+
+      let content = UNMutableNotificationContent()
+      content.title = "곁에 장소 알림"
+      content.body = self.placeAlertNotificationText(for: eventType)
+      content.sound = .default
+
+      let request = UNNotificationRequest(
+        identifier: "gyeote.place-alert.\(UUID().uuidString)",
+        content: content,
+        trigger: nil
+      )
+      center.add(request)
+    }
+  }
+
+  private func placeAlertNotificationText(for eventType: String) -> String {
+    switch eventType {
+    case "geofence.entered":
+      return "저장한 장소 반경에 도착했습니다."
+    case "geofence.exited":
+      return "저장한 장소 반경을 벗어났습니다."
+    default:
+      return "저장한 장소 반경 변화가 감지됐습니다."
+    }
   }
 
   private var hasForegroundLocationPermission: Bool {

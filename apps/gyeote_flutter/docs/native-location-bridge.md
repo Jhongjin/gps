@@ -112,6 +112,7 @@ Approximate sharing, history deletion, and ad isolation depend on this separatio
   - Native token refresh remains before production-scale background upload.
 - iOS first bridge slice is implemented in `ios/Runner/AppDelegate.swift`.
   - Covers channel registration, permission requests, live location events, SOS single fix, sharing policy checks, and region monitoring hooks.
+  - Region enter/exit events emit Flutter bridge events and schedule privacy-safe local notifications when notification permission is granted.
   - Upload configuration, file-protected bounded queueing, PostgREST latest/history flush, retry backoff, and auth failure surfacing are source-implemented.
   - iOS source is ready for Xcode/device validation; this Windows workspace cannot compile iOS.
 

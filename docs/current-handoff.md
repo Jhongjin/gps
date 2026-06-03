@@ -27,6 +27,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 - Place alert creation supports quiet-hours presets and circle rule cards display the saved summary.
 - Native place-alert enter/exit events update the in-app status copy without showing internal geofence ids.
 - Android native place-alert transitions also show a privacy-safe local notification when notification permission is granted.
+- iOS region enter/exit callbacks schedule matching privacy-safe local notifications in source; this Windows workspace cannot compile iOS.
 - Native permission snapshot surfaced in Privacy/안심 screen on Android/iOS.
 - History safety summary plus filters for `전체`, `확인`, `장소`, `동행`, and `데이터`.
 - Widget smoke tests for shell, history filters, and privacy permission/battery controls.
