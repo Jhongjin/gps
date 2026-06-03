@@ -24,6 +24,10 @@ The following SQL migration files were applied through the Supabase SQL Editor:
 - `supabase/migrations/010_check_in_session_ownership.sql`
 - `supabase/migrations/011_place_alert_target_rpc.sql`
 
+Prepared but not yet applied:
+
+- `supabase/migrations/012_place_alert_management_rpcs.sql`
+
 ## SQL Editor Bundle
 
 The following bundle was used to apply the post-initial migrations:

@@ -257,6 +257,13 @@ abstract interface class PlaceAlertRepository {
   Future<List<PlaceAlertRule>> listPlaceAlerts(String circleId);
 
   Future<PlaceAlertRule> createPlaceAlert(PlaceAlertDraft draft);
+
+  Future<PlaceAlertRule> setPlaceAlertEnabled({
+    required String alertId,
+    required bool enabled,
+  });
+
+  Future<void> deletePlaceAlert(String alertId);
 }
 
 abstract interface class CheckInRepository {

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/backend/backend_contract.dart';
+import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
+import '../../core/location/place_alert_geofence_sync.dart';
 import '../../theme/gyeote_theme.dart';
 
 class CircleScreen extends StatefulWidget {
@@ -12,12 +14,14 @@ class CircleScreen extends StatefulWidget {
     this.invitationRepository,
     this.placeAlertRepository,
     this.checkInRepository,
+    this.locationBridge,
   });
 
   final CircleRepository? circleRepository;
   final InvitationRepository? invitationRepository;
   final PlaceAlertRepository? placeAlertRepository;
   final CheckInRepository? checkInRepository;
+  final LocationBridge? locationBridge;
 
   @override
   State<CircleScreen> createState() => _CircleScreenState();
@@ -38,6 +42,7 @@ class _CircleScreenState extends State<CircleScreen> {
   List<CircleSummary> _circles = const [];
   List<PlaceAlertRule> _placeAlerts = const [];
   List<CheckInEvent> _checkIns = const [];
+  final Set<String> _busyPlaceAlertIds = {};
   final _inviteInputController = TextEditingController();
   InviteCreationResult? _inviteResult;
   String? _statusMessage;
@@ -70,10 +75,12 @@ class _CircleScreenState extends State<CircleScreen> {
     if (oldWidget.circleRepository != widget.circleRepository ||
         oldWidget.invitationRepository != widget.invitationRepository ||
         oldWidget.placeAlertRepository != widget.placeAlertRepository ||
-        oldWidget.checkInRepository != widget.checkInRepository) {
+        oldWidget.checkInRepository != widget.checkInRepository ||
+        oldWidget.locationBridge != widget.locationBridge) {
       _circles = const [];
       _placeAlerts = const [];
       _checkIns = const [];
+      _busyPlaceAlertIds.clear();
       _inviteResult = null;
       _statusMessage = null;
       _placeAlertMessage = null;
@@ -302,6 +309,124 @@ class _CircleScreenState extends State<CircleScreen> {
     }
   }
 
+  Future<void> _setPlaceAlertEnabled(PlaceAlertRule alert) async {
+    final repository = widget.placeAlertRepository;
+    if (repository == null) {
+      setState(() => _placeAlertMessage = 'Supabase 연결 후 장소 알림을 변경할 수 있습니다.');
+      return;
+    }
+
+    final nextEnabled = !alert.enabled;
+    setState(() {
+      _busyPlaceAlertIds.add(alert.id);
+      _placeAlertMessage = null;
+    });
+
+    try {
+      await repository.setPlaceAlertEnabled(
+        alertId: alert.id,
+        enabled: nextEnabled,
+      );
+      await _loadPlaceAlerts(alert.circleId);
+      final synced = await _syncPlaceAlertGeofences(alert.circleId);
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _placeAlertMessage = synced
+            ? (nextEnabled ? '장소 알림을 다시 켰습니다.' : '장소 알림을 일시정지했습니다.')
+            : '서버 변경은 완료됐고, 기기 반경 동기화는 대기 중입니다.';
+      });
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _placeAlertMessage = '장소 알림 상태를 변경하지 못했습니다.');
+    } finally {
+      if (mounted) {
+        setState(() => _busyPlaceAlertIds.remove(alert.id));
+      }
+    }
+  }
+
+  Future<void> _confirmDeletePlaceAlert(PlaceAlertRule alert) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('장소 알림 삭제'),
+        content:
+            Text('${alert.name} 알림을 삭제할까요? 대상 멤버에게 더 이상 도착/이탈 알림이 가지 않습니다.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('취소'),
+          ),
+          FilledButton.tonalIcon(
+            onPressed: () => Navigator.of(context).pop(true),
+            icon: const Icon(Icons.delete_outline),
+            label: const Text('삭제'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      await _deletePlaceAlert(alert);
+    }
+  }
+
+  Future<void> _deletePlaceAlert(PlaceAlertRule alert) async {
+    final repository = widget.placeAlertRepository;
+    if (repository == null) {
+      setState(() => _placeAlertMessage = 'Supabase 연결 후 장소 알림을 삭제할 수 있습니다.');
+      return;
+    }
+
+    setState(() {
+      _busyPlaceAlertIds.add(alert.id);
+      _placeAlertMessage = null;
+    });
+
+    try {
+      await repository.deletePlaceAlert(alert.id);
+      await _loadPlaceAlerts(alert.circleId);
+      final synced = await _syncPlaceAlertGeofences(alert.circleId);
+      if (!mounted) {
+        return;
+      }
+      setState(() => _placeAlertMessage =
+          synced ? '장소 알림을 삭제했습니다.' : '서버 삭제는 완료됐고, 기기 반경 동기화는 대기 중입니다.');
+    } catch (_) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _placeAlertMessage = '장소 알림을 삭제하지 못했습니다.');
+    } finally {
+      if (mounted) {
+        setState(() => _busyPlaceAlertIds.remove(alert.id));
+      }
+    }
+  }
+
+  Future<bool> _syncPlaceAlertGeofences(String circleId) async {
+    final repository = widget.placeAlertRepository;
+    final bridge = widget.locationBridge;
+    if (repository == null || bridge == null) {
+      return true;
+    }
+
+    try {
+      await syncPlaceAlertGeofences(
+        repository: repository,
+        locationBridge: bridge,
+        circleId: circleId,
+      );
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   String? _inviteTokenFromInput(String value) {
     if (value.isEmpty) {
       return null;
@@ -414,6 +539,9 @@ class _CircleScreenState extends State<CircleScreen> {
           hasCircle: activeCircle != null,
           isLoading: _isLoadingPlaceAlerts,
           message: _placeAlertMessage,
+          busyAlertIds: _busyPlaceAlertIds,
+          onToggleEnabled: _setPlaceAlertEnabled,
+          onDelete: _confirmDeletePlaceAlert,
         ),
       ],
     );
@@ -819,12 +947,18 @@ class _PlaceAlertCard extends StatelessWidget {
     required this.hasCircle,
     required this.isLoading,
     required this.message,
+    required this.busyAlertIds,
+    required this.onToggleEnabled,
+    required this.onDelete,
   });
 
   final List<PlaceAlertRule>? alerts;
   final bool hasCircle;
   final bool isLoading;
   final String? message;
+  final Set<String> busyAlertIds;
+  final ValueChanged<PlaceAlertRule> onToggleEnabled;
+  final ValueChanged<PlaceAlertRule> onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -839,6 +973,9 @@ class _PlaceAlertCard extends StatelessWidget {
         hasCircle: hasCircle,
         isLoading: isLoading,
         message: message,
+        busyAlertIds: busyAlertIds,
+        onToggleEnabled: onToggleEnabled,
+        onDelete: onDelete,
       ),
     );
   }
@@ -850,12 +987,18 @@ class _PlaceAlertCardBody extends StatelessWidget {
     required this.hasCircle,
     required this.isLoading,
     required this.message,
+    required this.busyAlertIds,
+    required this.onToggleEnabled,
+    required this.onDelete,
   });
 
   final List<PlaceAlertRule>? alerts;
   final bool hasCircle;
   final bool isLoading;
   final String? message;
+  final Set<String> busyAlertIds;
+  final ValueChanged<PlaceAlertRule> onToggleEnabled;
+  final ValueChanged<PlaceAlertRule> onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -863,50 +1006,119 @@ class _PlaceAlertCardBody extends StatelessWidget {
       return const _InlineLoadingState(text: '장소 알림을 불러오는 중입니다.');
     }
 
-    if (message != null) {
-      return _InlineEmptyState(
-        icon: Icons.sync_problem_outlined,
-        title: '장소 알림 동기화 실패',
-        body: message!,
-      );
-    }
-
     final rules = alerts;
+    final messageBanner = message == null
+        ? null
+        : Padding(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: _InlineNoticeState(
+              icon: _placeAlertMessageIcon(message!),
+              title: _placeAlertMessageTitle(message!),
+              body: message!,
+              isError: _placeAlertMessageIsError(message!),
+            ),
+          );
+
     if (rules == null) {
-      return const Column(
+      return Column(
         children: [
-          _AlertRule(title: '학교', body: '평일 08:00-17:00 · 도착/이탈 · 10분 지연'),
-          _AlertRule(title: '집', body: '가족 전체 · 도착 확인'),
-          _AlertRule(title: '병원', body: '할아버지 · 오래 머무름 확인'),
+          if (messageBanner != null) messageBanner,
+          const _AlertRule(
+              title: '학교', body: '평일 08:00-17:00 · 도착/이탈 · 10분 지연'),
+          const _AlertRule(title: '집', body: '가족 전체 · 도착 확인'),
+          const _AlertRule(title: '병원', body: '할아버지 · 오래 머무름 확인'),
         ],
       );
     }
 
     if (!hasCircle) {
-      return const _InlineEmptyState(
-        icon: Icons.add_location_alt_outlined,
-        title: '서클을 먼저 만들어 주세요',
-        body: '장소 알림은 서클 멤버와 공유 범위를 정한 뒤 사용할 수 있습니다.',
+      return Column(
+        children: [
+          if (messageBanner != null) messageBanner,
+          const _InlineEmptyState(
+            icon: Icons.add_location_alt_outlined,
+            title: '서클을 먼저 만들어 주세요',
+            body: '장소 알림은 서클 멤버와 공유 범위를 정한 뒤 사용할 수 있습니다.',
+          ),
+        ],
       );
     }
 
     if (rules.isEmpty) {
-      return const _InlineEmptyState(
-        icon: Icons.notifications_none_outlined,
-        title: '저장된 장소 알림이 없습니다',
-        body: '지도에서 반경을 미리 보고 대상 멤버를 고른 뒤 안전한 알림 규칙으로 추가할 예정입니다.',
+      return Column(
+        children: [
+          if (messageBanner != null) messageBanner,
+          const _InlineEmptyState(
+            icon: Icons.notifications_none_outlined,
+            title: '저장된 장소 알림이 없습니다',
+            body: '지도에서 반경을 미리 보고 대상 멤버를 고른 뒤 안전한 알림 규칙으로 추가할 예정입니다.',
+          ),
+        ],
       );
     }
 
     return Column(
       children: [
+        if (messageBanner != null) messageBanner,
         for (final alert in rules)
           _AlertRule(
             title: alert.name,
             body: _placeAlertBody(alert),
             enabled: alert.enabled,
+            isBusy: busyAlertIds.contains(alert.id),
+            onToggleEnabled: () => onToggleEnabled(alert),
+            onDelete: () => onDelete(alert),
           ),
       ],
+    );
+  }
+}
+
+class _InlineNoticeState extends StatelessWidget {
+  const _InlineNoticeState({
+    required this.icon,
+    required this.title,
+    required this.body,
+    required this.isError,
+  });
+
+  final IconData icon;
+  final String title;
+  final String body;
+  final bool isError;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isError ? GyeoteColors.danger : GyeoteColors.primary;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: color.withValues(alpha: 0.24)),
+        borderRadius: BorderRadius.circular(8),
+        color: color.withValues(alpha: 0.08),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 20),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style:
+                        TextStyle(color: color, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 2),
+                Text(body,
+                    style: const TextStyle(
+                        color: GyeoteColors.muted, fontSize: 12)),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -916,11 +1128,17 @@ class _AlertRule extends StatelessWidget {
     required this.title,
     required this.body,
     this.enabled = true,
+    this.isBusy = false,
+    this.onToggleEnabled,
+    this.onDelete,
   });
 
   final String title;
   final String body;
   final bool enabled;
+  final bool isBusy;
+  final VoidCallback? onToggleEnabled;
+  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -942,7 +1160,40 @@ class _AlertRule extends StatelessWidget {
                       child: Text(title,
                           style: const TextStyle(fontWeight: FontWeight.w900)),
                     ),
-                    if (!enabled) const _StatusChip(text: '일시정지'),
+                    if (isBusy)
+                      const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else ...[
+                      if (!enabled) const _StatusChip(text: '일시정지'),
+                      if (onToggleEnabled != null) ...[
+                        const SizedBox(width: 4),
+                        Tooltip(
+                          message: enabled ? '일시정지' : '다시 켜기',
+                          child: IconButton(
+                            visualDensity: VisualDensity.compact,
+                            icon: Icon(enabled
+                                ? Icons.pause_circle_outline
+                                : Icons.play_circle_outline),
+                            onPressed: onToggleEnabled,
+                          ),
+                        ),
+                      ],
+                      if (onDelete != null) ...[
+                        const SizedBox(width: 2),
+                        Tooltip(
+                          message: '삭제',
+                          child: IconButton(
+                            visualDensity: VisualDensity.compact,
+                            icon: const Icon(Icons.delete_outline),
+                            color: GyeoteColors.danger,
+                            onPressed: onDelete,
+                          ),
+                        ),
+                      ],
+                    ],
                   ],
                 ),
                 const SizedBox(height: 2),
@@ -1037,6 +1288,30 @@ String _placeAlertBody(PlaceAlertRule alert) {
       alert.targetCount == 0 ? '대상 미지정' : '${alert.targetCount}명';
   final eventLabel = events.isEmpty ? '알림 조건 없음' : events.join('/');
   return '$targetLabel · 반경 ${alert.radiusM}m · $eventLabel';
+}
+
+bool _placeAlertMessageIsError(String message) {
+  return message.contains('못했습니다') || message.contains('대기 중');
+}
+
+IconData _placeAlertMessageIcon(String message) {
+  if (message.contains('대기 중')) {
+    return Icons.sync_problem_outlined;
+  }
+  if (_placeAlertMessageIsError(message)) {
+    return Icons.error_outline;
+  }
+  return Icons.check_circle_outline;
+}
+
+String _placeAlertMessageTitle(String message) {
+  if (message.contains('대기 중')) {
+    return '기기 동기화 대기';
+  }
+  if (_placeAlertMessageIsError(message)) {
+    return '장소 알림 변경 실패';
+  }
+  return '장소 알림 업데이트';
 }
 
 String _checkInStatusLabel(CheckInStatus status) {

@@ -125,6 +125,13 @@ Direct `place_alerts` inserts are blocked by RLS. The RPC validates circle membe
 
 After a successful save on Android/iOS, `MapScreen` reloads visible alert rules and calls `LocationBridge.registerGeofences` with up to 20 enabled arrival/departure rules. iOS maps those to `CLCircularRegion`; Android registers the same rules through Google Play Services Geofencing API and emits `geofence.entered` / `geofence.exited` transition events back through the native event bridge.
 
+Pause/resume and deletion are creator-scoped RPCs:
+
+- `set_place_alert_enabled`
+- `delete_place_alert`
+
+After a pause, resume, or delete action, the app reloads the circle rules and re-syncs native geofences. An empty geofence list is sent to native so stale OS regions are removed.
+
 ## Check-In Events
 
 Manual check-in uses `perform_check_in`. The RPC writes a short `check_in_events` row without raw or shared coordinates and ends the caller's companion session when a `companionSessionId` is provided.

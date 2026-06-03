@@ -22,6 +22,7 @@ Android debug APK builds successfully. iOS source is implemented but not compile
 - Companion mode session creation, consent, activation, native session config, manual `도착 확인`, and session ending.
 - Android encrypted bounded native upload queue and iOS source implementation for the same queue.
 - Android saved place alerts register through Google Play Services Geofencing API and emit native enter/exit transition events.
+- Place alert pause/resume/delete UI and creator-scoped RPC SQL are implemented locally.
 - Native permission snapshot surfaced in Privacy/안심 screen on Android/iOS.
 - History safety summary plus filters for `전체`, `확인`, `장소`, `동행`, and `데이터`.
 - Widget smoke tests for shell, history filters, and privacy permission/battery controls.
@@ -55,9 +56,10 @@ Verified in production Supabase:
 Current local limitation:
 
 - `supabase` CLI and `psql` are still not configured in this workspace; production DDL was applied through the Supabase SQL Editor browser session.
+- `012_place_alert_management_rpcs.sql` is prepared locally but not applied to production yet because the current in-app Browser session has no Supabase login cookie.
 
 ## Next Backend Priority
 
-1. Add pause/delete RPCs for place alerts.
+1. Apply `012_place_alert_management_rpcs.sql`, then run `verification_after_012.sql` and `negative_tests_after_012.sql`.
 2. Decide whether to add `get_active_companion_route_tail` for high-frequency companion-only paths.
 3. Add quiet-hours editing after notification delivery rules are implemented.

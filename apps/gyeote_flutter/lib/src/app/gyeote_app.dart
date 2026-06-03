@@ -52,6 +52,7 @@ class _GyeoteAppState extends State<GyeoteApp> {
         invitationRepository: backend?.invitations,
         placeAlertRepository: backend?.placeAlerts,
         checkInRepository: backend?.checkIns,
+        locationBridge: _locationBridge,
       ),
       HistoryScreen(
         circleRepository: backend?.circles,

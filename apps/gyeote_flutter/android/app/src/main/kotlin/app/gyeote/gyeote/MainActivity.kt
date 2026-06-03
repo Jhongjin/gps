@@ -158,13 +158,6 @@ class MainActivity : FlutterActivity() {
 
     @SuppressLint("MissingPermission")
     private fun registerGeofences(arguments: Any?, result: MethodChannel.Result) {
-        if (!GyeoteLocationPayloads.hasForegroundLocationPermission(this) ||
-            !GyeoteLocationPayloads.hasBackgroundLocationPermission(this)
-        ) {
-            result.error("permission_denied", "Background location permission is required for place alerts.", null)
-            return
-        }
-
         val payload = arguments as? Map<*, *> ?: throw IllegalArgumentException("registerGeofences requires a map payload.")
         val rawGeofences = payload["geofences"] as? List<*> ?: emptyList<Any?>()
         val geofences = rawGeofences
@@ -183,6 +176,13 @@ class MainActivity : FlutterActivity() {
                     mapOf("registeredCount" to 0),
                 )
                 result.success(null)
+                return@addOnCompleteListener
+            }
+
+            if (!GyeoteLocationPayloads.hasForegroundLocationPermission(this) ||
+                !GyeoteLocationPayloads.hasBackgroundLocationPermission(this)
+            ) {
+                result.error("permission_denied", "Background location permission is required for place alerts.", null)
                 return@addOnCompleteListener
             }
 

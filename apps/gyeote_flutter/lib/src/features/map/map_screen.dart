@@ -10,6 +10,7 @@ import '../../core/backend/backend_config.dart';
 import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
+import '../../core/location/place_alert_geofence_sync.dart';
 import '../../theme/gyeote_theme.dart';
 import 'map_models.dart';
 
@@ -743,31 +744,15 @@ class _MapScreenState extends State<MapScreen> {
     }
 
     try {
-      final alerts = await repository.listPlaceAlerts(circleId);
-      final geofences = alerts
-          .where((alert) =>
-              alert.enabled &&
-              (alert.notifyOnArrival || alert.notifyOnDeparture))
-          .take(20)
-          .map(
-            (alert) => GeofenceSpec(
-              id: alert.id,
-              center: alert.center,
-              radiusM: alert.radiusM.toDouble(),
-              notifyOnArrival: alert.notifyOnArrival,
-              notifyOnDeparture: alert.notifyOnDeparture,
-            ),
-          )
-          .toList(growable: false);
-
-      if (geofences.isEmpty) {
-        return;
-      }
-
-      await widget.locationBridge.requestAlways();
-      await widget.locationBridge.registerGeofences(geofences);
+      final registeredCount = await syncPlaceAlertGeofences(
+        repository: repository,
+        locationBridge: widget.locationBridge,
+        circleId: circleId,
+      );
       if (mounted) {
-        setState(() => _bridgeStatus = '장소 알림 반경 ${geofences.length}개 기기 등록됨');
+        setState(() => _bridgeStatus = registeredCount == 0
+            ? '장소 알림 반경이 기기에서 해제됨'
+            : '장소 알림 반경 $registeredCount개 기기 등록됨');
       }
     } catch (_) {
       if (mounted) {

@@ -215,6 +215,30 @@ class SupabasePlaceAlertRepository implements PlaceAlertRepository {
     final map = Map<String, Object?>.from((rows as List).first);
     return _placeAlertRuleFromRow(map);
   }
+
+  @override
+  Future<PlaceAlertRule> setPlaceAlertEnabled({
+    required String alertId,
+    required bool enabled,
+  }) async {
+    final rows = await _client.rpc(
+      'set_place_alert_enabled',
+      params: {
+        'alert_id': alertId,
+        'is_enabled': enabled,
+      },
+    );
+    final map = Map<String, Object?>.from((rows as List).first);
+    return _placeAlertRuleFromRow(map);
+  }
+
+  @override
+  Future<void> deletePlaceAlert(String alertId) async {
+    await _client.rpc(
+      'delete_place_alert',
+      params: {'alert_id': alertId},
+    );
+  }
 }
 
 class SupabaseCheckInRepository implements CheckInRepository {

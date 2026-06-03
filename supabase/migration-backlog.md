@@ -38,21 +38,22 @@ Result:
 - place alert target RPC returned all `verification_after_011.sql` fields as `true`
 - rollback-only place alert negative test returned `all_place_alert_tests_passed = true` across 8 assertions
 
-## Next Candidate: Place Alert App UI
+## Pending Production Apply: Place Alert Management RPCs
 
 Current state:
 
 - `place_alerts` direct client inserts are blocked.
 - `place_alert_targets` remains read-only from the client.
 - `create_place_alert_with_targets` atomically validates and writes alert targets.
-- Flutter still shows read-only rules and a radius preview.
+- Flutter can create alerts, pause/resume them, delete them, and re-sync native geofences.
 
-Before enabling creation in Flutter:
+Prepared files:
 
-- add a compact creation sheet with name, radius, event toggles, and target selector
-- default target to self or currently selected member, never silently all members
-- show copy explaining guardian/minor target rules
-- do not expose exact home/school/workplace addresses in notification payloads
+- `migrations/012_place_alert_management_rpcs.sql`
+- `verification_after_012.sql`
+- `negative_tests_after_012.sql`
+
+Production apply is still pending because the current in-app Browser session is not logged into Supabase Studio.
 
 ## Next Candidate: Route Tail Semantics
 
@@ -84,4 +85,4 @@ Recommended path:
 ## Negative Tests To Add
 
 - native geofence registration rejects alerts outside the signed-in user's visible circles
-- future alert update/delete RPCs reject non-creators and targets outside the circle
+- native device QA confirms paused/deleted alerts remove stale OS geofences
