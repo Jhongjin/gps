@@ -34,6 +34,16 @@ void main() {
     expect(find.text('데이터'), findsWidgets);
   });
 
+  testWidgets('map place alert draft exposes quiet hour presets',
+      (tester) async {
+    await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
+
+    expect(find.text('장소 알림 저장'), findsOneWidget);
+    expect(find.text('없음'), findsWidgets);
+    expect(find.text('야간'), findsOneWidget);
+    expect(find.text('수업'), findsOneWidget);
+  });
+
   testWidgets('privacy screen exposes permission and battery controls',
       (tester) async {
     await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
