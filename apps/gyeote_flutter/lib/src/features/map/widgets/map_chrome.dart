@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../core/location/location_models.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../theme/gyeote_theme.dart';
 import '../map_models.dart';
 
@@ -192,7 +193,7 @@ class MemberMarker extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '${member.name}. ${member.status}',
+      label: '${member.name}. ${member.status(AppL10n.of(context))}',
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,

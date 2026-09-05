@@ -4,8 +4,7 @@
   "apps/gyeote_flutter/lib/src/features/auth/sign_in_screen.dart": 18,
   "apps/gyeote_flutter/lib/src/features/circle/circle_screen.dart": 137,
   "apps/gyeote_flutter/lib/src/features/history/history_screen.dart": 51,
-  "apps/gyeote_flutter/lib/src/features/map/map_models.dart": 35,
-  "apps/gyeote_flutter/lib/src/features/map/map_screen.dart": 138,
+  "apps/gyeote_flutter/lib/src/features/map/map_screen.dart": 121,
   "apps/gyeote_flutter/lib/src/features/map/widgets/map_chrome.dart": 2,
   "apps/gyeote_flutter/lib/src/features/privacy/privacy_screen.dart": 100
 }

@@ -1,11 +1,9 @@
 {
   "@@locale": "ko",
-
   "appTitle": "곁에",
   "@appTitle": {
     "description": "앱 이름"
   },
-
   "navMap": "지도",
   "navCircle": "서클",
   "navHistory": "기록",
@@ -13,9 +11,7 @@
   "@navPrivacy": {
     "description": "프라이버시 탭. '설정'이 아니라 '안심'이다 — 감시가 아닌 기다림의 톤"
   },
-
   "signOut": "로그아웃",
-
   "mapDefaultCircleName": "우리 서클",
   "mapLayersTooltip": "지도 종류",
   "mapInvite": "초대",
@@ -23,19 +19,22 @@
   "mapSharingCount": "{count}명이 위치 공유 중",
   "@mapSharingCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "mapAttentionCount": "확인 필요 {count}",
   "@mapAttentionCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "mapConnecting": "서클 위치 연결 중",
   "mapNoCircle": "아직 연결된 서클 없음",
   "mapDemoNotice": "아직 서버 위치가 없어 데모 위치 표시 중",
-
   "sosLabel": "SOS",
   "sosButtonSemantics": "긴급 공유. 길게 눌러 시작",
   "@sosButtonSemantics": {
@@ -46,13 +45,14 @@
   "sosAudience": "{audience}에게\n정확 위치와 배터리를 보냅니다",
   "@sosAudience": {
     "placeholders": {
-      "audience": { "type": "String" }
+      "audience": {
+        "type": "String"
+      }
     }
   },
   "sosNoAds": "이 화면에는 광고가 표시되지 않습니다.",
   "sosCancel": "취소",
   "sosSendNow": "지금 보내기",
-
   "memberBattery": "배터리",
   "memberAccuracy": "정확도",
   "memberUpdated": "갱신",
@@ -62,51 +62,141 @@
   "memberPrecisionTitle": "{name}이(가) 나에게 공유하는 정확도",
   "@memberPrecisionTitle": {
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "memberPrecisionConsent": "바꾸려면 {name}의 동의가 필요합니다. 요청을 보내면 상대 기기에 알림이 갑니다.",
   "@memberPrecisionConsent": {
     "description": "정확도는 일방적으로 올릴 수 없다. 동의 우선 원칙의 UI 증거",
     "placeholders": {
-      "name": { "type": "String" }
+      "name": {
+        "type": "String"
+      }
     }
   },
   "viewerLogTitle": "이 위치를 본 사람",
   "viewerLogSubtitle": "조회 기록은 안심 탭에서 전체를 볼 수 있습니다.",
   "viewerLogOpen": "기록",
-
   "precisionPrecise": "정확",
   "precisionBalanced": "균형",
   "precisionArea": "동네만",
   "precisionHidden": "숨김",
-
   "relativeJustNow": "방금",
   "relativeMinutes": "{minutes}분",
   "@relativeMinutes": {
     "placeholders": {
-      "minutes": { "type": "int" }
+      "minutes": {
+        "type": "int"
+      }
     }
   },
   "relativeHours": "{hours}시간",
   "@relativeHours": {
     "placeholders": {
-      "hours": { "type": "int" }
+      "hours": {
+        "type": "int"
+      }
     }
   },
   "relativeDays": "{days}일",
   "@relativeDays": {
     "placeholders": {
-      "days": { "type": "int" }
+      "days": {
+        "type": "int"
+      }
     }
   },
   "valueUnknown": "—",
-
   "adSlotSemantics": "스폰서 영역",
   "adSlotTitle": "스폰서",
   "adSlotBody": "위치 데이터와 분리된 광고 영역",
   "@adSlotBody": {
     "description": "정밀 위치·SOS·권한 데이터가 광고 타깃팅에 쓰이지 않는다는 사실을 알린다"
   },
-  "adSlotBadge": "테스트"
+  "adSlotBadge": "테스트",
+  "memberFallbackName": "멤버",
+  "sharingModePrecise": "정확",
+  "sharingModeBalanced": "균형",
+  "sharingModeArea": "동네 범위",
+  "sharingModeHidden": "숨김",
+  "sharingModeSosOnly": "긴급 전용",
+  "statusSharing": "{mode} 공유 중",
+  "@statusSharing": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "statusWaitingUpdate": "위치 업데이트 대기 중",
+  "statusLastKnownOnly": "마지막 위치만 표시 중",
+  "statusLowBattery": "배터리가 낮아 업데이트가 느릴 수 있어요",
+  "metaOldLocation": "오래된 위치 · {time}",
+  "@metaOldLocation": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "metaLastLocation": "마지막 위치 · {time}",
+  "@metaLastLocation": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "metaBattery": "배터리 {percent}%",
+  "@metaBattery": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "metaAccuracy": "정확도 {distance}",
+  "@metaAccuracy": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "metaJustUpdated": "방금 업데이트",
+  "noteVeryStale": "현재 위치가 아닐 수 있어요. 연결이 돌아오면 다시 업데이트돼요.",
+  "noteStale": "배터리, 신호, 권한 상태 때문에 늦을 수 있어요.",
+  "noteLowBattery": "배터리가 낮아 업데이트가 느릴 수 있어요.",
+  "agoJustNow": "방금",
+  "agoMinutes": "{minutes}분 전",
+  "@agoMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "agoHours": "{hours}시간 전",
+  "@agoHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "agoDays": "{days}일 전",
+  "@agoDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "demoNameChild": "준",
+  "demoNameFriend": "하나",
+  "demoNameElder": "할아버지",
+  "deviceArrivedStatus": "무사 도착 · 방금 확인",
+  "deviceArrivedMeta": "동행 공유 종료 · 균형 위치로 알림"
 }

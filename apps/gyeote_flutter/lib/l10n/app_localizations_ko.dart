@@ -164,4 +164,101 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get adSlotBadge => '테스트';
+
+  @override
+  String get memberFallbackName => '멤버';
+
+  @override
+  String get sharingModePrecise => '정확';
+
+  @override
+  String get sharingModeBalanced => '균형';
+
+  @override
+  String get sharingModeArea => '동네 범위';
+
+  @override
+  String get sharingModeHidden => '숨김';
+
+  @override
+  String get sharingModeSosOnly => '긴급 전용';
+
+  @override
+  String statusSharing(String mode) {
+    return '$mode 공유 중';
+  }
+
+  @override
+  String get statusWaitingUpdate => '위치 업데이트 대기 중';
+
+  @override
+  String get statusLastKnownOnly => '마지막 위치만 표시 중';
+
+  @override
+  String get statusLowBattery => '배터리가 낮아 업데이트가 느릴 수 있어요';
+
+  @override
+  String metaOldLocation(String time) {
+    return '오래된 위치 · $time';
+  }
+
+  @override
+  String metaLastLocation(String time) {
+    return '마지막 위치 · $time';
+  }
+
+  @override
+  String metaBattery(int percent) {
+    return '배터리 $percent%';
+  }
+
+  @override
+  String metaAccuracy(String distance) {
+    return '정확도 $distance';
+  }
+
+  @override
+  String get metaJustUpdated => '방금 업데이트';
+
+  @override
+  String get noteVeryStale => '현재 위치가 아닐 수 있어요. 연결이 돌아오면 다시 업데이트돼요.';
+
+  @override
+  String get noteStale => '배터리, 신호, 권한 상태 때문에 늦을 수 있어요.';
+
+  @override
+  String get noteLowBattery => '배터리가 낮아 업데이트가 느릴 수 있어요.';
+
+  @override
+  String get agoJustNow => '방금';
+
+  @override
+  String agoMinutes(int minutes) {
+    return '$minutes분 전';
+  }
+
+  @override
+  String agoHours(int hours) {
+    return '$hours시간 전';
+  }
+
+  @override
+  String agoDays(int days) {
+    return '$days일 전';
+  }
+
+  @override
+  String get demoNameChild => '준';
+
+  @override
+  String get demoNameFriend => '하나';
+
+  @override
+  String get demoNameElder => '할아버지';
+
+  @override
+  String get deviceArrivedStatus => '무사 도착 · 방금 확인';
+
+  @override
+  String get deviceArrivedMeta => '동행 공유 종료 · 균형 위치로 알림';
 }

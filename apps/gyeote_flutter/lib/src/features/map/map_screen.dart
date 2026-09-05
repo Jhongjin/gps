@@ -11,6 +11,8 @@ import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
 import '../../core/location/place_alert_geofence_sync.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../core/i18n/region_settings.dart';
 import '../../theme/gyeote_theme.dart';
 import 'widgets/map_chrome.dart';
 import 'widgets/member_sheet.dart';
@@ -74,6 +76,8 @@ class _MapScreenState extends State<MapScreen> {
   bool _isSavingPlaceAlert = false;
   bool _isPlaceDraftVisible = false;
   String? _selectedMemberId;
+
+  AppL10n get _l10n => AppL10n.of(context);
   bool _placeNotifyArrival = true;
   bool _placeNotifyDeparture = true;
   bool _placeNotifyLate = false;
@@ -236,7 +240,7 @@ class _MapScreenState extends State<MapScreen> {
     required String circleId,
     required List<MemberLocationSnapshot> snapshots,
   }) async {
-    final tracks = mapTracksFromSnapshots(snapshots);
+    final tracks = mapTracksFromSnapshots(_l10n, snapshots);
     if (tracks.isEmpty) {
       return tracks;
     }
@@ -275,11 +279,7 @@ class _MapScreenState extends State<MapScreen> {
           if (routeTail.length < 2) {
             return track;
           }
-          return track.copyWith(
-            routeTail: routeTail,
-            meta:
-                '${track.meta} · ${companionSessionId == null ? '경로' : '동행 경로'} ${routeTail.length}개 샘플',
-          );
+          return track.copyWith(routeTail: routeTail);
         } catch (_) {
           return track;
         }
@@ -553,12 +553,11 @@ class _MapScreenState extends State<MapScreen> {
             );
         _deviceRoute = const [];
         _deviceTrack = _deviceTrack?.copyWith(
-          status: '무사 도착 · 방금 확인',
-          meta: '동행 공유 종료 · 균형 위치로 알림',
+          statusOverride: _l10n.deviceArrivedStatus,
+          metaOverride: _l10n.deviceArrivedMeta,
           routeTail: const [],
           isStale: false,
           hasLowBattery: false,
-          clearSafetyNote: true,
         );
         _bridgeStatus = '무사 도착을 보냈어요. 동행 공유는 종료됐습니다.';
         _checkInStatusMessage = _bridgeStatus;
@@ -850,7 +849,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     final palette = context.palette;
 
-    final demoTracks = demoMapTracks();
+    final demoTracks = demoMapTracks(_l10n);
     final hasNoCircle =
         widget.circleRepository != null && _hasServerCircle == false;
     final isLive = _serverTracks.isNotEmpty;
@@ -1082,7 +1081,6 @@ class _MapScreenState extends State<MapScreen> {
         DateTime.tryParse('${event['recordedAt'] ?? ''}') ?? DateTime.now();
     final age = DateTime.now().difference(recordedAt);
     final isStale = age > const Duration(minutes: 5);
-    final isVeryStale = age >= const Duration(minutes: 30);
     final accuracy =
         event['accuracyM'] is num ? (event['accuracyM'] as num).round() : null;
     final battery = event['batteryPercent'] is num
@@ -1092,23 +1090,7 @@ class _MapScreenState extends State<MapScreen> {
 
     return MapMemberTrack(
       id: 'device-me',
-      name: '나',
-      status: isVeryStale
-          ? '마지막 위치만 표시 중'
-          : isStale
-              ? '위치 업데이트 대기 중'
-              : hasLowBattery
-                  ? '배터리가 낮아 업데이트가 느릴 수 있어요'
-                  : '내 기기 위치 · ${_relativeTimeLabel(recordedAt)}',
-      meta: [
-        if (isVeryStale)
-          '오래된 위치 · ${_relativeTimeLabel(recordedAt)}'
-        else if (isStale)
-          '마지막 위치 · ${_relativeTimeLabel(recordedAt)}',
-        if (battery != null && battery >= 0) '배터리 $battery%',
-        if (accuracy != null) '정확도 ${accuracy}m',
-        '실시간 브리지',
-      ].join(' · '),
+      name: _l10n.mapMeShort,
       point: point,
       tone: GyeoteTone.brand,
       recordedAt: recordedAt,
@@ -1117,14 +1099,8 @@ class _MapScreenState extends State<MapScreen> {
       isCurrentUser: true,
       isStale: isStale,
       hasLowBattery: hasLowBattery,
+      batteryPercent: battery,
       accuracyM: accuracy?.toDouble(),
-      safetyNote: isVeryStale
-          ? '현재 위치가 아닐 수 있어요. 연결이 돌아오면 다시 업데이트돼요.'
-          : isStale
-              ? '배터리, 신호, 권한 상태 때문에 늦을 수 있어요.'
-              : hasLowBattery
-                  ? '배터리가 낮아 업데이트가 느릴 수 있어요.'
-                  : null,
     );
   }
 
@@ -1959,6 +1935,9 @@ class _MemberTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
+    final unit =
+        RegionSettings.of(Localizations.localeOf(context)).distanceUnit;
 
     return InkWell(
       onTap: onTap,
@@ -1975,7 +1954,7 @@ class _MemberTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    member.status,
+                    member.status(l10n),
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       color: palette.ink,
@@ -1983,15 +1962,15 @@ class _MemberTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    member.meta,
+                    member.meta(l10n, unit),
                     style: TextStyle(color: palette.muted, fontSize: 12),
                   ),
                   const SizedBox(height: 6),
                   _MemberPrecisionLine(member: member),
-                  if (member.safetyNote != null) ...[
+                  if (member.safetyNote(l10n) != null) ...[
                     const SizedBox(height: 8),
                     _MemberSafetyNote(
-                      text: member.safetyNote!,
+                      text: member.safetyNote(l10n)!,
                       icon: member.isStale
                           ? Icons.wifi_off_outlined
                           : Icons.battery_alert_outlined,

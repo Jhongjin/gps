@@ -165,4 +165,104 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get adSlotBadge => 'Test';
+
+  @override
+  String get memberFallbackName => 'Member';
+
+  @override
+  String get sharingModePrecise => 'Exact';
+
+  @override
+  String get sharingModeBalanced => 'Balanced';
+
+  @override
+  String get sharingModeArea => 'Neighborhood';
+
+  @override
+  String get sharingModeHidden => 'Hidden';
+
+  @override
+  String get sharingModeSosOnly => 'Emergency only';
+
+  @override
+  String statusSharing(String mode) {
+    return 'Sharing $mode';
+  }
+
+  @override
+  String get statusWaitingUpdate => 'Waiting for a location update';
+
+  @override
+  String get statusLastKnownOnly => 'Showing last known location';
+
+  @override
+  String get statusLowBattery => 'Low battery may slow updates';
+
+  @override
+  String metaOldLocation(String time) {
+    return 'Old location · $time';
+  }
+
+  @override
+  String metaLastLocation(String time) {
+    return 'Last location · $time';
+  }
+
+  @override
+  String metaBattery(int percent) {
+    return 'Battery $percent%';
+  }
+
+  @override
+  String metaAccuracy(String distance) {
+    return 'Accuracy $distance';
+  }
+
+  @override
+  String get metaJustUpdated => 'Updated just now';
+
+  @override
+  String get noteVeryStale =>
+      'This may not be the current location. It will update when the connection returns.';
+
+  @override
+  String get noteStale =>
+      'Battery, signal, or permission state can delay this.';
+
+  @override
+  String get noteLowBattery => 'Low battery may slow updates.';
+
+  @override
+  String get agoJustNow => 'just now';
+
+  @override
+  String agoMinutes(int minutes) {
+    return '$minutes min ago';
+  }
+
+  @override
+  String agoHours(int hours) {
+    return '$hours hr ago';
+  }
+
+  @override
+  String agoDays(int days) {
+    return '$days d ago';
+  }
+
+  @override
+  String get demoNameChild => 'Jun';
+
+  @override
+  String get demoNameFriend => 'Hana';
+
+  @override
+  String get demoNameElder => 'Grandpa';
+
+  @override
+  String get deviceArrivedStatus => 'Arrived safely · just confirmed';
+
+  @override
+  String get deviceArrivedMeta =>
+      'Companion sharing ended · notified with balanced location';
 }

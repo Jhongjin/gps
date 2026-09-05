@@ -1,6 +1,8 @@
 import 'package:latlong2/latlong.dart';
 
 import '../../core/backend/backend_contract.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../core/i18n/region_settings.dart';
 import '../../core/location/location_models.dart';
 import '../../theme/gyeote_theme.dart';
 
@@ -8,8 +10,8 @@ class MapMemberTrack {
   const MapMemberTrack({
     required this.id,
     required this.name,
-    required this.status,
-    required this.meta,
+    this.statusOverride,
+    this.metaOverride,
     required this.point,
     required this.tone,
     required this.recordedAt,
@@ -20,13 +22,13 @@ class MapMemberTrack {
     this.hasLowBattery = false,
     this.batteryPercent,
     this.accuracyM,
-    this.safetyNote,
   });
 
   final String id;
   final String name;
-  final String status;
-  final String meta;
+  /// 데모 픽스처만 쓴다. 실제 데이터는 null 이고 [status]/[meta] 가 계산한다.
+  final String? statusOverride;
+  final String? metaOverride;
   final LatLng point;
   final GyeoteTone tone;
   final DateTime recordedAt;
@@ -39,13 +41,52 @@ class MapMemberTrack {
   /// 마커 링의 채워진 정도로 그린다. 없으면 링을 꽉 채운다.
   final int? batteryPercent;
   final double? accuracyM;
-  final String? safetyNote;
+
+  /// 30분 넘게 갱신이 없으면 "마지막 위치"로만 다룬다.
+  bool get isVeryStale =>
+      DateTime.now().difference(recordedAt) >= const Duration(minutes: 30);
+
+  /// 한 줄 상태. 모델은 렌더된 문자열을 담지 않는다 — 담으면 그 화면이
+  /// 한 언어에 묶인다. [GyeoteTone] 을 쓰는 이유와 같다.
+  String status(AppL10n l10n) {
+    final override = statusOverride;
+    if (override != null) return override;
+    if (isVeryStale) return l10n.statusLastKnownOnly;
+    if (isStale) return l10n.statusWaitingUpdate;
+    if (hasLowBattery) return l10n.statusLowBattery;
+    return l10n.statusSharing(sharingModeLabel(l10n, sharingMode));
+  }
+
+  /// 배터리·정확도·갱신 시각을 잇는 보조 줄.
+  String meta(AppL10n l10n, DistanceUnit unit) {
+    final override = metaOverride;
+    if (override != null) return override;
+
+    final parts = <String>[
+      if (isVeryStale)
+        l10n.metaOldLocation(relativeTimeLabel(l10n, recordedAt))
+      else if (isStale)
+        l10n.metaLastLocation(relativeTimeLabel(l10n, recordedAt)),
+      if (batteryPercent != null) l10n.metaBattery(batteryPercent!),
+      if (accuracyM != null) l10n.metaAccuracy(unit.formatDistance(accuracyM!)),
+      if (!isStale) relativeTimeLabel(l10n, recordedAt),
+    ];
+    return parts.isEmpty ? l10n.metaJustUpdated : parts.join(' · ');
+  }
+
+  /// 왜 늦는지 설명하는 안내. 사용자를 탓하지 않는 톤을 유지한다.
+  String? safetyNote(AppL10n l10n) {
+    if (isVeryStale) return l10n.noteVeryStale;
+    if (isStale) return l10n.noteStale;
+    if (hasLowBattery) return l10n.noteLowBattery;
+    return null;
+  }
 
   MapMemberTrack copyWith({
     String? id,
     String? name,
-    String? status,
-    String? meta,
+    String? statusOverride,
+    String? metaOverride,
     LatLng? point,
     GyeoteTone? tone,
     DateTime? recordedAt,
@@ -56,14 +97,12 @@ class MapMemberTrack {
     bool? hasLowBattery,
     int? batteryPercent,
     double? accuracyM,
-    String? safetyNote,
-    bool clearSafetyNote = false,
   }) {
     return MapMemberTrack(
       id: id ?? this.id,
       name: name ?? this.name,
-      status: status ?? this.status,
-      meta: meta ?? this.meta,
+      statusOverride: statusOverride ?? this.statusOverride,
+      metaOverride: metaOverride ?? this.metaOverride,
       point: point ?? this.point,
       tone: tone ?? this.tone,
       recordedAt: recordedAt ?? this.recordedAt,
@@ -74,20 +113,21 @@ class MapMemberTrack {
       hasLowBattery: hasLowBattery ?? this.hasLowBattery,
       batteryPercent: batteryPercent ?? this.batteryPercent,
       accuracyM: accuracyM ?? this.accuracyM,
-      safetyNote: clearSafetyNote ? null : safetyNote ?? this.safetyNote,
     );
   }
 }
 
 List<MapMemberTrack> mapTracksFromSnapshots(
-    List<MemberLocationSnapshot> snapshots) {
+  AppL10n l10n,
+  List<MemberLocationSnapshot> snapshots,
+) {
   return snapshots.indexed
       .where((entry) => entry.$2.sharedCoordinate != null)
-      .map((entry) => _trackFromSnapshot(entry.$2, entry.$1))
+      .map((entry) => _trackFromSnapshot(l10n, entry.$2, entry.$1))
       .toList(growable: false);
 }
 
-List<MapMemberTrack> demoMapTracks() {
+List<MapMemberTrack> demoMapTracks(AppL10n l10n) {
   final now = DateTime.now();
   const routeToHome = [
     LatLng(37.50325, 127.04888),
@@ -100,9 +140,7 @@ List<MapMemberTrack> demoMapTracks() {
   return [
     MapMemberTrack(
       id: 'demo-jun',
-      name: '준',
-      status: '학교 근처 · 예상 8분',
-      meta: '배터리 46% · 균형 공유 · 경로 4개 샘플',
+      name: l10n.demoNameChild,
       point: routeToHome.first,
       tone: GyeoteTone.move,
       recordedAt: now.subtract(const Duration(minutes: 1)),
@@ -113,9 +151,7 @@ List<MapMemberTrack> demoMapTracks() {
     ),
     MapMemberTrack(
       id: 'demo-hana',
-      name: '하나',
-      status: '강남역 · 5분 전',
-      meta: '배터리 67% · 균형 공유',
+      name: l10n.demoNameFriend,
       point: const LatLng(37.49809, 127.02761),
       tone: GyeoteTone.warm,
       recordedAt: now.subtract(const Duration(minutes: 5)),
@@ -125,9 +161,7 @@ List<MapMemberTrack> demoMapTracks() {
     ),
     MapMemberTrack(
       id: 'demo-grandfather',
-      name: '할아버지',
-      status: '위치 업데이트 대기 중',
-      meta: '마지막 위치 · 22분 전 · 배터리 12% · 동네만 공유',
+      name: l10n.demoNameElder,
       point: const LatLng(37.51119, 127.04374),
       tone: GyeoteTone.warm,
       recordedAt: now.subtract(const Duration(minutes: 22)),
@@ -136,13 +170,10 @@ List<MapMemberTrack> demoMapTracks() {
       accuracyM: 500,
       isStale: true,
       hasLowBattery: true,
-      safetyNote: '배터리, 신호, 권한 상태 때문에 늦을 수 있어요.',
     ),
     MapMemberTrack(
       id: 'demo-me',
-      name: '나',
-      status: '집 근처',
-      meta: '내 기기 · 정확 공유',
+      name: l10n.mapMeShort,
       point: routeToHome.last,
       tone: GyeoteTone.brand,
       recordedAt: now,
@@ -154,98 +185,51 @@ List<MapMemberTrack> demoMapTracks() {
   ];
 }
 
-MapMemberTrack _trackFromSnapshot(MemberLocationSnapshot snapshot, int index) {
+MapMemberTrack _trackFromSnapshot(
+  AppL10n l10n,
+  MemberLocationSnapshot snapshot,
+  int index,
+) {
   final coordinate = snapshot.sharedCoordinate!;
-  final sharingLabel = _sharingModeLabel(snapshot.sharingMode);
   final age = DateTime.now().difference(snapshot.recordedAt);
-  final isStale = age > const Duration(minutes: 5);
-  final isVeryStale = age >= const Duration(minutes: 30);
   final hasLowBattery =
       snapshot.batteryPercent != null && snapshot.batteryPercent! <= 15;
-  final status = _statusForSnapshot(
-    sharingLabel: sharingLabel,
-    isStale: isStale,
-    isVeryStale: isVeryStale,
-    hasLowBattery: hasLowBattery,
-  );
-  final meta = [
-    if (isVeryStale)
-      '오래된 위치 · ${_relativeTime(snapshot.recordedAt)}'
-    else if (isStale)
-      '마지막 위치 · ${_relativeTime(snapshot.recordedAt)}',
-    if (snapshot.batteryPercent != null) '배터리 ${snapshot.batteryPercent}%',
-    if (snapshot.accuracyM != null) '정확도 ${snapshot.accuracyM!.round()}m',
-    if (!isStale) _relativeTime(snapshot.recordedAt),
-  ].join(' · ');
 
+  // 표시 문자열은 만들지 않는다. 사실만 담고, 문구는 그릴 때 로케일에 맞춰 만든다.
   return MapMemberTrack(
     id: snapshot.profileId,
-    name: snapshot.displayName.isEmpty ? '멤버' : snapshot.displayName,
-    status: status,
-    meta: meta.isEmpty ? '방금 업데이트' : meta,
+    name: snapshot.displayName.isEmpty
+        ? l10n.memberFallbackName
+        : snapshot.displayName,
     point: LatLng(coordinate.latitude, coordinate.longitude),
     tone: _toneForIndex(index),
     recordedAt: snapshot.recordedAt,
     sharingMode: snapshot.sharingMode,
-    isStale: isStale,
+    isStale: age > const Duration(minutes: 5),
     hasLowBattery: hasLowBattery,
     batteryPercent: snapshot.batteryPercent,
     accuracyM: snapshot.accuracyM,
-    safetyNote: isVeryStale
-        ? '현재 위치가 아닐 수 있어요. 연결이 돌아오면 다시 업데이트돼요.'
-        : isStale
-            ? '배터리, 신호, 권한 상태 때문에 늦을 수 있어요.'
-            : hasLowBattery
-                ? '배터리가 낮아 업데이트가 느릴 수 있어요.'
-                : null,
   );
 }
 
-String _statusForSnapshot({
-  required String sharingLabel,
-  required bool isStale,
-  required bool isVeryStale,
-  required bool hasLowBattery,
-}) {
-  if (isVeryStale) {
-    return '마지막 위치만 표시 중';
-  }
-  if (isStale) {
-    return '위치 업데이트 대기 중';
-  }
-  if (hasLowBattery) {
-    return '배터리가 낮아 업데이트가 느릴 수 있어요';
-  }
-  return '$sharingLabel 공유 중';
+/// 공유 정확도 라벨.
+String sharingModeLabel(AppL10n l10n, SharingMode mode) {
+  return switch (mode) {
+    SharingMode.precise => l10n.sharingModePrecise,
+    SharingMode.balanced => l10n.sharingModeBalanced,
+    SharingMode.area => l10n.sharingModeArea,
+    SharingMode.hidden => l10n.sharingModeHidden,
+    SharingMode.sosOnly => l10n.sharingModeSosOnly,
+  };
 }
 
-String _sharingModeLabel(SharingMode mode) {
-  switch (mode) {
-    case SharingMode.precise:
-      return '정확';
-    case SharingMode.balanced:
-      return '균형';
-    case SharingMode.area:
-      return '동네 범위';
-    case SharingMode.hidden:
-      return '숨김';
-    case SharingMode.sosOnly:
-      return '긴급 전용';
-  }
-}
-
-String _relativeTime(DateTime recordedAt) {
+/// "3분 전" 형태의 상대 시각.
+String relativeTimeLabel(AppL10n l10n, DateTime recordedAt) {
   final diff = DateTime.now().difference(recordedAt);
-  if (diff.inSeconds < 60) {
-    return '방금';
-  }
-  if (diff.inMinutes < 60) {
-    return '${diff.inMinutes}분 전';
-  }
-  if (diff.inHours < 24) {
-    return '${diff.inHours}시간 전';
-  }
-  return '${diff.inDays}일 전';
+  if (diff.inSeconds < 60) return l10n.agoJustNow;
+  if (diff.inMinutes < 60) return l10n.agoMinutes(diff.inMinutes);
+  if (diff.inHours < 24) return l10n.agoHours(diff.inHours);
+  return l10n.agoDays(diff.inDays);
 }
 
 GyeoteTone _toneForIndex(int index) {

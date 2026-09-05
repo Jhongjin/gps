@@ -38,6 +38,7 @@ class _MemberSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
 
     return SafeArea(
       top: false,
@@ -63,7 +64,7 @@ class _MemberSheet extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        member.status,
+                        member.status(l10n),
                         style: TextStyle(fontSize: 13, color: palette.muted),
                       ),
                     ],
@@ -75,10 +76,10 @@ class _MemberSheet extends StatelessWidget {
             _StatRow(member: member),
             const SizedBox(height: 12),
             const _ActionRow(),
-            if (member.safetyNote != null) ...[
+            if (member.safetyNote(l10n) != null) ...[
               const SizedBox(height: 12),
               _NoteBanner(
-                text: member.safetyNote!,
+                text: member.safetyNote(l10n)!,
                 tone: memberStateTone(member),
               ),
             ],

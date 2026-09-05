@@ -378,6 +378,168 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'테스트'**
   String get adSlotBadge;
+
+  /// No description provided for @memberFallbackName.
+  ///
+  /// In ko, this message translates to:
+  /// **'멤버'**
+  String get memberFallbackName;
+
+  /// No description provided for @sharingModePrecise.
+  ///
+  /// In ko, this message translates to:
+  /// **'정확'**
+  String get sharingModePrecise;
+
+  /// No description provided for @sharingModeBalanced.
+  ///
+  /// In ko, this message translates to:
+  /// **'균형'**
+  String get sharingModeBalanced;
+
+  /// No description provided for @sharingModeArea.
+  ///
+  /// In ko, this message translates to:
+  /// **'동네 범위'**
+  String get sharingModeArea;
+
+  /// No description provided for @sharingModeHidden.
+  ///
+  /// In ko, this message translates to:
+  /// **'숨김'**
+  String get sharingModeHidden;
+
+  /// No description provided for @sharingModeSosOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'긴급 전용'**
+  String get sharingModeSosOnly;
+
+  /// No description provided for @statusSharing.
+  ///
+  /// In ko, this message translates to:
+  /// **'{mode} 공유 중'**
+  String statusSharing(String mode);
+
+  /// No description provided for @statusWaitingUpdate.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 업데이트 대기 중'**
+  String get statusWaitingUpdate;
+
+  /// No description provided for @statusLastKnownOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 위치만 표시 중'**
+  String get statusLastKnownOnly;
+
+  /// No description provided for @statusLowBattery.
+  ///
+  /// In ko, this message translates to:
+  /// **'배터리가 낮아 업데이트가 느릴 수 있어요'**
+  String get statusLowBattery;
+
+  /// No description provided for @metaOldLocation.
+  ///
+  /// In ko, this message translates to:
+  /// **'오래된 위치 · {time}'**
+  String metaOldLocation(String time);
+
+  /// No description provided for @metaLastLocation.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 위치 · {time}'**
+  String metaLastLocation(String time);
+
+  /// No description provided for @metaBattery.
+  ///
+  /// In ko, this message translates to:
+  /// **'배터리 {percent}%'**
+  String metaBattery(int percent);
+
+  /// No description provided for @metaAccuracy.
+  ///
+  /// In ko, this message translates to:
+  /// **'정확도 {distance}'**
+  String metaAccuracy(String distance);
+
+  /// No description provided for @metaJustUpdated.
+  ///
+  /// In ko, this message translates to:
+  /// **'방금 업데이트'**
+  String get metaJustUpdated;
+
+  /// No description provided for @noteVeryStale.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 위치가 아닐 수 있어요. 연결이 돌아오면 다시 업데이트돼요.'**
+  String get noteVeryStale;
+
+  /// No description provided for @noteStale.
+  ///
+  /// In ko, this message translates to:
+  /// **'배터리, 신호, 권한 상태 때문에 늦을 수 있어요.'**
+  String get noteStale;
+
+  /// No description provided for @noteLowBattery.
+  ///
+  /// In ko, this message translates to:
+  /// **'배터리가 낮아 업데이트가 느릴 수 있어요.'**
+  String get noteLowBattery;
+
+  /// No description provided for @agoJustNow.
+  ///
+  /// In ko, this message translates to:
+  /// **'방금'**
+  String get agoJustNow;
+
+  /// No description provided for @agoMinutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분 전'**
+  String agoMinutes(int minutes);
+
+  /// No description provided for @agoHours.
+  ///
+  /// In ko, this message translates to:
+  /// **'{hours}시간 전'**
+  String agoHours(int hours);
+
+  /// No description provided for @agoDays.
+  ///
+  /// In ko, this message translates to:
+  /// **'{days}일 전'**
+  String agoDays(int days);
+
+  /// No description provided for @demoNameChild.
+  ///
+  /// In ko, this message translates to:
+  /// **'준'**
+  String get demoNameChild;
+
+  /// No description provided for @demoNameFriend.
+  ///
+  /// In ko, this message translates to:
+  /// **'하나'**
+  String get demoNameFriend;
+
+  /// No description provided for @demoNameElder.
+  ///
+  /// In ko, this message translates to:
+  /// **'할아버지'**
+  String get demoNameElder;
+
+  /// No description provided for @deviceArrivedStatus.
+  ///
+  /// In ko, this message translates to:
+  /// **'무사 도착 · 방금 확인'**
+  String get deviceArrivedStatus;
+
+  /// No description provided for @deviceArrivedMeta.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 공유 종료 · 균형 위치로 알림'**
+  String get deviceArrivedMeta;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

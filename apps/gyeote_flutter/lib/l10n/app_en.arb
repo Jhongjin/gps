@@ -1,15 +1,11 @@
 {
   "@@locale": "en",
-
   "appTitle": "Gyeote",
-
   "navMap": "Map",
   "navCircle": "Circle",
   "navHistory": "History",
   "navPrivacy": "Safety",
-
   "signOut": "Sign out",
-
   "mapDefaultCircleName": "Our circle",
   "mapLayersTooltip": "Map style",
   "mapInvite": "Invite",
@@ -19,7 +15,6 @@
   "mapConnecting": "Connecting to your circle",
   "mapNoCircle": "No circle connected yet",
   "mapDemoNotice": "Showing sample locations until your circle reports in",
-
   "sosLabel": "SOS",
   "sosButtonSemantics": "Emergency share. Press and hold to start",
   "sosArming": "Emergency share ready",
@@ -28,7 +23,6 @@
   "sosNoAds": "No ads appear on this screen.",
   "sosCancel": "Cancel",
   "sosSendNow": "Send now",
-
   "memberBattery": "Battery",
   "memberAccuracy": "Accuracy",
   "memberUpdated": "Updated",
@@ -40,20 +34,44 @@
   "viewerLogTitle": "Who viewed this location",
   "viewerLogSubtitle": "The full view log lives in the Safety tab.",
   "viewerLogOpen": "View log",
-
   "precisionPrecise": "Exact",
   "precisionBalanced": "Balanced",
   "precisionArea": "Neighborhood",
   "precisionHidden": "Hidden",
-
   "relativeJustNow": "just now",
   "relativeMinutes": "{minutes} min",
   "relativeHours": "{hours} hr",
   "relativeDays": "{days} d",
   "valueUnknown": "—",
-
   "adSlotSemantics": "Sponsored area",
   "adSlotTitle": "Sponsored",
   "adSlotBody": "Ads are kept separate from your location data",
-  "adSlotBadge": "Test"
+  "adSlotBadge": "Test",
+  "memberFallbackName": "Member",
+  "sharingModePrecise": "Exact",
+  "sharingModeBalanced": "Balanced",
+  "sharingModeArea": "Neighborhood",
+  "sharingModeHidden": "Hidden",
+  "sharingModeSosOnly": "Emergency only",
+  "statusSharing": "Sharing {mode}",
+  "statusWaitingUpdate": "Waiting for a location update",
+  "statusLastKnownOnly": "Showing last known location",
+  "statusLowBattery": "Low battery may slow updates",
+  "metaOldLocation": "Old location · {time}",
+  "metaLastLocation": "Last location · {time}",
+  "metaBattery": "Battery {percent}%",
+  "metaAccuracy": "Accuracy {distance}",
+  "metaJustUpdated": "Updated just now",
+  "noteVeryStale": "This may not be the current location. It will update when the connection returns.",
+  "noteStale": "Battery, signal, or permission state can delay this.",
+  "noteLowBattery": "Low battery may slow updates.",
+  "agoJustNow": "just now",
+  "agoMinutes": "{minutes} min ago",
+  "agoHours": "{hours} hr ago",
+  "agoDays": "{days} d ago",
+  "demoNameChild": "Jun",
+  "demoNameFriend": "Hana",
+  "demoNameElder": "Grandpa",
+  "deviceArrivedStatus": "Arrived safely · just confirmed",
+  "deviceArrivedMeta": "Companion sharing ended · notified with balanced location"
 }
