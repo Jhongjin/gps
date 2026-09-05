@@ -1908,6 +1908,570 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'{name} · {status} · {time}'**
   String checkInEventLine(String name, String status, String time);
+
+  /// No description provided for @quietHoursOff.
+  ///
+  /// In ko, this message translates to:
+  /// **'없음'**
+  String get quietHoursOff;
+
+  /// No description provided for @quietHoursOn.
+  ///
+  /// In ko, this message translates to:
+  /// **'설정됨'**
+  String get quietHoursOn;
+
+  /// No description provided for @circleCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클 만들기'**
+  String get circleCreate;
+
+  /// No description provided for @circleCreateFirst.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클을 먼저 만들어 주세요'**
+  String get circleCreateFirst;
+
+  /// No description provided for @circleCreateFirstBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 서클을 만들고 가까운 사람을 초대하세요'**
+  String get circleCreateFirstBody;
+
+  /// No description provided for @circleSyncing.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클 동기화 중'**
+  String get circleSyncing;
+
+  /// No description provided for @circleManageMembers.
+  ///
+  /// In ko, this message translates to:
+  /// **'멤버 관리'**
+  String get circleManageMembers;
+
+  /// No description provided for @circleNoMembers.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 멤버가 없습니다'**
+  String get circleNoMembers;
+
+  /// No description provided for @circleNoMembersBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 링크를 만들면 이곳에 수락한 멤버가 표시됩니다.'**
+  String get circleNoMembersBody;
+
+  /// No description provided for @inviteLink.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 링크'**
+  String get inviteLink;
+
+  /// No description provided for @inviteCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대하기'**
+  String get inviteCreate;
+
+  /// No description provided for @inviteNewLink.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 링크'**
+  String get inviteNewLink;
+
+  /// No description provided for @inviteCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'복사'**
+  String get inviteCopy;
+
+  /// No description provided for @inviteJoin.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 참여'**
+  String get inviteJoin;
+
+  /// No description provided for @inviteAccept.
+  ///
+  /// In ko, this message translates to:
+  /// **'참여'**
+  String get inviteAccept;
+
+  /// No description provided for @inviteTokenLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 링크 또는 토큰'**
+  String get inviteTokenLabel;
+
+  /// No description provided for @inviteTokenRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 링크나 토큰을 입력해 주세요.'**
+  String get inviteTokenRequired;
+
+  /// No description provided for @inviteCreated.
+  ///
+  /// In ko, this message translates to:
+  /// **'24시간 초대 링크를 만들었습니다.'**
+  String get inviteCreated;
+
+  /// No description provided for @inviteCreateFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 링크를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.'**
+  String get inviteCreateFailed;
+
+  /// No description provided for @inviteCopied.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대 링크를 복사했습니다.'**
+  String get inviteCopied;
+
+  /// No description provided for @inviteAccepted.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대를 수락했습니다.'**
+  String get inviteAccepted;
+
+  /// No description provided for @inviteAcceptFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대를 수락하지 못했습니다. 만료 여부를 확인해 주세요.'**
+  String get inviteAcceptFailed;
+
+  /// No description provided for @inviteNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 실제 초대 링크를 만들 수 있습니다.'**
+  String get inviteNeedsBackend;
+
+  /// No description provided for @inviteAcceptNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 초대를 수락할 수 있습니다.'**
+  String get inviteAcceptNeedsBackend;
+
+  /// No description provided for @inviteSafetyNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'1회 사용 · 수락 전 공유 범위 확인 · 원문 토큰 저장 안 함'**
+  String get inviteSafetyNote;
+
+  /// No description provided for @inviteVerifyInviter.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대자 확인'**
+  String get inviteVerifyInviter;
+
+  /// No description provided for @inviteVerifyToken.
+  ///
+  /// In ko, this message translates to:
+  /// **'토큰 확인'**
+  String get inviteVerifyToken;
+
+  /// No description provided for @inviteConsentLocation.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 동의'**
+  String get inviteConsentLocation;
+
+  /// No description provided for @roleGuardian.
+  ///
+  /// In ko, this message translates to:
+  /// **'보호자'**
+  String get roleGuardian;
+
+  /// No description provided for @roleChild.
+  ///
+  /// In ko, this message translates to:
+  /// **'자녀'**
+  String get roleChild;
+
+  /// No description provided for @roleFriend.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구'**
+  String get roleFriend;
+
+  /// No description provided for @roleCare.
+  ///
+  /// In ko, this message translates to:
+  /// **'케어'**
+  String get roleCare;
+
+  /// No description provided for @sharingPreciseShort.
+  ///
+  /// In ko, this message translates to:
+  /// **'정확 공유'**
+  String get sharingPreciseShort;
+
+  /// No description provided for @sharingBalancedShort.
+  ///
+  /// In ko, this message translates to:
+  /// **'균형 공유'**
+  String get sharingBalancedShort;
+
+  /// No description provided for @companionWaiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 대기'**
+  String get companionWaiting;
+
+  /// No description provided for @companionRequest.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 요청'**
+  String get companionRequest;
+
+  /// No description provided for @companionAllow.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 허용'**
+  String get companionAllow;
+
+  /// No description provided for @companionLater.
+  ///
+  /// In ko, this message translates to:
+  /// **'나중에'**
+  String get companionLater;
+
+  /// No description provided for @companionRequestDemo.
+  ///
+  /// In ko, this message translates to:
+  /// **'준 · 학교에서 집까지'**
+  String get companionRequestDemo;
+
+  /// No description provided for @companionRequestBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'15분 동안 균형 위치와 경로 꼬리만 공유됩니다.'**
+  String get companionRequestBody;
+
+  /// No description provided for @checkInSectionTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 확인'**
+  String get checkInSectionTitle;
+
+  /// No description provided for @checkInLoading.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 확인 기록을 불러오는 중입니다.'**
+  String get checkInLoading;
+
+  /// No description provided for @checkInLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 확인 기록을 불러오지 못했습니다.'**
+  String get checkInLoadFailed;
+
+  /// No description provided for @checkInSyncFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 확인 동기화 실패'**
+  String get checkInSyncFailed;
+
+  /// No description provided for @checkInNoneRecent.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 안전 확인이 없습니다'**
+  String get checkInNoneRecent;
+
+  /// No description provided for @checkInEmptyBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 표시됩니다.'**
+  String get checkInEmptyBody;
+
+  /// No description provided for @checkInNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 확인은 서클 멤버에게 짧은 안심 신호로 전달됩니다.'**
+  String get checkInNote;
+
+  /// No description provided for @checkInTroubleshoot.
+  ///
+  /// In ko, this message translates to:
+  /// **'배터리, 신호, 권한, 기기 상태를 확인해 주세요.'**
+  String get checkInTroubleshoot;
+
+  /// No description provided for @checkInDemoScope.
+  ///
+  /// In ko, this message translates to:
+  /// **'가족 전체 · 도착 확인'**
+  String get checkInDemoScope;
+
+  /// No description provided for @checkInDemoLongStay.
+  ///
+  /// In ko, this message translates to:
+  /// **'할아버지 · 오래 머무름 확인'**
+  String get checkInDemoLongStay;
+
+  /// No description provided for @checkInDemoDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 공유 종료 · 균형 위치로 알림 · 방금'**
+  String get checkInDemoDetail;
+
+  /// No description provided for @placeAlertSectionTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림'**
+  String get placeAlertSectionTitle;
+
+  /// No description provided for @placeAlertLoading.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림을 불러오는 중입니다.'**
+  String get placeAlertLoading;
+
+  /// No description provided for @placeAlertLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림을 불러오지 못했습니다.'**
+  String get placeAlertLoadFailed;
+
+  /// No description provided for @placeAlertNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 장소 알림이 없습니다'**
+  String get placeAlertNone;
+
+  /// No description provided for @placeAlertNoneBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림은 서클 멤버와 공유 범위를 정한 뒤 사용할 수 있습니다.'**
+  String get placeAlertNoneBody;
+
+  /// No description provided for @placeAlertHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'지도에서 반경을 미리 보고 대상 멤버를 고른 뒤 안전한 알림 규칙으로 추가할 예정입니다.'**
+  String get placeAlertHint;
+
+  /// No description provided for @placeAlertUpdating.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 업데이트'**
+  String get placeAlertUpdating;
+
+  /// No description provided for @placeAlertUpdateFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 변경 실패'**
+  String get placeAlertUpdateFailed;
+
+  /// No description provided for @placeAlertToggleFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 상태를 변경하지 못했습니다.'**
+  String get placeAlertToggleFailed;
+
+  /// No description provided for @placeAlertPaused.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림을 일시정지했습니다.'**
+  String get placeAlertPaused;
+
+  /// No description provided for @placeAlertResumed.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림을 다시 켰습니다.'**
+  String get placeAlertResumed;
+
+  /// No description provided for @placeAlertDeleteTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 삭제'**
+  String get placeAlertDeleteTitle;
+
+  /// No description provided for @placeAlertDeleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림을 삭제했습니다.'**
+  String get placeAlertDeleted;
+
+  /// No description provided for @placeAlertDeleteFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림을 삭제하지 못했습니다.'**
+  String get placeAlertDeleteFailed;
+
+  /// No description provided for @quietHoursChange.
+  ///
+  /// In ko, this message translates to:
+  /// **'조용한 시간 변경'**
+  String get quietHoursChange;
+
+  /// No description provided for @quietHoursChangeFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'조용한 시간을 변경하지 못했습니다.'**
+  String get quietHoursChangeFailed;
+
+  /// No description provided for @placeAlertChangeNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 장소 알림을 변경할 수 있습니다.'**
+  String get placeAlertChangeNeedsBackend;
+
+  /// No description provided for @placeAlertDeleteNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 장소 알림을 삭제할 수 있습니다.'**
+  String get placeAlertDeleteNeedsBackend;
+
+  /// No description provided for @quietHoursNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 조용한 시간을 변경할 수 있습니다.'**
+  String get quietHoursNeedsBackend;
+
+  /// No description provided for @placeAlertServerOnlyUpdate.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 변경은 완료됐고, 기기 반경 동기화는 대기 중입니다.'**
+  String get placeAlertServerOnlyUpdate;
+
+  /// No description provided for @placeAlertServerOnlyDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'서버 삭제는 완료됐고, 기기 반경 동기화는 대기 중입니다.'**
+  String get placeAlertServerOnlyDelete;
+
+  /// No description provided for @deviceSyncPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 동기화 대기'**
+  String get deviceSyncPending;
+
+  /// No description provided for @syncLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'동기화'**
+  String get syncLabel;
+
+  /// No description provided for @pauseLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'일시정지'**
+  String get pauseLabel;
+
+  /// No description provided for @resumeLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 켜기'**
+  String get resumeLabel;
+
+  /// No description provided for @pendingLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 중'**
+  String get pendingLabel;
+
+  /// No description provided for @targetsUnset.
+  ///
+  /// In ko, this message translates to:
+  /// **'대상 미지정'**
+  String get targetsUnset;
+
+  /// No description provided for @rulesNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 조건 없음'**
+  String get rulesNone;
+
+  /// No description provided for @mutualConsent.
+  ///
+  /// In ko, this message translates to:
+  /// **'상호 동의'**
+  String get mutualConsent;
+
+  /// No description provided for @adNotice.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 안내'**
+  String get adNotice;
+
+  /// No description provided for @sampleLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'예시'**
+  String get sampleLabel;
+
+  /// No description provided for @placeHome.
+  ///
+  /// In ko, this message translates to:
+  /// **'집'**
+  String get placeHome;
+
+  /// No description provided for @placeSchool.
+  ///
+  /// In ko, this message translates to:
+  /// **'학교'**
+  String get placeSchool;
+
+  /// No description provided for @placeClinic.
+  ///
+  /// In ko, this message translates to:
+  /// **'병원'**
+  String get placeClinic;
+
+  /// No description provided for @placeAlertDemoRule.
+  ///
+  /// In ko, this message translates to:
+  /// **'평일 08:00-17:00 · 도착/이탈 · 10분 지연'**
+  String get placeAlertDemoRule;
+
+  /// No description provided for @targetCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명'**
+  String targetCount(int count);
+
+  /// No description provided for @itemCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}개'**
+  String itemCount(int count);
+
+  /// No description provided for @radiusMeters.
+  ///
+  /// In ko, this message translates to:
+  /// **'반경 {meters}m'**
+  String radiusMeters(int meters);
+
+  /// No description provided for @quietHoursSummary.
+  ///
+  /// In ko, this message translates to:
+  /// **'조용한 시간 {summary}'**
+  String quietHoursSummary(String summary);
+
+  /// No description provided for @quietHoursChanged.
+  ///
+  /// In ko, this message translates to:
+  /// **'조용한 시간을 {summary}(으)로 변경했습니다.'**
+  String quietHoursChanged(String summary);
+
+  /// No description provided for @placeAlertDeleteConfirm.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name} 알림을 삭제할까요? 대상 멤버에게 더 이상 도착/이탈 알림이 가지 않습니다.'**
+  String placeAlertDeleteConfirm(String name);
+
+  /// No description provided for @circleSummary.
+  ///
+  /// In ko, this message translates to:
+  /// **'{count}명 · 장소 3개 · 동행 세션 1개 대기'**
+  String circleSummary(int count);
+
+  /// No description provided for @checkInDetailLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'{mode} 위치로 알림 · {time}'**
+  String checkInDetailLine(String mode, String time);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

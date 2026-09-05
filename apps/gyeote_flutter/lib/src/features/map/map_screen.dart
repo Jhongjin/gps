@@ -1215,7 +1215,7 @@ String _checkInEventText(AppL10n l10n, CheckInEvent event) {
     CheckInStatus.signalWeak => l10n.checkInWeakSignal,
   };
   return l10n.checkInEventLine(
-    event.displayName,
+    event.displayName.isEmpty ? l10n.memberFallbackName : event.displayName,
     status,
     _relativeTimeLabel(l10n, event.createdAt),
   );

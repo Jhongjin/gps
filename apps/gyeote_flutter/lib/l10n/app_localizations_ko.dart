@@ -972,4 +972,303 @@ class AppL10nKo extends AppL10n {
   String checkInEventLine(String name, String status, String time) {
     return '$name · $status · $time';
   }
+
+  @override
+  String get quietHoursOff => '없음';
+
+  @override
+  String get quietHoursOn => '설정됨';
+
+  @override
+  String get circleCreate => '서클 만들기';
+
+  @override
+  String get circleCreateFirst => '서클을 먼저 만들어 주세요';
+
+  @override
+  String get circleCreateFirstBody => '첫 서클을 만들고 가까운 사람을 초대하세요';
+
+  @override
+  String get circleSyncing => '서클 동기화 중';
+
+  @override
+  String get circleManageMembers => '멤버 관리';
+
+  @override
+  String get circleNoMembers => '아직 멤버가 없습니다';
+
+  @override
+  String get circleNoMembersBody => '초대 링크를 만들면 이곳에 수락한 멤버가 표시됩니다.';
+
+  @override
+  String get inviteLink => '초대 링크';
+
+  @override
+  String get inviteCreate => '초대하기';
+
+  @override
+  String get inviteNewLink => '새 링크';
+
+  @override
+  String get inviteCopy => '복사';
+
+  @override
+  String get inviteJoin => '초대 참여';
+
+  @override
+  String get inviteAccept => '참여';
+
+  @override
+  String get inviteTokenLabel => '초대 링크 또는 토큰';
+
+  @override
+  String get inviteTokenRequired => '초대 링크나 토큰을 입력해 주세요.';
+
+  @override
+  String get inviteCreated => '24시간 초대 링크를 만들었습니다.';
+
+  @override
+  String get inviteCreateFailed => '초대 링크를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get inviteCopied => '초대 링크를 복사했습니다.';
+
+  @override
+  String get inviteAccepted => '초대를 수락했습니다.';
+
+  @override
+  String get inviteAcceptFailed => '초대를 수락하지 못했습니다. 만료 여부를 확인해 주세요.';
+
+  @override
+  String get inviteNeedsBackend => 'Supabase 연결 후 실제 초대 링크를 만들 수 있습니다.';
+
+  @override
+  String get inviteAcceptNeedsBackend => 'Supabase 연결 후 초대를 수락할 수 있습니다.';
+
+  @override
+  String get inviteSafetyNote => '1회 사용 · 수락 전 공유 범위 확인 · 원문 토큰 저장 안 함';
+
+  @override
+  String get inviteVerifyInviter => '초대자 확인';
+
+  @override
+  String get inviteVerifyToken => '토큰 확인';
+
+  @override
+  String get inviteConsentLocation => '위치 동의';
+
+  @override
+  String get roleGuardian => '보호자';
+
+  @override
+  String get roleChild => '자녀';
+
+  @override
+  String get roleFriend => '친구';
+
+  @override
+  String get roleCare => '케어';
+
+  @override
+  String get sharingPreciseShort => '정확 공유';
+
+  @override
+  String get sharingBalancedShort => '균형 공유';
+
+  @override
+  String get companionWaiting => '동행 대기';
+
+  @override
+  String get companionRequest => '동행 요청';
+
+  @override
+  String get companionAllow => '동행 허용';
+
+  @override
+  String get companionLater => '나중에';
+
+  @override
+  String get companionRequestDemo => '준 · 학교에서 집까지';
+
+  @override
+  String get companionRequestBody => '15분 동안 균형 위치와 경로 꼬리만 공유됩니다.';
+
+  @override
+  String get checkInSectionTitle => '안전 확인';
+
+  @override
+  String get checkInLoading => '안전 확인 기록을 불러오는 중입니다.';
+
+  @override
+  String get checkInLoadFailed => '안전 확인 기록을 불러오지 못했습니다.';
+
+  @override
+  String get checkInSyncFailed => '안전 확인 동기화 실패';
+
+  @override
+  String get checkInNoneRecent => '최근 안전 확인이 없습니다';
+
+  @override
+  String get checkInEmptyBody => '동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 표시됩니다.';
+
+  @override
+  String get checkInNote => '도착 확인은 서클 멤버에게 짧은 안심 신호로 전달됩니다.';
+
+  @override
+  String get checkInTroubleshoot => '배터리, 신호, 권한, 기기 상태를 확인해 주세요.';
+
+  @override
+  String get checkInDemoScope => '가족 전체 · 도착 확인';
+
+  @override
+  String get checkInDemoLongStay => '할아버지 · 오래 머무름 확인';
+
+  @override
+  String get checkInDemoDetail => '동행 공유 종료 · 균형 위치로 알림 · 방금';
+
+  @override
+  String get placeAlertSectionTitle => '장소 알림';
+
+  @override
+  String get placeAlertLoading => '장소 알림을 불러오는 중입니다.';
+
+  @override
+  String get placeAlertLoadFailed => '장소 알림을 불러오지 못했습니다.';
+
+  @override
+  String get placeAlertNone => '저장된 장소 알림이 없습니다';
+
+  @override
+  String get placeAlertNoneBody => '장소 알림은 서클 멤버와 공유 범위를 정한 뒤 사용할 수 있습니다.';
+
+  @override
+  String get placeAlertHint =>
+      '지도에서 반경을 미리 보고 대상 멤버를 고른 뒤 안전한 알림 규칙으로 추가할 예정입니다.';
+
+  @override
+  String get placeAlertUpdating => '장소 알림 업데이트';
+
+  @override
+  String get placeAlertUpdateFailed => '장소 알림 변경 실패';
+
+  @override
+  String get placeAlertToggleFailed => '장소 알림 상태를 변경하지 못했습니다.';
+
+  @override
+  String get placeAlertPaused => '장소 알림을 일시정지했습니다.';
+
+  @override
+  String get placeAlertResumed => '장소 알림을 다시 켰습니다.';
+
+  @override
+  String get placeAlertDeleteTitle => '장소 알림 삭제';
+
+  @override
+  String get placeAlertDeleted => '장소 알림을 삭제했습니다.';
+
+  @override
+  String get placeAlertDeleteFailed => '장소 알림을 삭제하지 못했습니다.';
+
+  @override
+  String get quietHoursChange => '조용한 시간 변경';
+
+  @override
+  String get quietHoursChangeFailed => '조용한 시간을 변경하지 못했습니다.';
+
+  @override
+  String get placeAlertChangeNeedsBackend => 'Supabase 연결 후 장소 알림을 변경할 수 있습니다.';
+
+  @override
+  String get placeAlertDeleteNeedsBackend => 'Supabase 연결 후 장소 알림을 삭제할 수 있습니다.';
+
+  @override
+  String get quietHoursNeedsBackend => 'Supabase 연결 후 조용한 시간을 변경할 수 있습니다.';
+
+  @override
+  String get placeAlertServerOnlyUpdate => '서버 변경은 완료됐고, 기기 반경 동기화는 대기 중입니다.';
+
+  @override
+  String get placeAlertServerOnlyDelete => '서버 삭제는 완료됐고, 기기 반경 동기화는 대기 중입니다.';
+
+  @override
+  String get deviceSyncPending => '기기 동기화 대기';
+
+  @override
+  String get syncLabel => '동기화';
+
+  @override
+  String get pauseLabel => '일시정지';
+
+  @override
+  String get resumeLabel => '다시 켜기';
+
+  @override
+  String get pendingLabel => '대기 중';
+
+  @override
+  String get targetsUnset => '대상 미지정';
+
+  @override
+  String get rulesNone => '알림 조건 없음';
+
+  @override
+  String get mutualConsent => '상호 동의';
+
+  @override
+  String get adNotice => '광고 안내';
+
+  @override
+  String get sampleLabel => '예시';
+
+  @override
+  String get placeHome => '집';
+
+  @override
+  String get placeSchool => '학교';
+
+  @override
+  String get placeClinic => '병원';
+
+  @override
+  String get placeAlertDemoRule => '평일 08:00-17:00 · 도착/이탈 · 10분 지연';
+
+  @override
+  String targetCount(int count) {
+    return '$count명';
+  }
+
+  @override
+  String itemCount(int count) {
+    return '$count개';
+  }
+
+  @override
+  String radiusMeters(int meters) {
+    return '반경 ${meters}m';
+  }
+
+  @override
+  String quietHoursSummary(String summary) {
+    return '조용한 시간 $summary';
+  }
+
+  @override
+  String quietHoursChanged(String summary) {
+    return '조용한 시간을 $summary(으)로 변경했습니다.';
+  }
+
+  @override
+  String placeAlertDeleteConfirm(String name) {
+    return '$name 알림을 삭제할까요? 대상 멤버에게 더 이상 도착/이탈 알림이 가지 않습니다.';
+  }
+
+  @override
+  String circleSummary(int count) {
+    return '$count명 · 장소 3개 · 동행 세션 1개 대기';
+  }
+
+  @override
+  String checkInDetailLine(String mode, String time) {
+    return '$mode 위치로 알림 · $time';
+  }
 }

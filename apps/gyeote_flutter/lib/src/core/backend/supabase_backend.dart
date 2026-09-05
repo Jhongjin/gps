@@ -58,7 +58,8 @@ class SupabaseCircleRepository implements CircleRepository {
     required String name,
     String circleType = 'family',
   }) async {
-    final normalizedName = name.trim().isEmpty ? '가족 서클' : name.trim();
+    // 기본 이름은 화면이 정한다. 저장소가 만들면 만든 사람의 언어로 DB 에 굳는다.
+    final normalizedName = name.trim();
     final circleId = await _client.rpc(
       'create_circle_with_owner',
       params: {
@@ -322,7 +323,7 @@ class SupabaseCheckInRepository implements CheckInRepository {
       },
     );
     final map = Map<String, Object?>.from((rows as List).first);
-    return _checkInEventFromRow(map, fallbackDisplayName: '나');
+    return _checkInEventFromRow(map);
   }
 
   @override
@@ -606,7 +607,7 @@ MemberLocationSnapshot _memberLocationFromRow(Map<String, Object?> map) {
   final lng = map['shared_lng'];
   return MemberLocationSnapshot(
     profileId: '${map['profile_id']}',
-    displayName: '${map['display_name'] ?? '멤버'}',
+    displayName: '${map['display_name'] ?? ''}',
     sharedCoordinate: lat is num && lng is num
         ? Coordinate(latitude: lat.toDouble(), longitude: lng.toDouble())
         : null,
@@ -654,7 +655,7 @@ PlaceAlertRule _placeAlertRuleFromRow(Map<String, Object?> map) {
   return PlaceAlertRule(
     id: '${map['id']}',
     circleId: '${map['circle_id']}',
-    name: '${map['name'] ?? '장소'}',
+    name: '${map['name'] ?? ''}',
     center: Coordinate(
       latitude: (map['center_lat'] as num).toDouble(),
       longitude: (map['center_lng'] as num).toDouble(),
@@ -703,7 +704,7 @@ String _placeAlertEventTypeToJson(PlaceAlertEventType eventType) {
 
 CheckInEvent _checkInEventFromRow(
   Map<String, Object?> map, {
-  String fallbackDisplayName = '멤버',
+  String fallbackDisplayName = '',
 }) {
   return CheckInEvent(
     id: '${map['id']}',

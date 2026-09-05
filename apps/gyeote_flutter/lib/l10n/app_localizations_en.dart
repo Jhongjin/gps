@@ -1017,4 +1017,321 @@ class AppL10nEn extends AppL10n {
   String checkInEventLine(String name, String status, String time) {
     return '$name · $status · $time';
   }
+
+  @override
+  String get quietHoursOff => 'Off';
+
+  @override
+  String get quietHoursOn => 'On';
+
+  @override
+  String get circleCreate => 'Create a circle';
+
+  @override
+  String get circleCreateFirst => 'Create a circle first';
+
+  @override
+  String get circleCreateFirstBody =>
+      'Create your first circle and invite the people close to you';
+
+  @override
+  String get circleSyncing => 'Syncing your circle';
+
+  @override
+  String get circleManageMembers => 'Manage members';
+
+  @override
+  String get circleNoMembers => 'No members yet';
+
+  @override
+  String get circleNoMembersBody =>
+      'Create an invite link and everyone who accepts shows up here.';
+
+  @override
+  String get inviteLink => 'Invite link';
+
+  @override
+  String get inviteCreate => 'Invite';
+
+  @override
+  String get inviteNewLink => 'New link';
+
+  @override
+  String get inviteCopy => 'Copy';
+
+  @override
+  String get inviteJoin => 'Join with an invite';
+
+  @override
+  String get inviteAccept => 'Join';
+
+  @override
+  String get inviteTokenLabel => 'Invite link or token';
+
+  @override
+  String get inviteTokenRequired => 'Enter an invite link or token.';
+
+  @override
+  String get inviteCreated => 'Created a 24-hour invite link.';
+
+  @override
+  String get inviteCreateFailed =>
+      'Could not create an invite link. Please try again in a moment.';
+
+  @override
+  String get inviteCopied => 'Invite link copied.';
+
+  @override
+  String get inviteAccepted => 'Invite accepted.';
+
+  @override
+  String get inviteAcceptFailed =>
+      'Could not accept the invite. Check whether it has expired.';
+
+  @override
+  String get inviteNeedsBackend =>
+      'Connect Supabase to create real invite links.';
+
+  @override
+  String get inviteAcceptNeedsBackend => 'Connect Supabase to accept invites.';
+
+  @override
+  String get inviteSafetyNote =>
+      'Single use · sharing scope shown before accepting · raw token is never stored';
+
+  @override
+  String get inviteVerifyInviter => 'Inviter verified';
+
+  @override
+  String get inviteVerifyToken => 'Token verified';
+
+  @override
+  String get inviteConsentLocation => 'Location consent';
+
+  @override
+  String get roleGuardian => 'Guardian';
+
+  @override
+  String get roleChild => 'Child';
+
+  @override
+  String get roleFriend => 'Friend';
+
+  @override
+  String get roleCare => 'Care';
+
+  @override
+  String get sharingPreciseShort => 'Exact sharing';
+
+  @override
+  String get sharingBalancedShort => 'Balanced sharing';
+
+  @override
+  String get companionWaiting => 'Companion pending';
+
+  @override
+  String get companionRequest => 'Companion request';
+
+  @override
+  String get companionAllow => 'Allow';
+
+  @override
+  String get companionLater => 'Later';
+
+  @override
+  String get companionRequestDemo => 'Jun · school to home';
+
+  @override
+  String get companionRequestBody =>
+      'For 15 minutes, only balanced location and a route tail are shared.';
+
+  @override
+  String get checkInSectionTitle => 'Check-ins';
+
+  @override
+  String get checkInLoading => 'Loading check-in history.';
+
+  @override
+  String get checkInLoadFailed => 'Could not load check-in history.';
+
+  @override
+  String get checkInSyncFailed => 'Check-in sync failed';
+
+  @override
+  String get checkInNoneRecent => 'No recent check-ins';
+
+  @override
+  String get checkInEmptyBody =>
+      'Send an arrival check-in during a companion session and it shows up here.';
+
+  @override
+  String get checkInNote =>
+      'An arrival check-in reaches your circle as a short all-clear.';
+
+  @override
+  String get checkInTroubleshoot =>
+      'Check battery, signal, permissions, and device state.';
+
+  @override
+  String get checkInDemoScope => 'Whole family · arrival check-in';
+
+  @override
+  String get checkInDemoLongStay => 'Grandpa · long-stay check';
+
+  @override
+  String get checkInDemoDetail =>
+      'Companion sharing ended · notified with balanced location · just now';
+
+  @override
+  String get placeAlertSectionTitle => 'Place alerts';
+
+  @override
+  String get placeAlertLoading => 'Loading place alerts.';
+
+  @override
+  String get placeAlertLoadFailed => 'Could not load place alerts.';
+
+  @override
+  String get placeAlertNone => 'No saved place alerts';
+
+  @override
+  String get placeAlertNoneBody =>
+      'Place alerts become available once you set circle members and a sharing scope.';
+
+  @override
+  String get placeAlertHint =>
+      'Preview the radius on the map, pick the members, then add a safe alert rule.';
+
+  @override
+  String get placeAlertUpdating => 'Updating place alert';
+
+  @override
+  String get placeAlertUpdateFailed => 'Place alert update failed';
+
+  @override
+  String get placeAlertToggleFailed => 'Could not change the place alert.';
+
+  @override
+  String get placeAlertPaused => 'Place alert paused.';
+
+  @override
+  String get placeAlertResumed => 'Place alert turned back on.';
+
+  @override
+  String get placeAlertDeleteTitle => 'Delete place alert';
+
+  @override
+  String get placeAlertDeleted => 'Place alert deleted.';
+
+  @override
+  String get placeAlertDeleteFailed => 'Could not delete the place alert.';
+
+  @override
+  String get quietHoursChange => 'Change quiet hours';
+
+  @override
+  String get quietHoursChangeFailed => 'Could not change quiet hours.';
+
+  @override
+  String get placeAlertChangeNeedsBackend =>
+      'Connect Supabase to change place alerts.';
+
+  @override
+  String get placeAlertDeleteNeedsBackend =>
+      'Connect Supabase to delete place alerts.';
+
+  @override
+  String get quietHoursNeedsBackend =>
+      'Connect Supabase to change quiet hours.';
+
+  @override
+  String get placeAlertServerOnlyUpdate =>
+      'Saved on the server; the device radius is still syncing.';
+
+  @override
+  String get placeAlertServerOnlyDelete =>
+      'Deleted on the server; the device radius is still syncing.';
+
+  @override
+  String get deviceSyncPending => 'Device sync pending';
+
+  @override
+  String get syncLabel => 'Sync';
+
+  @override
+  String get pauseLabel => 'Paused';
+
+  @override
+  String get resumeLabel => 'Turn back on';
+
+  @override
+  String get pendingLabel => 'Pending';
+
+  @override
+  String get targetsUnset => 'No targets';
+
+  @override
+  String get rulesNone => 'No alert rules';
+
+  @override
+  String get mutualConsent => 'Mutual consent';
+
+  @override
+  String get adNotice => 'Ad notice';
+
+  @override
+  String get sampleLabel => 'Sample';
+
+  @override
+  String get placeHome => 'Home';
+
+  @override
+  String get placeSchool => 'School';
+
+  @override
+  String get placeClinic => 'Clinic';
+
+  @override
+  String get placeAlertDemoRule =>
+      'Weekdays 08:00-17:00 · arrival and departure · 10 min delay';
+
+  @override
+  String targetCount(int count) {
+    return '$count people';
+  }
+
+  @override
+  String itemCount(int count) {
+    return '$count';
+  }
+
+  @override
+  String radiusMeters(int meters) {
+    return '$meters m radius';
+  }
+
+  @override
+  String quietHoursSummary(String summary) {
+    return 'Quiet hours $summary';
+  }
+
+  @override
+  String quietHoursChanged(String summary) {
+    return 'Quiet hours changed to $summary.';
+  }
+
+  @override
+  String placeAlertDeleteConfirm(String name) {
+    return 'Delete the $name alert? Its members stop receiving arrival and departure alerts.';
+  }
+
+  @override
+  String circleSummary(int count) {
+    return '$count members · 3 places · 1 companion session pending';
+  }
+
+  @override
+  String checkInDetailLine(String mode, String time) {
+    return 'Notified with $mode location · $time';
+  }
 }

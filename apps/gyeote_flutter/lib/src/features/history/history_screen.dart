@@ -541,7 +541,8 @@ _HistoryEvent _historyEventFromCheckIn(AppL10n l10n, CheckInEvent event) {
   return _HistoryEvent(
     time: _timeLabel(event.createdAt),
     type: HistoryEventType.checkIn,
-    title: '${event.displayName} ${_checkInStatusLabel(l10n, event.status)}',
+    title: '${event.displayName.isEmpty ? l10n.memberFallbackName : event.displayName}'
+        ' ${_checkInStatusLabel(l10n, event.status)}',
     detail: l10n.companionEndedNote(_sharingModeLabel(l10n, event.sharingMode)),
     tone: GyeoteTone.brand,
   );

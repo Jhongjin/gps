@@ -1,3 +1,5 @@
+import '../../../l10n/app_localizations.dart';
+
 import '../location/location_models.dart';
 
 enum CompanionSessionStatus {
@@ -190,11 +192,13 @@ class PlaceAlertQuietHours {
   final String? timeZone;
   final String? label;
 
-  String get summary {
+  /// 표시용 요약. 계약 계층이 문구를 만들지만, 문구 자체는 로케일에서 온다.
+  String summary(AppL10n l10n) {
     if (!enabled) {
-      return '없음';
+      return l10n.quietHoursOff;
     }
-    final timeLabel = start != null && end != null ? '$start-$end' : '설정됨';
+    final timeLabel =
+        start != null && end != null ? '$start-$end' : l10n.quietHoursOn;
     final labelText = label;
     if (labelText == null || labelText.isEmpty) {
       return timeLabel;
