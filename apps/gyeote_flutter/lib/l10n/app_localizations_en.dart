@@ -426,4 +426,282 @@ class AppL10nEn extends AppL10n {
   @override
   String get authPrivacyNote =>
       'Precise location is never used for ads, and you can stop sharing at any time.';
+
+  @override
+  String get privacyTitle => 'Safety settings';
+
+  @override
+  String get privacySubtitle => 'Sharing, view log, ads, deletion requests';
+
+  @override
+  String get privacySharingScopeTitle => 'Sharing scope';
+
+  @override
+  String get privacySharingScopeBody =>
+      'Default location sharing for the map and companion mode';
+
+  @override
+  String get privacyPauseSharing => 'Pause sharing';
+
+  @override
+  String get privacyPausedNotice => 'Location sharing is paused for one hour.';
+
+  @override
+  String get privacyPauseFailed => 'Could not save the sharing pause.';
+
+  @override
+  String get privacyPauseNeedsBackend => 'Connect Supabase to pause sharing.';
+
+  @override
+  String get privacyModePreciseTitle => 'Exact location';
+
+  @override
+  String get privacyModePreciseBody =>
+      'The map radius follows your sharing precision.';
+
+  @override
+  String get privacyModeBalancedTitle => 'Balanced sharing';
+
+  @override
+  String get privacyModeBalancedBody =>
+      'Balances freshness and battery for everyday sharing.';
+
+  @override
+  String get privacyModeApprox => 'Approximate';
+
+  @override
+  String get privacyModeApproxBody =>
+      'Approximate locations show as a radius circle.';
+
+  @override
+  String get privacyModeAdjusted => 'Shows an adjusted position';
+
+  @override
+  String get privacyModeHidesExact => 'Hides exact coordinates';
+
+  @override
+  String get privacyBatteryTitle => 'Battery mode';
+
+  @override
+  String get privacyBatteryBody =>
+      'When the battery is low, updates slow down and key alerts take priority.';
+
+  @override
+  String get privacyBatteryRealtime => 'Live';
+
+  @override
+  String get privacyBatterySaver => 'Saver';
+
+  @override
+  String get privacyBatteryRealtimeNote => 'Live first';
+
+  @override
+  String get privacyBatteryBalancedNote => 'Balanced';
+
+  @override
+  String get privacyBatterySaverNote => 'Battery first';
+
+  @override
+  String get privacyBatteryFast => 'Fast updates';
+
+  @override
+  String get privacyBatterySlow => 'Slow updates';
+
+  @override
+  String get privacyInterval15to30 => '15-30 s';
+
+  @override
+  String get privacyInterval30to90 => '30-90 s';
+
+  @override
+  String get privacyInterval2to5 => '2-5 min';
+
+  @override
+  String get privacyCompanionBatteryNote =>
+      'Companion mode updates faster and uses more battery.';
+
+  @override
+  String get privacyPermissionTitle => 'Permission status';
+
+  @override
+  String get privacyPermissionRefresh => 'Refresh permission status';
+
+  @override
+  String get privacyPermissionFailed =>
+      'Could not read the device permission status.';
+
+  @override
+  String get privacyPermissionBuildOnly =>
+      'Device permissions are read in the Android and iOS builds.';
+
+  @override
+  String get privacyPermissionBuildOnlyShort =>
+      'Real permissions are read on Android and iOS.';
+
+  @override
+  String get privacyPermissionLocation => 'Location permission';
+
+  @override
+  String get privacyPermissionBackground => 'Background location';
+
+  @override
+  String get privacyPermissionNotifications => 'Notifications';
+
+  @override
+  String get privacyPermissionDeviceBuild => 'Device build';
+
+  @override
+  String get privacyPermissionGranted => 'Granted';
+
+  @override
+  String get privacyPermissionWhileInUse => 'While using the app';
+
+  @override
+  String get privacyPermissionUnknown => 'Not checked';
+
+  @override
+  String get privacyPermissionWhenNeeded => 'When needed';
+
+  @override
+  String get privacyPermissionEducationNote =>
+      'Explain the permission before location sharing starts.';
+
+  @override
+  String get privacyPermissionStagedNote =>
+      'Requested step by step, from the features you turn on.';
+
+  @override
+  String get privacyNotificationsBody => 'Arrival check-ins, place alerts, SOS';
+
+  @override
+  String get privacyNotificationsTitle => 'Safety notifications';
+
+  @override
+  String get privacyViewerLogTitle => 'Recent views';
+
+  @override
+  String get privacyViewerLogLabel => 'View log';
+
+  @override
+  String get privacyViewerLogNote => 'Visible to you';
+
+  @override
+  String get privacyViewerFamilyBalanced => 'Family circle · balanced location';
+
+  @override
+  String get privacyViewerFriendsArea => 'Friends circle · neighborhood only';
+
+  @override
+  String get privacyCircleFamily => 'Family circle';
+
+  @override
+  String get privacyCircleFriends => 'Friends circle';
+
+  @override
+  String get demoNameGuardian => 'Mira';
+
+  @override
+  String get privacyViewer12MinAgo => '12 min ago';
+
+  @override
+  String get privacyViewerYesterday => 'Yesterday';
+
+  @override
+  String get privacyAdsTitle => 'Ads and data';
+
+  @override
+  String get privacyAdsPersonalized => 'Personalized ads';
+
+  @override
+  String get privacyAdsPersonalizedBody =>
+      'Without consent, only non-personalized ads are used';
+
+  @override
+  String get privacyAdsSensitiveBlock => 'Block sensitive categories';
+
+  @override
+  String get privacyAdsSensitiveBody =>
+      'Protects family, location, and emergency contexts';
+
+  @override
+  String get privacyAdsNoPreciseTargeting => 'No precise-location ad targeting';
+
+  @override
+  String get privacyAdsLoadFailed => 'Could not load ad settings.';
+
+  @override
+  String get privacyAdsSaveFailed => 'Could not save ad settings.';
+
+  @override
+  String get privacyAdsSaved => 'Ad settings saved.';
+
+  @override
+  String get privacyAdsNeedsBackend => 'Connect Supabase to save ad settings.';
+
+  @override
+  String get privacyDataTitle => 'My data';
+
+  @override
+  String get privacyDataExport => 'Export';
+
+  @override
+  String get privacyDataDelete => 'Delete history';
+
+  @override
+  String get privacyDataExportSent => 'Export request sent.';
+
+  @override
+  String get privacyDataDeleteSent => 'Deletion request sent.';
+
+  @override
+  String get privacyDataRequestFailed => 'Could not send the data request.';
+
+  @override
+  String get privacyDataNeedsBackend =>
+      'Connect Supabase to send data requests.';
+
+  @override
+  String get privacyDataLocationHistory => 'Location history';
+
+  @override
+  String get privacyDataCompanionRoutes => 'Companion routes';
+
+  @override
+  String get privacyDataCompanionRoutesBody =>
+      'Companion sessions · route tails';
+
+  @override
+  String get privacyRetention30Days => '30 days';
+
+  @override
+  String get privacyRetention24Hours => '24 hours';
+
+  @override
+  String get privacyRetentionAutoDelete =>
+      'Deleted automatically when it expires';
+
+  @override
+  String get privacyRetentionSummaryOnly =>
+      'Only a summary is kept after the session ends';
+
+  @override
+  String get privacyRecommended => 'Recommended';
+
+  @override
+  String get privacySaving => 'Saving';
+
+  @override
+  String get privacyRequesting => 'Sending';
+
+  @override
+  String get privacyPending => 'Pending';
+
+  @override
+  String get privacyCompanionMode => 'Companion mode';
+
+  @override
+  String get privacyCompanionConsentNote => 'Starts after both people agree';
+
+  @override
+  String get privacyCompanion15MinLeft => '15 min left';
 }

@@ -412,4 +412,266 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get authPrivacyNote => '정밀 위치는 광고에 사용하지 않으며, 언제든 공유를 멈출 수 있어요.';
+
+  @override
+  String get privacyTitle => '안심 설정';
+
+  @override
+  String get privacySubtitle => '공유, 조회 기록, 광고, 삭제 요청';
+
+  @override
+  String get privacySharingScopeTitle => '공유 범위';
+
+  @override
+  String get privacySharingScopeBody => '지도와 동행 모드의 기본 위치 공유';
+
+  @override
+  String get privacyPauseSharing => '공유 멈춤';
+
+  @override
+  String get privacyPausedNotice => '1시간 동안 위치 공유를 멈췄습니다.';
+
+  @override
+  String get privacyPauseFailed => '공유 멈춤을 저장하지 못했습니다.';
+
+  @override
+  String get privacyPauseNeedsBackend => 'Supabase 연결 후 공유를 멈출 수 있습니다.';
+
+  @override
+  String get privacyModePreciseTitle => '정확한 위치';
+
+  @override
+  String get privacyModePreciseBody => '공유 정밀도에 맞춰 지도 반경을 표시합니다.';
+
+  @override
+  String get privacyModeBalancedTitle => '균형 공유';
+
+  @override
+  String get privacyModeBalancedBody => '일상 공유에 맞춰 위치 최신성과 배터리를 함께 봅니다.';
+
+  @override
+  String get privacyModeApprox => '대략';
+
+  @override
+  String get privacyModeApproxBody => '대략 위치에서는 반경 원으로 표시됩니다.';
+
+  @override
+  String get privacyModeAdjusted => '현재 위치를 보정해서 표시';
+
+  @override
+  String get privacyModeHidesExact => '정확 좌표 숨김';
+
+  @override
+  String get privacyBatteryTitle => '배터리 모드';
+
+  @override
+  String get privacyBatteryBody => '배터리가 낮을 때 업데이트 간격을 늘리고 주요 알림을 우선합니다.';
+
+  @override
+  String get privacyBatteryRealtime => '실시간';
+
+  @override
+  String get privacyBatterySaver => '절전';
+
+  @override
+  String get privacyBatteryRealtimeNote => '실시간 우선';
+
+  @override
+  String get privacyBatteryBalancedNote => '균형 우선';
+
+  @override
+  String get privacyBatterySaverNote => '절전 우선';
+
+  @override
+  String get privacyBatteryFast => '빠른 갱신';
+
+  @override
+  String get privacyBatterySlow => '느린 갱신';
+
+  @override
+  String get privacyInterval15to30 => '15-30초';
+
+  @override
+  String get privacyInterval30to90 => '30-90초';
+
+  @override
+  String get privacyInterval2to5 => '2-5분';
+
+  @override
+  String get privacyCompanionBatteryNote =>
+      '동행 중 빠르게 업데이트하며 배터리 사용량이 높아질 수 있습니다.';
+
+  @override
+  String get privacyPermissionTitle => '권한 상태';
+
+  @override
+  String get privacyPermissionRefresh => '권한 상태 새로고침';
+
+  @override
+  String get privacyPermissionFailed => '기기 권한 상태를 확인하지 못했습니다.';
+
+  @override
+  String get privacyPermissionBuildOnly => 'Android/iOS 빌드에서 기기 권한을 확인합니다.';
+
+  @override
+  String get privacyPermissionBuildOnlyShort => 'Android/iOS에서 실제 권한을 확인합니다.';
+
+  @override
+  String get privacyPermissionLocation => '위치 권한';
+
+  @override
+  String get privacyPermissionBackground => '배경 위치';
+
+  @override
+  String get privacyPermissionNotifications => '알림';
+
+  @override
+  String get privacyPermissionDeviceBuild => '기기 빌드';
+
+  @override
+  String get privacyPermissionGranted => '허용됨';
+
+  @override
+  String get privacyPermissionWhileInUse => '앱 사용 중';
+
+  @override
+  String get privacyPermissionUnknown => '확인 전';
+
+  @override
+  String get privacyPermissionWhenNeeded => '필요 시';
+
+  @override
+  String get privacyPermissionEducationNote => '위치 공유 시작 전에 권한 안내가 필요합니다.';
+
+  @override
+  String get privacyPermissionStagedNote => '동행, 장소 알림처럼 켜진 기능에서 단계적으로 요청';
+
+  @override
+  String get privacyNotificationsBody => '도착 확인, 장소 알림, SOS 수신';
+
+  @override
+  String get privacyNotificationsTitle => '안심 알림';
+
+  @override
+  String get privacyViewerLogTitle => '최근 조회';
+
+  @override
+  String get privacyViewerLogLabel => '조회 로그';
+
+  @override
+  String get privacyViewerLogNote => '내가 확인 가능';
+
+  @override
+  String get privacyViewerFamilyBalanced => '가족 서클 · 균형 위치';
+
+  @override
+  String get privacyViewerFriendsArea => '친구 서클 · 동네만';
+
+  @override
+  String get privacyCircleFamily => '가족 서클';
+
+  @override
+  String get privacyCircleFriends => '친구 서클';
+
+  @override
+  String get demoNameGuardian => '미라';
+
+  @override
+  String get privacyViewer12MinAgo => '12분 전';
+
+  @override
+  String get privacyViewerYesterday => '어제';
+
+  @override
+  String get privacyAdsTitle => '광고와 데이터';
+
+  @override
+  String get privacyAdsPersonalized => '개인화 광고';
+
+  @override
+  String get privacyAdsPersonalizedBody => '동의 전에는 비개인화 광고만 사용';
+
+  @override
+  String get privacyAdsSensitiveBlock => '민감 카테고리 차단';
+
+  @override
+  String get privacyAdsSensitiveBody => '가족, 위치, 응급 상황 문맥 보호';
+
+  @override
+  String get privacyAdsNoPreciseTargeting => '정밀 위치 광고 차단';
+
+  @override
+  String get privacyAdsLoadFailed => '광고 설정을 불러오지 못했습니다.';
+
+  @override
+  String get privacyAdsSaveFailed => '광고 설정을 저장하지 못했습니다.';
+
+  @override
+  String get privacyAdsSaved => '광고 설정을 저장했습니다.';
+
+  @override
+  String get privacyAdsNeedsBackend => 'Supabase 연결 후 광고 설정을 저장할 수 있습니다.';
+
+  @override
+  String get privacyDataTitle => '내 데이터';
+
+  @override
+  String get privacyDataExport => '내보내기';
+
+  @override
+  String get privacyDataDelete => '기록 삭제';
+
+  @override
+  String get privacyDataExportSent => '데이터 내보내기 요청을 보냈습니다.';
+
+  @override
+  String get privacyDataDeleteSent => '기록 삭제 요청을 보냈습니다.';
+
+  @override
+  String get privacyDataRequestFailed => '데이터 요청을 보내지 못했습니다.';
+
+  @override
+  String get privacyDataNeedsBackend => 'Supabase 연결 후 데이터 요청을 보낼 수 있습니다.';
+
+  @override
+  String get privacyDataLocationHistory => '위치 기록';
+
+  @override
+  String get privacyDataCompanionRoutes => '동행 경로';
+
+  @override
+  String get privacyDataCompanionRoutesBody => '동행 세션 · 경로 꼬리';
+
+  @override
+  String get privacyRetention30Days => '30일';
+
+  @override
+  String get privacyRetention24Hours => '24시간';
+
+  @override
+  String get privacyRetentionAutoDelete => '만료 후 자동 삭제';
+
+  @override
+  String get privacyRetentionSummaryOnly => '세션 종료 후 요약 보관';
+
+  @override
+  String get privacyRecommended => '추천';
+
+  @override
+  String get privacySaving => '저장 중';
+
+  @override
+  String get privacyRequesting => '요청 중';
+
+  @override
+  String get privacyPending => '대기';
+
+  @override
+  String get privacyCompanionMode => '동행 모드';
+
+  @override
+  String get privacyCompanionConsentNote => '준과 상호 동의 완료 후 시작';
+
+  @override
+  String get privacyCompanion15MinLeft => '15분 남음';
 }

@@ -2,6 +2,5 @@
   "apps/gyeote_flutter/lib/src/core/backend/backend_contract.dart": 2,
   "apps/gyeote_flutter/lib/src/core/backend/supabase_backend.dart": 5,
   "apps/gyeote_flutter/lib/src/features/circle/circle_screen.dart": 137,
-  "apps/gyeote_flutter/lib/src/features/map/map_screen.dart": 121,
-  "apps/gyeote_flutter/lib/src/features/privacy/privacy_screen.dart": 100
+  "apps/gyeote_flutter/lib/src/features/map/map_screen.dart": 121
 }

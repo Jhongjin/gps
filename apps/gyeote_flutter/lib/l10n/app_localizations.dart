@@ -834,6 +834,528 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'정밀 위치는 광고에 사용하지 않으며, 언제든 공유를 멈출 수 있어요.'**
   String get authPrivacyNote;
+
+  /// No description provided for @privacyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'안심 설정'**
+  String get privacyTitle;
+
+  /// No description provided for @privacySubtitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'공유, 조회 기록, 광고, 삭제 요청'**
+  String get privacySubtitle;
+
+  /// No description provided for @privacySharingScopeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'공유 범위'**
+  String get privacySharingScopeTitle;
+
+  /// No description provided for @privacySharingScopeBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'지도와 동행 모드의 기본 위치 공유'**
+  String get privacySharingScopeBody;
+
+  /// No description provided for @privacyPauseSharing.
+  ///
+  /// In ko, this message translates to:
+  /// **'공유 멈춤'**
+  String get privacyPauseSharing;
+
+  /// No description provided for @privacyPausedNotice.
+  ///
+  /// In ko, this message translates to:
+  /// **'1시간 동안 위치 공유를 멈췄습니다.'**
+  String get privacyPausedNotice;
+
+  /// No description provided for @privacyPauseFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'공유 멈춤을 저장하지 못했습니다.'**
+  String get privacyPauseFailed;
+
+  /// No description provided for @privacyPauseNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 공유를 멈출 수 있습니다.'**
+  String get privacyPauseNeedsBackend;
+
+  /// No description provided for @privacyModePreciseTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'정확한 위치'**
+  String get privacyModePreciseTitle;
+
+  /// No description provided for @privacyModePreciseBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'공유 정밀도에 맞춰 지도 반경을 표시합니다.'**
+  String get privacyModePreciseBody;
+
+  /// No description provided for @privacyModeBalancedTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'균형 공유'**
+  String get privacyModeBalancedTitle;
+
+  /// No description provided for @privacyModeBalancedBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'일상 공유에 맞춰 위치 최신성과 배터리를 함께 봅니다.'**
+  String get privacyModeBalancedBody;
+
+  /// No description provided for @privacyModeApprox.
+  ///
+  /// In ko, this message translates to:
+  /// **'대략'**
+  String get privacyModeApprox;
+
+  /// No description provided for @privacyModeApproxBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'대략 위치에서는 반경 원으로 표시됩니다.'**
+  String get privacyModeApproxBody;
+
+  /// No description provided for @privacyModeAdjusted.
+  ///
+  /// In ko, this message translates to:
+  /// **'현재 위치를 보정해서 표시'**
+  String get privacyModeAdjusted;
+
+  /// No description provided for @privacyModeHidesExact.
+  ///
+  /// In ko, this message translates to:
+  /// **'정확 좌표 숨김'**
+  String get privacyModeHidesExact;
+
+  /// No description provided for @privacyBatteryTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'배터리 모드'**
+  String get privacyBatteryTitle;
+
+  /// No description provided for @privacyBatteryBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'배터리가 낮을 때 업데이트 간격을 늘리고 주요 알림을 우선합니다.'**
+  String get privacyBatteryBody;
+
+  /// No description provided for @privacyBatteryRealtime.
+  ///
+  /// In ko, this message translates to:
+  /// **'실시간'**
+  String get privacyBatteryRealtime;
+
+  /// No description provided for @privacyBatterySaver.
+  ///
+  /// In ko, this message translates to:
+  /// **'절전'**
+  String get privacyBatterySaver;
+
+  /// No description provided for @privacyBatteryRealtimeNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'실시간 우선'**
+  String get privacyBatteryRealtimeNote;
+
+  /// No description provided for @privacyBatteryBalancedNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'균형 우선'**
+  String get privacyBatteryBalancedNote;
+
+  /// No description provided for @privacyBatterySaverNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'절전 우선'**
+  String get privacyBatterySaverNote;
+
+  /// No description provided for @privacyBatteryFast.
+  ///
+  /// In ko, this message translates to:
+  /// **'빠른 갱신'**
+  String get privacyBatteryFast;
+
+  /// No description provided for @privacyBatterySlow.
+  ///
+  /// In ko, this message translates to:
+  /// **'느린 갱신'**
+  String get privacyBatterySlow;
+
+  /// No description provided for @privacyInterval15to30.
+  ///
+  /// In ko, this message translates to:
+  /// **'15-30초'**
+  String get privacyInterval15to30;
+
+  /// No description provided for @privacyInterval30to90.
+  ///
+  /// In ko, this message translates to:
+  /// **'30-90초'**
+  String get privacyInterval30to90;
+
+  /// No description provided for @privacyInterval2to5.
+  ///
+  /// In ko, this message translates to:
+  /// **'2-5분'**
+  String get privacyInterval2to5;
+
+  /// No description provided for @privacyCompanionBatteryNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 중 빠르게 업데이트하며 배터리 사용량이 높아질 수 있습니다.'**
+  String get privacyCompanionBatteryNote;
+
+  /// No description provided for @privacyPermissionTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'권한 상태'**
+  String get privacyPermissionTitle;
+
+  /// No description provided for @privacyPermissionRefresh.
+  ///
+  /// In ko, this message translates to:
+  /// **'권한 상태 새로고침'**
+  String get privacyPermissionRefresh;
+
+  /// No description provided for @privacyPermissionFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 권한 상태를 확인하지 못했습니다.'**
+  String get privacyPermissionFailed;
+
+  /// No description provided for @privacyPermissionBuildOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'Android/iOS 빌드에서 기기 권한을 확인합니다.'**
+  String get privacyPermissionBuildOnly;
+
+  /// No description provided for @privacyPermissionBuildOnlyShort.
+  ///
+  /// In ko, this message translates to:
+  /// **'Android/iOS에서 실제 권한을 확인합니다.'**
+  String get privacyPermissionBuildOnlyShort;
+
+  /// No description provided for @privacyPermissionLocation.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한'**
+  String get privacyPermissionLocation;
+
+  /// No description provided for @privacyPermissionBackground.
+  ///
+  /// In ko, this message translates to:
+  /// **'배경 위치'**
+  String get privacyPermissionBackground;
+
+  /// No description provided for @privacyPermissionNotifications.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림'**
+  String get privacyPermissionNotifications;
+
+  /// No description provided for @privacyPermissionDeviceBuild.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 빌드'**
+  String get privacyPermissionDeviceBuild;
+
+  /// No description provided for @privacyPermissionGranted.
+  ///
+  /// In ko, this message translates to:
+  /// **'허용됨'**
+  String get privacyPermissionGranted;
+
+  /// No description provided for @privacyPermissionWhileInUse.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱 사용 중'**
+  String get privacyPermissionWhileInUse;
+
+  /// No description provided for @privacyPermissionUnknown.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인 전'**
+  String get privacyPermissionUnknown;
+
+  /// No description provided for @privacyPermissionWhenNeeded.
+  ///
+  /// In ko, this message translates to:
+  /// **'필요 시'**
+  String get privacyPermissionWhenNeeded;
+
+  /// No description provided for @privacyPermissionEducationNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공유 시작 전에 권한 안내가 필요합니다.'**
+  String get privacyPermissionEducationNote;
+
+  /// No description provided for @privacyPermissionStagedNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행, 장소 알림처럼 켜진 기능에서 단계적으로 요청'**
+  String get privacyPermissionStagedNote;
+
+  /// No description provided for @privacyNotificationsBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 확인, 장소 알림, SOS 수신'**
+  String get privacyNotificationsBody;
+
+  /// No description provided for @privacyNotificationsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'안심 알림'**
+  String get privacyNotificationsTitle;
+
+  /// No description provided for @privacyViewerLogTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 조회'**
+  String get privacyViewerLogTitle;
+
+  /// No description provided for @privacyViewerLogLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'조회 로그'**
+  String get privacyViewerLogLabel;
+
+  /// No description provided for @privacyViewerLogNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'내가 확인 가능'**
+  String get privacyViewerLogNote;
+
+  /// No description provided for @privacyViewerFamilyBalanced.
+  ///
+  /// In ko, this message translates to:
+  /// **'가족 서클 · 균형 위치'**
+  String get privacyViewerFamilyBalanced;
+
+  /// No description provided for @privacyViewerFriendsArea.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구 서클 · 동네만'**
+  String get privacyViewerFriendsArea;
+
+  /// No description provided for @privacyCircleFamily.
+  ///
+  /// In ko, this message translates to:
+  /// **'가족 서클'**
+  String get privacyCircleFamily;
+
+  /// No description provided for @privacyCircleFriends.
+  ///
+  /// In ko, this message translates to:
+  /// **'친구 서클'**
+  String get privacyCircleFriends;
+
+  /// No description provided for @demoNameGuardian.
+  ///
+  /// In ko, this message translates to:
+  /// **'미라'**
+  String get demoNameGuardian;
+
+  /// No description provided for @privacyViewer12MinAgo.
+  ///
+  /// In ko, this message translates to:
+  /// **'12분 전'**
+  String get privacyViewer12MinAgo;
+
+  /// No description provided for @privacyViewerYesterday.
+  ///
+  /// In ko, this message translates to:
+  /// **'어제'**
+  String get privacyViewerYesterday;
+
+  /// No description provided for @privacyAdsTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고와 데이터'**
+  String get privacyAdsTitle;
+
+  /// No description provided for @privacyAdsPersonalized.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인화 광고'**
+  String get privacyAdsPersonalized;
+
+  /// No description provided for @privacyAdsPersonalizedBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'동의 전에는 비개인화 광고만 사용'**
+  String get privacyAdsPersonalizedBody;
+
+  /// No description provided for @privacyAdsSensitiveBlock.
+  ///
+  /// In ko, this message translates to:
+  /// **'민감 카테고리 차단'**
+  String get privacyAdsSensitiveBlock;
+
+  /// No description provided for @privacyAdsSensitiveBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'가족, 위치, 응급 상황 문맥 보호'**
+  String get privacyAdsSensitiveBody;
+
+  /// No description provided for @privacyAdsNoPreciseTargeting.
+  ///
+  /// In ko, this message translates to:
+  /// **'정밀 위치 광고 차단'**
+  String get privacyAdsNoPreciseTargeting;
+
+  /// No description provided for @privacyAdsLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 설정을 불러오지 못했습니다.'**
+  String get privacyAdsLoadFailed;
+
+  /// No description provided for @privacyAdsSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 설정을 저장하지 못했습니다.'**
+  String get privacyAdsSaveFailed;
+
+  /// No description provided for @privacyAdsSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 설정을 저장했습니다.'**
+  String get privacyAdsSaved;
+
+  /// No description provided for @privacyAdsNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 광고 설정을 저장할 수 있습니다.'**
+  String get privacyAdsNeedsBackend;
+
+  /// No description provided for @privacyDataTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 데이터'**
+  String get privacyDataTitle;
+
+  /// No description provided for @privacyDataExport.
+  ///
+  /// In ko, this message translates to:
+  /// **'내보내기'**
+  String get privacyDataExport;
+
+  /// No description provided for @privacyDataDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록 삭제'**
+  String get privacyDataDelete;
+
+  /// No description provided for @privacyDataExportSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터 내보내기 요청을 보냈습니다.'**
+  String get privacyDataExportSent;
+
+  /// No description provided for @privacyDataDeleteSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'기록 삭제 요청을 보냈습니다.'**
+  String get privacyDataDeleteSent;
+
+  /// No description provided for @privacyDataRequestFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터 요청을 보내지 못했습니다.'**
+  String get privacyDataRequestFailed;
+
+  /// No description provided for @privacyDataNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 데이터 요청을 보낼 수 있습니다.'**
+  String get privacyDataNeedsBackend;
+
+  /// No description provided for @privacyDataLocationHistory.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 기록'**
+  String get privacyDataLocationHistory;
+
+  /// No description provided for @privacyDataCompanionRoutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 경로'**
+  String get privacyDataCompanionRoutes;
+
+  /// No description provided for @privacyDataCompanionRoutesBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 세션 · 경로 꼬리'**
+  String get privacyDataCompanionRoutesBody;
+
+  /// No description provided for @privacyRetention30Days.
+  ///
+  /// In ko, this message translates to:
+  /// **'30일'**
+  String get privacyRetention30Days;
+
+  /// No description provided for @privacyRetention24Hours.
+  ///
+  /// In ko, this message translates to:
+  /// **'24시간'**
+  String get privacyRetention24Hours;
+
+  /// No description provided for @privacyRetentionAutoDelete.
+  ///
+  /// In ko, this message translates to:
+  /// **'만료 후 자동 삭제'**
+  String get privacyRetentionAutoDelete;
+
+  /// No description provided for @privacyRetentionSummaryOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'세션 종료 후 요약 보관'**
+  String get privacyRetentionSummaryOnly;
+
+  /// No description provided for @privacyRecommended.
+  ///
+  /// In ko, this message translates to:
+  /// **'추천'**
+  String get privacyRecommended;
+
+  /// No description provided for @privacySaving.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장 중'**
+  String get privacySaving;
+
+  /// No description provided for @privacyRequesting.
+  ///
+  /// In ko, this message translates to:
+  /// **'요청 중'**
+  String get privacyRequesting;
+
+  /// No description provided for @privacyPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기'**
+  String get privacyPending;
+
+  /// No description provided for @privacyCompanionMode.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 모드'**
+  String get privacyCompanionMode;
+
+  /// No description provided for @privacyCompanionConsentNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'준과 상호 동의 완료 후 시작'**
+  String get privacyCompanionConsentNote;
+
+  /// No description provided for @privacyCompanion15MinLeft.
+  ///
+  /// In ko, this message translates to:
+  /// **'15분 남음'**
+  String get privacyCompanion15MinLeft;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
