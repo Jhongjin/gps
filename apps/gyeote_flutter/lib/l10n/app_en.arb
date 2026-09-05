@@ -399,5 +399,22 @@
   "a11yMemberRow": "{name}, {status}. Double tap for details",
   "a11yBatteryLevel": "Battery {percent} percent",
   "a11yStaleLocation": "Location is out of date",
-  "a11yAttentionBadge": "{count} members need a check"
+  "a11yAttentionBadge": "{count} members need a check",
+  "onboardWelcomeTitle": "Close people, only as much as you choose",
+  "onboardWelcomeBody": "Gyeote shares location only between people who invited each other and agreed. There is no way to watch someone quietly.",
+  "onboardConsentTitle": "You always see who can see you",
+  "onboardConsentBody": "Set a sharing precision per circle and pause it whenever you want. Every view of your location is recorded.",
+  "onboardPermissionTitle": "Why location permission",
+  "onboardPermissionBody": "Drawing each other on the map needs your device location. The system asks next, and the answer is yours.",
+  "onboardNext": "Next",
+  "onboardStart": "Get started",
+  "onboardSkip": "Skip",
+  "onboardStepOf": "{current} of {total}",
+  "primerContinue": "Continue",
+  "primerLater": "Later",
+  "primerWhenInUseTitle": "Location is needed while you use the app",
+  "primerWhenInUseBody": "Companion mode draws your position on the map. The system asks on the next screen.",
+  "primerAlwaysTitle": "Place alerts need background location",
+  "primerAlwaysBody": "Checking arrivals and departures while the app is closed needs this. Place alerts do not work without it.",
+  "primerPromise": "Precise location is never used for ads, and you can stop sharing at any time."
 }

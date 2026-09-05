@@ -1352,4 +1352,63 @@ class AppL10nEn extends AppL10n {
   String a11yAttentionBadge(int count) {
     return '$count members need a check';
   }
+
+  @override
+  String get onboardWelcomeTitle => 'Close people, only as much as you choose';
+
+  @override
+  String get onboardWelcomeBody =>
+      'Gyeote shares location only between people who invited each other and agreed. There is no way to watch someone quietly.';
+
+  @override
+  String get onboardConsentTitle => 'You always see who can see you';
+
+  @override
+  String get onboardConsentBody =>
+      'Set a sharing precision per circle and pause it whenever you want. Every view of your location is recorded.';
+
+  @override
+  String get onboardPermissionTitle => 'Why location permission';
+
+  @override
+  String get onboardPermissionBody =>
+      'Drawing each other on the map needs your device location. The system asks next, and the answer is yours.';
+
+  @override
+  String get onboardNext => 'Next';
+
+  @override
+  String get onboardStart => 'Get started';
+
+  @override
+  String get onboardSkip => 'Skip';
+
+  @override
+  String onboardStepOf(int current, int total) {
+    return '$current of $total';
+  }
+
+  @override
+  String get primerContinue => 'Continue';
+
+  @override
+  String get primerLater => 'Later';
+
+  @override
+  String get primerWhenInUseTitle => 'Location is needed while you use the app';
+
+  @override
+  String get primerWhenInUseBody =>
+      'Companion mode draws your position on the map. The system asks on the next screen.';
+
+  @override
+  String get primerAlwaysTitle => 'Place alerts need background location';
+
+  @override
+  String get primerAlwaysBody =>
+      'Checking arrivals and departures while the app is closed needs this. Place alerts do not work without it.';
+
+  @override
+  String get primerPromise =>
+      'Precise location is never used for ads, and you can stop sharing at any time.';
 }

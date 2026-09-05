@@ -10,6 +10,7 @@ import '../features/auth/auth_gate.dart';
 import '../features/circle/circle_screen.dart';
 import '../features/history/history_screen.dart';
 import '../features/map/map_screen.dart';
+import '../features/onboarding/onboarding_screen.dart';
 import '../features/privacy/privacy_screen.dart';
 import '../theme/gyeote_theme.dart';
 
@@ -29,6 +30,27 @@ class _GyeoteAppState extends State<GyeoteApp> {
   final _locationBridge = LocationBridge();
   int _tabIndex = 0;
 
+  /// null 이면 아직 확인 중이다. 확인 전에 셸을 띄우면 온보딩이 한 프레임
+  /// 늦게 덮여 깜빡인다.
+  bool? _hasSeenOnboarding;
+
+  @override
+  void initState() {
+    super.initState();
+    const OnboardingGate().hasSeen().then((seen) {
+      if (mounted) setState(() => _hasSeenOnboarding = seen);
+    });
+  }
+
+  Future<void> _completeOnboarding({required bool wantsLocation}) async {
+    await const OnboardingGate().markSeen();
+    if (wantsLocation) {
+      // 방금 이유를 읽은 직후가 물어보기 가장 좋은 때다.
+      await _locationBridge.requestWhenInUse();
+    }
+    if (mounted) setState(() => _hasSeenOnboarding = true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,6 +67,14 @@ class _GyeoteAppState extends State<GyeoteApp> {
   }
 
   Widget _buildShell(BuildContext context) {
+    final seen = _hasSeenOnboarding;
+    if (seen == null) {
+      return const Scaffold(body: SizedBox.shrink());
+    }
+    if (!seen) {
+      return OnboardingScreen(onDone: _completeOnboarding);
+    }
+
     final l10n = AppL10n.of(context);
     final backend = widget.backendConfig.hasSupabase
         ? SupabaseBackend(

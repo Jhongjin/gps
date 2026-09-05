@@ -2496,6 +2496,108 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'확인이 필요한 멤버 {count}명'**
   String a11yAttentionBadge(int count);
+
+  /// No description provided for @onboardWelcomeTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'가까운 사람과, 필요한 만큼만'**
+  String get onboardWelcomeTitle;
+
+  /// No description provided for @onboardWelcomeBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'곁에는 서로 초대하고 동의한 사이에서만 위치를 나눕니다. 몰래 보는 방법은 만들지 않습니다.'**
+  String get onboardWelcomeBody;
+
+  /// No description provided for @onboardConsentTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'누가 나를 볼 수 있는지 항상 보입니다'**
+  String get onboardConsentTitle;
+
+  /// No description provided for @onboardConsentBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클마다 공유 정확도를 정하고, 언제든 멈출 수 있어요. 누가 언제 내 위치를 봤는지도 기록으로 남습니다.'**
+  String get onboardConsentBody;
+
+  /// No description provided for @onboardPermissionTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한이 왜 필요한가요'**
+  String get onboardPermissionTitle;
+
+  /// No description provided for @onboardPermissionBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'지도에 서로의 위치를 그리려면 기기 위치가 필요합니다. 다음 화면에서 시스템이 물어보고, 허용 여부는 직접 정하시면 됩니다.'**
+  String get onboardPermissionBody;
+
+  /// No description provided for @onboardNext.
+  ///
+  /// In ko, this message translates to:
+  /// **'다음'**
+  String get onboardNext;
+
+  /// No description provided for @onboardStart.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작하기'**
+  String get onboardStart;
+
+  /// No description provided for @onboardSkip.
+  ///
+  /// In ko, this message translates to:
+  /// **'건너뛰기'**
+  String get onboardSkip;
+
+  /// No description provided for @onboardStepOf.
+  ///
+  /// In ko, this message translates to:
+  /// **'{current} / {total}'**
+  String onboardStepOf(int current, int total);
+
+  /// No description provided for @primerContinue.
+  ///
+  /// In ko, this message translates to:
+  /// **'계속'**
+  String get primerContinue;
+
+  /// No description provided for @primerLater.
+  ///
+  /// In ko, this message translates to:
+  /// **'나중에'**
+  String get primerLater;
+
+  /// No description provided for @primerWhenInUseTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱을 쓰는 동안 위치가 필요합니다'**
+  String get primerWhenInUseTitle;
+
+  /// No description provided for @primerWhenInUseBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 모드에서 지도에 내 위치를 그리려면 필요합니다. 다음 화면에서 시스템이 물어봅니다.'**
+  String get primerWhenInUseBody;
+
+  /// No description provided for @primerAlwaysTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림에는 백그라운드 위치가 필요합니다'**
+  String get primerAlwaysTitle;
+
+  /// No description provided for @primerAlwaysBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'앱이 꺼져 있어도 저장한 장소에 도착·이탈했는지 확인하려면 필요합니다. 이 권한 없이는 장소 알림이 동작하지 않습니다.'**
+  String get primerAlwaysBody;
+
+  /// No description provided for @primerPromise.
+  ///
+  /// In ko, this message translates to:
+  /// **'정밀 위치는 광고에 쓰지 않고, 공유는 언제든 멈출 수 있습니다.'**
+  String get primerPromise;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

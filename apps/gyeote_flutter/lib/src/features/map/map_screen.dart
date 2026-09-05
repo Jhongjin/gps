@@ -14,6 +14,7 @@ import '../../core/location/place_alert_geofence_sync.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../core/i18n/region_settings.dart';
 import '../../theme/gyeote_theme.dart';
+import '../onboarding/permission_primer.dart';
 import 'widgets/animated_tracks.dart';
 import 'widgets/map_chrome.dart';
 import 'widgets/night_tiles.dart';
@@ -491,6 +492,14 @@ class _MapScreenState extends State<MapScreen> {
         duration,
         companionSessionId: companionSessionId,
       );
+      // 물러나면 OS 대화상자를 띄우지 않는다. 물어보지 않으면 기회가 남는다.
+      if (!mounted) return;
+      final allowed = await showPermissionPrimer(
+        context,
+        purpose: PermissionPurpose.whileUsing,
+      );
+      if (!allowed) return;
+
       await widget.locationBridge.requestWhenInUse();
       await widget.locationBridge.startLocationSession(config);
       if (!mounted) {
@@ -620,6 +629,8 @@ class _MapScreenState extends State<MapScreen> {
     }
 
     try {
+      // 여기에는 사전 안내를 넣지 않는다. 긴급한 사람에게 설명 시트를 읽힐 수
+      // 없다. 그래서 온보딩에서 미리 받아 두는 것이 중요하다.
       await widget.locationBridge.requestWhenInUse();
       await widget.locationBridge.requestSosFix();
       if (mounted) {
@@ -838,7 +849,7 @@ class _MapScreenState extends State<MapScreen> {
             _l10n.placeAlertSaved(alert.name, alert.targetCount);
         _isPlaceDraftVisible = true;
       });
-      await _syncPlaceAlertGeofences(circleId);
+      await _syncPlaceAlertGeofences(circleId, askForBackground: true);
     } catch (_) {
       if (mounted) {
         setState(() => _placeAlertStatusMessage = _l10n.placeAlertSaveFailed);
@@ -850,17 +861,31 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Future<void> _syncPlaceAlertGeofences(String circleId) async {
+  /// 장소 알림을 막 저장한 직후에만 백그라운드 위치를 묻는다. 방금 한 행동과
+  /// 이어져야 왜 필요한지가 납득된다.
+  Future<void> _syncPlaceAlertGeofences(
+    String circleId, {
+    bool askForBackground = false,
+  }) async {
     final repository = widget.placeAlertRepository;
     if (!_supportsNativeLocation || repository == null) {
       return;
     }
 
     try {
+      var allowBackground = false;
+      if (askForBackground && mounted) {
+        allowBackground = await showPermissionPrimer(
+          context,
+          purpose: PermissionPurpose.background,
+        );
+      }
+
       final registeredCount = await syncPlaceAlertGeofences(
         repository: repository,
         locationBridge: widget.locationBridge,
         circleId: circleId,
+        requestBackgroundPermission: allowBackground,
       );
       if (mounted) {
         setState(() => _bridgeStatus = registeredCount == 0

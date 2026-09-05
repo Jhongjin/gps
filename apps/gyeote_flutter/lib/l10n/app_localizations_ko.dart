@@ -1289,4 +1289,62 @@ class AppL10nKo extends AppL10n {
   String a11yAttentionBadge(int count) {
     return '확인이 필요한 멤버 $count명';
   }
+
+  @override
+  String get onboardWelcomeTitle => '가까운 사람과, 필요한 만큼만';
+
+  @override
+  String get onboardWelcomeBody =>
+      '곁에는 서로 초대하고 동의한 사이에서만 위치를 나눕니다. 몰래 보는 방법은 만들지 않습니다.';
+
+  @override
+  String get onboardConsentTitle => '누가 나를 볼 수 있는지 항상 보입니다';
+
+  @override
+  String get onboardConsentBody =>
+      '서클마다 공유 정확도를 정하고, 언제든 멈출 수 있어요. 누가 언제 내 위치를 봤는지도 기록으로 남습니다.';
+
+  @override
+  String get onboardPermissionTitle => '위치 권한이 왜 필요한가요';
+
+  @override
+  String get onboardPermissionBody =>
+      '지도에 서로의 위치를 그리려면 기기 위치가 필요합니다. 다음 화면에서 시스템이 물어보고, 허용 여부는 직접 정하시면 됩니다.';
+
+  @override
+  String get onboardNext => '다음';
+
+  @override
+  String get onboardStart => '시작하기';
+
+  @override
+  String get onboardSkip => '건너뛰기';
+
+  @override
+  String onboardStepOf(int current, int total) {
+    return '$current / $total';
+  }
+
+  @override
+  String get primerContinue => '계속';
+
+  @override
+  String get primerLater => '나중에';
+
+  @override
+  String get primerWhenInUseTitle => '앱을 쓰는 동안 위치가 필요합니다';
+
+  @override
+  String get primerWhenInUseBody =>
+      '동행 모드에서 지도에 내 위치를 그리려면 필요합니다. 다음 화면에서 시스템이 물어봅니다.';
+
+  @override
+  String get primerAlwaysTitle => '장소 알림에는 백그라운드 위치가 필요합니다';
+
+  @override
+  String get primerAlwaysBody =>
+      '앱이 꺼져 있어도 저장한 장소에 도착·이탈했는지 확인하려면 필요합니다. 이 권한 없이는 장소 알림이 동작하지 않습니다.';
+
+  @override
+  String get primerPromise => '정밀 위치는 광고에 쓰지 않고, 공유는 언제든 멈출 수 있습니다.';
 }

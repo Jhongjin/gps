@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gyeote/src/app/gyeote_app.dart';
 import 'package:gyeote/src/core/backend/backend_config.dart';
 import 'package:gyeote/src/features/map/widgets/night_tiles.dart';
 
 void main() {
+  // 온보딩은 첫 실행에만 뜬다. 이 파일들은 그 이후 화면을 본다.
+  setUp(() => SharedPreferences.setMockInitialValues(
+        {'gyeote.onboarding.seen.v1': true},
+      ));
+
   const testConfig = BackendConfig(
     supabaseUrl: '',
     supabaseAnonKey: '',
@@ -22,6 +28,8 @@ void main() {
     tester.platformDispatcher.localesTestValue = [locale];
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
+    // 온보딩 확인이 비동기다. 한 프레임 더 돌려야 셸이 그려진다.
+    await tester.pump();
   }
 
   _darkModeTests();
@@ -142,11 +150,14 @@ void _darkModeTests() {
   );
 
   Future<void> pumpDark(WidgetTester tester) async {
+    SharedPreferences.setMockInitialValues({'gyeote.onboarding.seen.v1': true});
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
     tester.platformDispatcher.localesTestValue = const [Locale('ko')];
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
+    // 온보딩 확인이 비동기다. 한 프레임 더 돌려야 셸이 그려진다.
+    await tester.pump();
   }
 
   testWidgets('dark mode darkens the map tiles too', (tester) async {
@@ -165,11 +176,14 @@ void _darkModeTests() {
   });
 
   testWidgets('light mode leaves the tiles untouched', (tester) async {
+    SharedPreferences.setMockInitialValues({'gyeote.onboarding.seen.v1': true});
     tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
     tester.platformDispatcher.localesTestValue = const [Locale('ko')];
     addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
+    // 온보딩 확인이 비동기다. 한 프레임 더 돌려야 셸이 그려진다.
+    await tester.pump();
 
     expect(
       find.descendant(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:gyeote/src/app/gyeote_app.dart';
 import 'package:gyeote/src/core/backend/backend_config.dart';
 
@@ -13,6 +14,11 @@ import 'package:gyeote/src/core/backend/backend_config.dart';
 /// Flutter 는 오버플로를 디버그 빌드에서 예외로 던진다. 그래서 별도 단언 없이
 /// `takeException()` 이 비어 있는지만 보면 된다.
 void main() {
+  // 온보딩은 첫 실행에만 뜬다. 이 파일들은 그 이후 화면을 본다.
+  setUp(() => SharedPreferences.setMockInitialValues(
+        {'gyeote.onboarding.seen.v1': true},
+      ));
+
   const testConfig = BackendConfig(
     supabaseUrl: '',
     supabaseAnonKey: '',
@@ -30,6 +36,8 @@ void main() {
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
 
     await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
+    // 온보딩 확인이 비동기다. 한 프레임 더 돌려야 셸이 그려진다.
+    await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
   }
 

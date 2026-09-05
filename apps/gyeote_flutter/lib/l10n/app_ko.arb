@@ -716,5 +716,32 @@
         "type": "int"
       }
     }
+  },
+  "onboardWelcomeTitle": "가까운 사람과, 필요한 만큼만",
+  "onboardWelcomeBody": "곁에는 서로 초대하고 동의한 사이에서만 위치를 나눕니다. 몰래 보는 방법은 만들지 않습니다.",
+  "onboardConsentTitle": "누가 나를 볼 수 있는지 항상 보입니다",
+  "onboardConsentBody": "서클마다 공유 정확도를 정하고, 언제든 멈출 수 있어요. 누가 언제 내 위치를 봤는지도 기록으로 남습니다.",
+  "onboardPermissionTitle": "위치 권한이 왜 필요한가요",
+  "onboardPermissionBody": "지도에 서로의 위치를 그리려면 기기 위치가 필요합니다. 다음 화면에서 시스템이 물어보고, 허용 여부는 직접 정하시면 됩니다.",
+  "onboardNext": "다음",
+  "onboardStart": "시작하기",
+  "onboardSkip": "건너뛰기",
+  "onboardStepOf": "{current} / {total}",
+  "primerContinue": "계속",
+  "primerLater": "나중에",
+  "primerWhenInUseTitle": "앱을 쓰는 동안 위치가 필요합니다",
+  "primerWhenInUseBody": "동행 모드에서 지도에 내 위치를 그리려면 필요합니다. 다음 화면에서 시스템이 물어봅니다.",
+  "primerAlwaysTitle": "장소 알림에는 백그라운드 위치가 필요합니다",
+  "primerAlwaysBody": "앱이 꺼져 있어도 저장한 장소에 도착·이탈했는지 확인하려면 필요합니다. 이 권한 없이는 장소 알림이 동작하지 않습니다.",
+  "primerPromise": "정밀 위치는 광고에 쓰지 않고, 공유는 언제든 멈출 수 있습니다.",
+  "@onboardStepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

@@ -16,6 +16,9 @@ dependencies:
   flutter_map: ^8.3.0
   latlong2: ^0.9.1
   supabase_flutter: ^2.12.2
+  # 온보딩·권한 안내를 봤는지 기억한다. supabase_flutter 가 이미 끌어오지만
+  # 직접 쓰므로 직접 선언한다.
+  shared_preferences: ^2.3.0
 
 dev_dependencies:
   flutter_test:
