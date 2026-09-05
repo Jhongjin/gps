@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:gyeote/src/app/gyeote_app.dart';
 import 'package:gyeote/src/core/backend/backend_config.dart';
+import 'package:gyeote/src/features/map/widgets/night_tiles.dart';
 
 void main() {
   const testConfig = BackendConfig(
@@ -22,6 +23,8 @@ void main() {
     addTearDown(tester.platformDispatcher.clearLocalesTestValue);
     await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
   }
+
+  _darkModeTests();
 
   testWidgets('renders the Gyeote shell in demo mode', (tester) async {
     await pumpApp(tester);
@@ -126,3 +129,54 @@ Finder _mapSheet() => find.ancestor(
       of: find.textContaining('명이 위치 공유 중'),
       matching: find.byType(Scrollable),
     );
+
+/// 다크 모드 회귀 방지.
+///
+/// 테마만 어두워지고 지도 타일이 밝게 남으면 화면 절반이 눈을 때린다.
+/// 실제로 그 상태로 한 번 배포될 뻔했다.
+void _darkModeTests() {
+  const testConfig = BackendConfig(
+    supabaseUrl: '',
+    supabaseAnonKey: '',
+    inviteBaseUrl: 'https://gyeote.app/invite',
+  );
+
+  Future<void> pumpDark(WidgetTester tester) async {
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.dark;
+    tester.platformDispatcher.localesTestValue = const [Locale('ko')];
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+    await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
+  }
+
+  testWidgets('dark mode darkens the map tiles too', (tester) async {
+    await pumpDark(tester);
+
+    expect(Theme.of(tester.element(find.byType(NightTiles))).brightness,
+        Brightness.dark);
+    // NightTiles 는 다크에서만 필터를 건다.
+    expect(
+      find.descendant(
+        of: find.byType(NightTiles),
+        matching: find.byType(ColorFiltered),
+      ),
+      findsWidgets,
+    );
+  });
+
+  testWidgets('light mode leaves the tiles untouched', (tester) async {
+    tester.platformDispatcher.platformBrightnessTestValue = Brightness.light;
+    tester.platformDispatcher.localesTestValue = const [Locale('ko')];
+    addTearDown(tester.platformDispatcher.clearPlatformBrightnessTestValue);
+    addTearDown(tester.platformDispatcher.clearLocalesTestValue);
+    await tester.pumpWidget(const GyeoteApp(backendConfig: testConfig));
+
+    expect(
+      find.descendant(
+        of: find.byType(NightTiles),
+        matching: find.byType(ColorFiltered),
+      ),
+      findsNothing,
+    );
+  });
+}
