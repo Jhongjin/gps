@@ -150,13 +150,25 @@ radius:  sheet 28 · card 16 · chip/button/avatar 999 · small surface 10
 - **OS 글자 크기 확대** — `MediaQuery.textScaler`를 존중할 것
 - 최장 로케일 (독일어 기준. §7 참조)
 
-체크리스트:
+**눈으로 보지 말고 테스트로 잡는다.** `test/text_resilience_test.dart` 가 360px
+기기에서 배율 1.0 / 1.3 / 2.0 으로 네 탭과 멤버 시트를 띄우고, Flutter 가 던지는
+오버플로 예외가 하나라도 있으면 실패한다. 실제로 이 테스트가 배율 1.0 에서도
+245px 넘치던 지도 출처 표기를 잡아냈다 — 눈으로는 못 봤던 것이다.
 
-- [ ] `maxLines: 1` + 고정 `fontSize` 조합을 쓴 곳에 긴 로케일 문자열이 들어가는가
-- [ ] `Expanded` 균등 분할 안의 라벨이 확대·번역 시 견디는가 (`_CompanionPanel` 주의)
+고정 크기를 쓸 때의 규칙:
+
+- 텍스트를 담는 컨테이너에 **고정 `height` 를 주지 않는다.** 꼭 필요하면
+  `MediaQuery.textScalerOf(context).scale(...)` 로 계산한다.
+  (`MemberAvatarRail`, 지도 `Marker` 상자가 이 방식이다.)
+- `maxLines: 1` 은 잘려도 되는 값(이름·라벨)에만. 설명 문장에는 쓰지 않는다.
+- `Expanded` 균등 분할 안의 버튼 라벨은 확대·번역 시 가장 먼저 깨진다.
+
+나머지 체크리스트:
+
 - [ ] 대비 4.5:1 이상 (본문). `muted` on `surfaceAlt` 조합은 반드시 측정
 - [ ] 포커스 상태가 키보드/스위치 접근에서 보이는가
-- [ ] `Semantics` 라벨 — 마커, 시트 행, 상태 배지에 의미 라벨
+- [ ] `Semantics` 라벨 — 마커, 시트 행, 상태 배지에 의미 라벨.
+      시각 요소를 라벨로 요약했으면 `excludeSemantics: true` 로 중복 낭독을 막는다
 - [ ] 모션 축소 설정 존중 (`MediaQuery.disableAnimations`)
 
 ---

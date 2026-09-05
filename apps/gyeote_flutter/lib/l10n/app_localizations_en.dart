@@ -1334,4 +1334,22 @@ class AppL10nEn extends AppL10n {
   String checkInDetailLine(String mode, String time) {
     return 'Notified with $mode location · $time';
   }
+
+  @override
+  String a11yMemberRow(String name, String status) {
+    return '$name, $status. Double tap for details';
+  }
+
+  @override
+  String a11yBatteryLevel(int percent) {
+    return 'Battery $percent percent';
+  }
+
+  @override
+  String get a11yStaleLocation => 'Location is out of date';
+
+  @override
+  String a11yAttentionBadge(int count) {
+    return '$count members need a check';
+  }
 }

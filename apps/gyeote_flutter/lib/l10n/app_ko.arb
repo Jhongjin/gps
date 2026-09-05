@@ -688,5 +688,33 @@
         "type": "String"
       }
     }
+  },
+  "a11yMemberRow": "{name}, {status}. 두 번 눌러 상세 보기",
+  "a11yBatteryLevel": "배터리 {percent}퍼센트",
+  "a11yStaleLocation": "위치가 오래됐습니다",
+  "a11yAttentionBadge": "확인이 필요한 멤버 {count}명",
+  "@a11yMemberRow": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@a11yBatteryLevel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@a11yAttentionBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

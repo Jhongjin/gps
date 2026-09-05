@@ -2472,6 +2472,30 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'{mode} 위치로 알림 · {time}'**
   String checkInDetailLine(String mode, String time);
+
+  /// No description provided for @a11yMemberRow.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name}, {status}. 두 번 눌러 상세 보기'**
+  String a11yMemberRow(String name, String status);
+
+  /// No description provided for @a11yBatteryLevel.
+  ///
+  /// In ko, this message translates to:
+  /// **'배터리 {percent}퍼센트'**
+  String a11yBatteryLevel(int percent);
+
+  /// No description provided for @a11yStaleLocation.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치가 오래됐습니다'**
+  String get a11yStaleLocation;
+
+  /// No description provided for @a11yAttentionBadge.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인이 필요한 멤버 {count}명'**
+  String a11yAttentionBadge(int count);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

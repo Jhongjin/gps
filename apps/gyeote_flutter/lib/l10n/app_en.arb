@@ -395,5 +395,9 @@
   "quietHoursChanged": "Quiet hours changed to {summary}.",
   "placeAlertDeleteConfirm": "Delete the {name} alert? Its members stop receiving arrival and departure alerts.",
   "circleSummary": "{count} members · 3 places · 1 companion session pending",
-  "checkInDetailLine": "Notified with {mode} location · {time}"
+  "checkInDetailLine": "Notified with {mode} location · {time}",
+  "a11yMemberRow": "{name}, {status}. Double tap for details",
+  "a11yBatteryLevel": "Battery {percent} percent",
+  "a11yStaleLocation": "Location is out of date",
+  "a11yAttentionBadge": "{count} members need a check"
 }

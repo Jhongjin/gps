@@ -1271,4 +1271,22 @@ class AppL10nKo extends AppL10n {
   String checkInDetailLine(String mode, String time) {
     return '$mode 위치로 알림 · $time';
   }
+
+  @override
+  String a11yMemberRow(String name, String status) {
+    return '$name, $status. 두 번 눌러 상세 보기';
+  }
+
+  @override
+  String a11yBatteryLevel(int percent) {
+    return '배터리 $percent퍼센트';
+  }
+
+  @override
+  String get a11yStaleLocation => '위치가 오래됐습니다';
+
+  @override
+  String a11yAttentionBadge(int count) {
+    return '확인이 필요한 멤버 $count명';
+  }
 }

@@ -759,7 +759,7 @@ class _MapScreenState extends State<MapScreen> {
       final nextLongStay = longStay ?? _placeNotifyLongStay;
       if (!(nextArrival || nextDeparture || nextLate || nextLongStay)) {
         _placeAlertStatusMessage = _l10n.placeAlertNeedsRule;
-      _placeAlertStatusIsError = true;
+        _placeAlertStatusIsError = true;
         return;
       }
       _placeNotifyArrival = nextArrival;
@@ -840,8 +840,7 @@ class _MapScreenState extends State<MapScreen> {
       await _syncPlaceAlertGeofences(circleId);
     } catch (_) {
       if (mounted) {
-        setState(() => _placeAlertStatusMessage =
-            _l10n.placeAlertSaveFailed);
+        setState(() => _placeAlertStatusMessage = _l10n.placeAlertSaveFailed);
       }
     } finally {
       if (mounted) {
@@ -994,8 +993,7 @@ class _MapScreenState extends State<MapScreen> {
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         color: palette.line,
-                        borderRadius:
-                            BorderRadius.circular(GyeoteRadius.pill),
+                        borderRadius: BorderRadius.circular(GyeoteRadius.pill),
                       ),
                     ),
                   ),
@@ -1284,6 +1282,11 @@ class _MapSurface extends StatelessWidget {
     final routeMembers = members
         .where((member) => !member.isStale && member.routeTail.length > 1)
         .toList();
+    // 선택된 멤버는 아바타 아래 이름 라벨이 붙는다. 마커 상자를 고정하면
+    // OS 글자 크기를 키웠을 때 그 라벨이 잘린다.
+    final markerExtent =
+        (52 + 12 + MediaQuery.textScalerOf(context).scale(11) * 1.45)
+            .clamp(88.0, 160.0);
     final initialCenter = members.isEmpty
         ? const LatLng(37.50768, 127.04382)
         : members
@@ -1357,8 +1360,8 @@ class _MapSurface extends StatelessWidget {
                   for (final member in members)
                     Marker(
                       point: member.point,
-                      width: 88,
-                      height: 88,
+                      width: markerExtent,
+                      height: markerExtent,
                       child: MemberMarker(
                         member: member,
                         isSelected: member.id == selectedId,
@@ -1367,16 +1370,18 @@ class _MapSurface extends StatelessWidget {
                     ),
                 ],
               ),
-              const SimpleAttributionWidget(
-                source: Text('OpenStreetMap contributors'),
-              ),
             ],
+          ),
+          // ODbL 상 출처 표기는 뺄 수 없다. 시트에 가리지 않는 자리에 둔다.
+          const Positioned(
+            left: 14,
+            bottom: 10,
+            child: MapAttribution(),
           ),
         ],
       ),
     );
   }
-
 
   double _precisionRadiusM(MapMemberTrack member) {
     if (member.isStale) {
@@ -1436,8 +1441,7 @@ class _MapOnboardingPanel extends StatelessWidget {
               borderRadius: BorderRadius.circular(8),
               color: palette.brandSoft,
             ),
-            child: Icon(Icons.group_add_outlined,
-                color: palette.brand),
+            child: Icon(Icons.group_add_outlined, color: palette.brand),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -1541,8 +1545,8 @@ class _PlaceDraftPanel extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   color: palette.brandSoft,
                 ),
-                child: Icon(Icons.add_location_alt_outlined,
-                    color: palette.brand),
+                child:
+                    Icon(Icons.add_location_alt_outlined, color: palette.brand),
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -1553,8 +1557,7 @@ class _PlaceDraftPanel extends StatelessWidget {
                         style: const TextStyle(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 2),
                     Text(l10n.placeDraftSubtitle,
-                        style:
-                            TextStyle(color: palette.muted, fontSize: 12)),
+                        style: TextStyle(color: palette.muted, fontSize: 12)),
                   ],
                 ),
               ),
@@ -1621,7 +1624,8 @@ class _PlaceDraftPanel extends StatelessWidget {
                       ),
                     ),
                   ),
-                  label: Text(member.isCurrentUser ? l10n.mapMeShort : member.name),
+                  label: Text(
+                      member.isCurrentUser ? l10n.mapMeShort : member.name),
                   selected: selectedTargetIds.contains(member.id),
                   onSelected: (selected) =>
                       onTargetChanged(member.id, selected),
@@ -1798,7 +1802,8 @@ class _CompanionPanel extends StatelessWidget {
         : expiresAt.difference(DateTime.now()).inMinutes.clamp(1, 60);
     final uploadText = [
       uploadStatus ?? l10n.uploadQueueWaiting,
-      if (uploadPendingCount != null) l10n.uploadPendingCount(uploadPendingCount!),
+      if (uploadPendingCount != null)
+        l10n.uploadPendingCount(uploadPendingCount!),
     ].join(' · ');
 
     return Container(
@@ -1815,8 +1820,8 @@ class _CompanionPanel extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(l10n.privacyCompanionMode,
-                    style:
-                        const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w900)),
               ),
               _StatusBadge(text: l10n.companionMinutesLeft(minutes)),
             ],
@@ -1861,7 +1866,8 @@ class _CompanionPanel extends StatelessWidget {
               children: [
                 Expanded(
                     child: OutlinedButton(
-                        onPressed: onStart15, child: Text(l10n.companionFifteenMinutes))),
+                        onPressed: onStart15,
+                        child: Text(l10n.companionFifteenMinutes))),
                 const SizedBox(width: 8),
                 Expanded(
                     child: OutlinedButton(
@@ -1903,8 +1909,7 @@ class _CompanionPanel extends StatelessWidget {
                           style: const TextStyle(fontWeight: FontWeight.w900)),
                       const SizedBox(height: 2),
                       Text(uploadText,
-                          style: TextStyle(
-                              color: palette.muted, fontSize: 12)),
+                          style: TextStyle(color: palette.muted, fontSize: 12)),
                     ],
                   ),
                 ),
@@ -1958,8 +1963,8 @@ class _SafetyStatusStrip extends StatelessWidget {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                  color: palette.brand, fontWeight: FontWeight.w800),
+              style:
+                  TextStyle(color: palette.brand, fontWeight: FontWeight.w800),
             ),
           ),
         ],
@@ -1981,48 +1986,54 @@ class _MemberTile extends StatelessWidget {
     final unit =
         RegionSettings.of(Localizations.localeOf(context)).distanceUnit;
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(GyeoteRadius.card),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            MemberAvatar(member: member, size: 34),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    member.status(l10n),
-                    style: TextStyle(
-                      fontWeight: FontWeight.w700,
-                      color: palette.ink,
+    return Semantics(
+      button: true,
+      label: l10n.a11yMemberRow(member.name, member.status(l10n)),
+      // 아래 시각 요소는 위 라벨이 이미 읽어 준다. 두 번 읽지 않게 묶는다.
+      excludeSemantics: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(GyeoteRadius.card),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MemberAvatar(member: member, size: 34),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      member.status(l10n),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                        color: palette.ink,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    member.meta(l10n, unit),
-                    style: TextStyle(color: palette.muted, fontSize: 12),
-                  ),
-                  const SizedBox(height: 6),
-                  _MemberPrecisionLine(member: member),
-                  if (member.safetyNote(l10n) != null) ...[
-                    const SizedBox(height: 8),
-                    _MemberSafetyNote(
-                      text: member.safetyNote(l10n)!,
-                      icon: member.isStale
-                          ? Icons.wifi_off_outlined
-                          : Icons.battery_alert_outlined,
+                    const SizedBox(height: 2),
+                    Text(
+                      member.meta(l10n, unit),
+                      style: TextStyle(color: palette.muted, fontSize: 12),
                     ),
+                    const SizedBox(height: 6),
+                    _MemberPrecisionLine(member: member),
+                    if (member.safetyNote(l10n) != null) ...[
+                      const SizedBox(height: 8),
+                      _MemberSafetyNote(
+                        text: member.safetyNote(l10n)!,
+                        icon: member.isStale
+                            ? Icons.wifi_off_outlined
+                            : Icons.battery_alert_outlined,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
-            ),
-            Icon(Icons.chevron_right, size: 20, color: palette.muted),
-          ],
+              Icon(Icons.chevron_right, size: 20, color: palette.muted),
+            ],
+          ),
         ),
       ),
     );
@@ -2175,8 +2186,6 @@ List<String> _geofenceIdsFromEvent(Map<Object?, Object?> event) {
   return [id];
 }
 
-
-
 class _StatusBadge extends StatelessWidget {
   const _StatusBadge({required this.text});
 
@@ -2194,13 +2203,10 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(text,
           style: TextStyle(
-              color: palette.brand,
-              fontWeight: FontWeight.w800,
-              fontSize: 12)),
+              color: palette.brand, fontWeight: FontWeight.w800, fontSize: 12)),
     );
   }
 }
-
 
 /// 시트 상단의 상태 줄.
 ///
@@ -2230,12 +2236,8 @@ class _SheetStatusLine extends StatelessWidget {
     final l10n = AppL10n.of(context);
     final palette = context.palette;
 
-    final (String? note, GyeoteTone tone) = switch ((
-      loadError,
-      isLoading,
-      hasNoCircle,
-      isDemo
-    )) {
+    final (String? note, GyeoteTone tone) =
+        switch ((loadError, isLoading, hasNoCircle, isDemo)) {
       (final String error, _, _, _) => (error, GyeoteTone.alert),
       (_, true, _, _) => (l10n.mapConnecting, GyeoteTone.muted),
       (_, _, true, _) => (l10n.mapNoCircle, GyeoteTone.muted),

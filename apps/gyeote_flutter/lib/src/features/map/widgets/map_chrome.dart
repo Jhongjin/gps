@@ -337,12 +337,20 @@ class MemberAvatarRail extends StatelessWidget {
   final ValueChanged<MapMemberTrack> onSelect;
   final VoidCallback onInvite;
 
+  /// 아바타 지름 + 상태 링.
+  static const _entrySize = 50.0;
+  static const _labelSize = 11.0;
+
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    // 높이를 고정하면 OS 글자 크기를 키웠을 때 라벨이 잘린다.
+    // 아바타는 그대로 두고 라벨이 필요한 만큼만 자라게 한다.
+    final labelHeight =
+        MediaQuery.textScalerOf(context).scale(_labelSize) * 1.45;
 
     return SizedBox(
-      height: 78,
+      height: _entrySize + 4 + labelHeight + 8,
       child: ListView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -416,7 +424,7 @@ class _RailEntry extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(GyeoteRadius.card),
         child: SizedBox(
-          width: 54,
+          width: 58,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -442,6 +450,36 @@ class _RailEntry extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 지도 출처 표기.
+///
+/// flutter_map 의 `SimpleAttributionWidget` 은 내부 Row 가 고정 폭이라 360px
+/// 기기에서 245px 넘쳐 나간다. 표기 자체는 ODbL 상 빼면 안 되므로, 좁은 화면과
+/// 큰 글자에서도 버티는 형태로 직접 그린다.
+class MapAttribution extends StatelessWidget {
+  const MapAttribution({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+
+    return IgnorePointer(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+        decoration: BoxDecoration(
+          color: palette.surface.withValues(alpha: 0.82),
+          borderRadius: BorderRadius.circular(GyeoteRadius.pill),
+        ),
+        child: Text(
+          '© OpenStreetMap',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 9, color: palette.muted),
         ),
       ),
     );

@@ -29,6 +29,8 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
+      # 오버플로는 배율을 키우거나 긴 로케일을 넣을 때만 드러난다.
+      # test/text_resilience_test.dart 가 그 조건을 재현한다.
       - name: Test
         run: flutter test
 
