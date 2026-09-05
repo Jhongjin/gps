@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../core/backend/backend_contract.dart';
@@ -19,6 +18,7 @@ class MapMemberTrack {
     this.isCurrentUser = false,
     this.isStale = false,
     this.hasLowBattery = false,
+    this.batteryPercent,
     this.accuracyM,
     this.safetyNote,
   });
@@ -28,13 +28,16 @@ class MapMemberTrack {
   final String status;
   final String meta;
   final LatLng point;
-  final Color tone;
+  final GyeoteTone tone;
   final DateTime recordedAt;
   final SharingMode sharingMode;
   final List<LatLng> routeTail;
   final bool isCurrentUser;
   final bool isStale;
   final bool hasLowBattery;
+
+  /// 마커 링의 채워진 정도로 그린다. 없으면 링을 꽉 채운다.
+  final int? batteryPercent;
   final double? accuracyM;
   final String? safetyNote;
 
@@ -44,13 +47,14 @@ class MapMemberTrack {
     String? status,
     String? meta,
     LatLng? point,
-    Color? tone,
+    GyeoteTone? tone,
     DateTime? recordedAt,
     SharingMode? sharingMode,
     List<LatLng>? routeTail,
     bool? isCurrentUser,
     bool? isStale,
     bool? hasLowBattery,
+    int? batteryPercent,
     double? accuracyM,
     String? safetyNote,
     bool clearSafetyNote = false,
@@ -68,6 +72,7 @@ class MapMemberTrack {
       isCurrentUser: isCurrentUser ?? this.isCurrentUser,
       isStale: isStale ?? this.isStale,
       hasLowBattery: hasLowBattery ?? this.hasLowBattery,
+      batteryPercent: batteryPercent ?? this.batteryPercent,
       accuracyM: accuracyM ?? this.accuracyM,
       safetyNote: clearSafetyNote ? null : safetyNote ?? this.safetyNote,
     );
@@ -99,9 +104,10 @@ List<MapMemberTrack> demoMapTracks() {
       status: '학교 근처 · 예상 8분',
       meta: '배터리 46% · 균형 공유 · 경로 4개 샘플',
       point: routeToHome.first,
-      tone: GyeoteColors.info,
+      tone: GyeoteTone.move,
       recordedAt: now.subtract(const Duration(minutes: 1)),
       sharingMode: SharingMode.balanced,
+      batteryPercent: 46,
       accuracyM: 85,
       routeTail: routeToHome,
     ),
@@ -111,9 +117,10 @@ List<MapMemberTrack> demoMapTracks() {
       status: '강남역 · 5분 전',
       meta: '배터리 67% · 균형 공유',
       point: const LatLng(37.49809, 127.02761),
-      tone: GyeoteColors.amber,
+      tone: GyeoteTone.warm,
       recordedAt: now.subtract(const Duration(minutes: 5)),
       sharingMode: SharingMode.balanced,
+      batteryPercent: 67,
       accuracyM: 110,
     ),
     MapMemberTrack(
@@ -122,9 +129,10 @@ List<MapMemberTrack> demoMapTracks() {
       status: '위치 업데이트 대기 중',
       meta: '마지막 위치 · 22분 전 · 배터리 12% · 동네만 공유',
       point: const LatLng(37.51119, 127.04374),
-      tone: GyeoteColors.amber,
+      tone: GyeoteTone.warm,
       recordedAt: now.subtract(const Duration(minutes: 22)),
       sharingMode: SharingMode.area,
+      batteryPercent: 12,
       accuracyM: 500,
       isStale: true,
       hasLowBattery: true,
@@ -136,9 +144,10 @@ List<MapMemberTrack> demoMapTracks() {
       status: '집 근처',
       meta: '내 기기 · 정확 공유',
       point: routeToHome.last,
-      tone: GyeoteColors.primary,
+      tone: GyeoteTone.brand,
       recordedAt: now,
       sharingMode: SharingMode.precise,
+      batteryPercent: 88,
       accuracyM: 35,
       isCurrentUser: true,
     ),
@@ -175,15 +184,12 @@ MapMemberTrack _trackFromSnapshot(MemberLocationSnapshot snapshot, int index) {
     status: status,
     meta: meta.isEmpty ? '방금 업데이트' : meta,
     point: LatLng(coordinate.latitude, coordinate.longitude),
-    tone: isStale
-        ? GyeoteColors.amber
-        : hasLowBattery
-            ? GyeoteColors.danger
-            : _toneForIndex(index),
+    tone: _toneForIndex(index),
     recordedAt: snapshot.recordedAt,
     sharingMode: snapshot.sharingMode,
     isStale: isStale,
     hasLowBattery: hasLowBattery,
+    batteryPercent: snapshot.batteryPercent,
     accuracyM: snapshot.accuracyM,
     safetyNote: isVeryStale
         ? '현재 위치가 아닐 수 있어요. 연결이 돌아오면 다시 업데이트돼요.'
@@ -242,12 +248,12 @@ String _relativeTime(DateTime recordedAt) {
   return '${diff.inDays}일 전';
 }
 
-Color _toneForIndex(int index) {
+GyeoteTone _toneForIndex(int index) {
   const tones = [
-    GyeoteColors.primary,
-    GyeoteColors.info,
-    GyeoteColors.amber,
-    GyeoteColors.danger,
+    GyeoteTone.brand,
+    GyeoteTone.move,
+    GyeoteTone.warm,
+    GyeoteTone.alert,
   ];
   return tones[index % tones.length];
 }

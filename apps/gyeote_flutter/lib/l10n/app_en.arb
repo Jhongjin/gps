@@ -1,0 +1,59 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "Gyeote",
+
+  "navMap": "Map",
+  "navCircle": "Circle",
+  "navHistory": "History",
+  "navPrivacy": "Safety",
+
+  "signOut": "Sign out",
+
+  "mapDefaultCircleName": "Our circle",
+  "mapLayersTooltip": "Map style",
+  "mapInvite": "Invite",
+  "mapMeShort": "Me",
+  "mapSharingCount": "{count} sharing location",
+  "mapAttentionCount": "{count} need a check",
+  "mapConnecting": "Connecting to your circle",
+  "mapNoCircle": "No circle connected yet",
+  "mapDemoNotice": "Showing sample locations until your circle reports in",
+
+  "sosLabel": "SOS",
+  "sosButtonSemantics": "Emergency share. Press and hold to start",
+  "sosArming": "Emergency share ready",
+  "sosSecondsRemaining": "sec until sent",
+  "sosAudience": "Sending your exact location and battery\nto {audience}",
+  "sosNoAds": "No ads appear on this screen.",
+  "sosCancel": "Cancel",
+  "sosSendNow": "Send now",
+
+  "memberBattery": "Battery",
+  "memberAccuracy": "Accuracy",
+  "memberUpdated": "Updated",
+  "memberCall": "Call",
+  "memberNudge": "Nudge",
+  "memberDirections": "Directions",
+  "memberPrecisionTitle": "What {name} shares with you",
+  "memberPrecisionConsent": "Changing this needs {name}'s consent. Sending a request notifies their device.",
+  "viewerLogTitle": "Who viewed this location",
+  "viewerLogSubtitle": "The full view log lives in the Safety tab.",
+  "viewerLogOpen": "View log",
+
+  "precisionPrecise": "Exact",
+  "precisionBalanced": "Balanced",
+  "precisionArea": "Neighborhood",
+  "precisionHidden": "Hidden",
+
+  "relativeJustNow": "just now",
+  "relativeMinutes": "{minutes} min",
+  "relativeHours": "{hours} hr",
+  "relativeDays": "{days} d",
+  "valueUnknown": "—",
+
+  "adSlotSemantics": "Sponsored area",
+  "adSlotTitle": "Sponsored",
+  "adSlotBody": "Ads are kept separate from your location data",
+  "adSlotBadge": "Test"
+}

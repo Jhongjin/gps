@@ -30,13 +30,13 @@ class CircleScreen extends StatefulWidget {
 class _CircleScreenState extends State<CircleScreen> {
   static const _demoMembers = [
     _CircleMember(
-        name: '미라', role: '보호자', status: '정확 공유', tone: GyeoteColors.primary),
+        name: '미라', role: '보호자', status: '정확 공유', tone: GyeoteTone.brand),
     _CircleMember(
-        name: '준', role: '자녀', status: '동행 대기', tone: GyeoteColors.info),
+        name: '준', role: '자녀', status: '동행 대기', tone: GyeoteTone.move),
     _CircleMember(
-        name: '하나', role: '친구', status: '균형 공유', tone: GyeoteColors.amber),
+        name: '하나', role: '친구', status: '균형 공유', tone: GyeoteTone.warm),
     _CircleMember(
-        name: '할아버지', role: '케어', status: '동네만', tone: GyeoteColors.danger),
+        name: '할아버지', role: '케어', status: '동네만', tone: GyeoteTone.alert),
   ];
 
   List<CircleSummary> _circles = const [];
@@ -479,6 +479,8 @@ class _CircleScreenState extends State<CircleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     final activeCircle = _circles.isEmpty ? null : _circles.first;
     final memberCount = activeCircle == null || activeCircle.memberCount == 0
         ? 1
@@ -490,8 +492,8 @@ class _CircleScreenState extends State<CircleScreen> {
             ? '첫 서클을 만들고 가까운 사람을 초대하세요'
             : '$memberCount명 · 장소 3개 · 동행 세션 1개 대기';
     final statusColor = (_statusMessage?.contains('못했습니다') ?? false)
-        ? GyeoteColors.danger
-        : GyeoteColors.primary;
+        ? palette.alert
+        : palette.brand;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -507,7 +509,7 @@ class _CircleScreenState extends State<CircleScreen> {
                           fontSize: 28, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 4),
                   Text(subtitle,
-                      style: const TextStyle(color: GyeoteColors.muted)),
+                      style: TextStyle(color: palette.muted)),
                   if (_statusMessage != null) ...[
                     const SizedBox(height: 4),
                     Text(_statusMessage!,
@@ -590,21 +592,23 @@ class _EmptyMembersState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.primarySoft,
+        color: palette.brandSoft,
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('아직 멤버가 없습니다', style: TextStyle(fontWeight: FontWeight.w900)),
-          SizedBox(height: 4),
+          const Text('아직 멤버가 없습니다', style: TextStyle(fontWeight: FontWeight.w900)),
+          const SizedBox(height: 4),
           Text('초대 링크를 만들면 이곳에 수락한 멤버가 표시됩니다.',
-              style: TextStyle(color: GyeoteColors.muted)),
+              style: TextStyle(color: palette.muted)),
         ],
       ),
     );
@@ -677,7 +681,7 @@ class _CircleMember {
   final String name;
   final String role;
   final String status;
-  final Color tone;
+  final GyeoteTone tone;
 }
 
 class _InviteCard extends StatelessWidget {
@@ -693,6 +697,8 @@ class _InviteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     final invite = inviteResult?.invite;
     final rawInviteUrl = inviteResult?.rawInviteUrl.toString();
 
@@ -712,7 +718,7 @@ class _InviteCard extends StatelessWidget {
             rawInviteUrl ?? '1회 사용 · 수락 전 공유 범위 확인 · 원문 토큰 저장 안 함',
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: GyeoteColors.muted),
+            style: TextStyle(color: palette.muted),
           ),
           const SizedBox(height: 12),
           const Wrap(
@@ -765,16 +771,20 @@ class _MemberRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: member.tone.withValues(alpha: 0.14),
+            backgroundColor: member.tone.resolveSoft(palette),
             child: Text(
-              member.name.substring(0, 1),
-              style: TextStyle(color: member.tone, fontWeight: FontWeight.w900),
+              member.name.characters.first,
+              style: TextStyle(
+                  color: member.tone.resolve(palette),
+                  fontWeight: FontWeight.w700),
             ),
           ),
           const SizedBox(width: 12),
@@ -786,8 +796,8 @@ class _MemberRow extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 2),
                 Text(member.role,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -803,6 +813,8 @@ class _CompanionRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return _SectionCard(
       title: '동행 요청',
       trailing: const _StatusChip(text: '상호 동의'),
@@ -812,8 +824,8 @@ class _CompanionRequestCard extends StatelessWidget {
           const Text('준 · 학교에서 집까지',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
-          const Text('15분 동안 균형 위치와 경로 꼬리만 공유됩니다.',
-              style: TextStyle(color: GyeoteColors.muted)),
+          Text('15분 동안 균형 위치와 경로 꼬리만 공유됩니다.',
+              style: TextStyle(color: palette.muted)),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -951,13 +963,15 @@ class _CheckInRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.verified_user_outlined,
-              size: 20, color: GyeoteColors.primary),
+          Icon(Icons.verified_user_outlined,
+              size: 20, color: palette.brand),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -967,8 +981,8 @@ class _CheckInRow extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 2),
                 Text(body,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -1132,7 +1146,9 @@ class _InlineNoticeState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isError ? GyeoteColors.danger : GyeoteColors.primary;
+    final palette = context.palette;
+
+    final color = isError ? palette.alert : palette.brand;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -1155,8 +1171,8 @@ class _InlineNoticeState extends StatelessWidget {
                         TextStyle(color: color, fontWeight: FontWeight.w900)),
                 const SizedBox(height: 2),
                 Text(body,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -1187,7 +1203,9 @@ class _AlertRule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = enabled ? GyeoteColors.amber : GyeoteColors.muted;
+    final palette = context.palette;
+
+    final iconColor = enabled ? palette.warm : palette.muted;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -1244,7 +1262,7 @@ class _AlertRule extends StatelessWidget {
                           child: IconButton(
                             visualDensity: VisualDensity.compact,
                             icon: const Icon(Icons.delete_outline),
-                            color: GyeoteColors.danger,
+                            color: palette.alert,
                             onPressed: onDelete,
                           ),
                         ),
@@ -1254,8 +1272,8 @@ class _AlertRule extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(body,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -1272,6 +1290,8 @@ class _InlineLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Row(
       children: [
         const SizedBox(
@@ -1281,7 +1301,7 @@ class _InlineLoadingState extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(text, style: const TextStyle(color: GyeoteColors.muted)),
+          child: Text(text, style: TextStyle(color: palette.muted)),
         ),
       ],
     );
@@ -1301,18 +1321,20 @@ class _InlineEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surfaceAlt,
+        color: palette.surfaceAlt,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: GyeoteColors.primary, size: 22),
+          Icon(icon, color: palette.brand, size: 22),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -1322,8 +1344,8 @@ class _InlineEmptyState extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 3),
                 Text(body,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -1454,12 +1476,14 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surface,
+        color: palette.surface,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1487,17 +1511,19 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(6),
-        color: GyeoteColors.surfaceAlt,
+        color: palette.surfaceAlt,
       ),
       child: Text(
         text,
-        style: const TextStyle(
-            color: GyeoteColors.primary,
+        style: TextStyle(
+            color: palette.brand,
             fontSize: 12,
             fontWeight: FontWeight.w800),
       ),

@@ -243,9 +243,11 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     final statusColor = (_statusMessage?.contains('못했습니다') ?? false)
-        ? GyeoteColors.danger
-        : GyeoteColors.primary;
+        ? palette.alert
+        : palette.brand;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -260,8 +262,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                       style:
                           TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
                   const SizedBox(height: 4),
-                  const Text('공유, 조회 기록, 광고, 삭제 요청',
-                      style: TextStyle(color: GyeoteColors.muted)),
+                  Text('공유, 조회 기록, 광고, 삭제 요청',
+                      style: TextStyle(color: palette.muted)),
                   if (_statusMessage != null) ...[
                     const SizedBox(height: 4),
                     Text(_statusMessage!,
@@ -275,8 +277,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               children: [
                 FilledButton.tonal(
                   style: FilledButton.styleFrom(
-                    backgroundColor: GyeoteColors.dangerSoft,
-                    foregroundColor: GyeoteColors.danger,
+                    backgroundColor: palette.alertSoft,
+                    foregroundColor: palette.alert,
                   ),
                   onPressed: _isPausing
                       ? null
@@ -507,22 +509,24 @@ class _PermissionNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surfaceAlt,
+        color: palette.surfaceAlt,
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, size: 18, color: GyeoteColors.primary),
+          Icon(Icons.info_outline, size: 18, color: palette.brand),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(color: GyeoteColors.muted, fontSize: 12),
+              style: TextStyle(color: palette.muted, fontSize: 12),
             ),
           ),
         ],
@@ -567,6 +571,8 @@ class _AdsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return _PrivacyCard(
       title: '광고와 데이터',
       trailing: const _Badge(text: '정밀 위치 광고 차단'),
@@ -575,8 +581,8 @@ class _AdsCard extends StatelessWidget {
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('개인화 광고'),
-            subtitle: const Text('동의 전에는 비개인화 광고만 사용',
-                style: TextStyle(color: GyeoteColors.muted)),
+            subtitle: Text('동의 전에는 비개인화 광고만 사용',
+                style: TextStyle(color: palette.muted)),
             value: personalizedAdsEnabled,
             onChanged: isSaving
                 ? null
@@ -587,8 +593,8 @@ class _AdsCard extends StatelessWidget {
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
             title: const Text('민감 카테고리 차단'),
-            subtitle: const Text('가족, 위치, 응급 상황 문맥 보호',
-                style: TextStyle(color: GyeoteColors.muted)),
+            subtitle: Text('가족, 위치, 응급 상황 문맥 보호',
+                style: TextStyle(color: palette.muted)),
             value: sensitiveCategoriesBlocked,
             onChanged: isSaving
                 ? null
@@ -713,6 +719,8 @@ class _ModeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -725,8 +733,8 @@ class _ModeRow extends StatelessWidget {
                     style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 2),
                 Text(detail,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -750,12 +758,14 @@ class _PrivacyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surface,
+        color: palette.surface,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -783,17 +793,19 @@ class _Badge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(6),
-        color: GyeoteColors.surfaceAlt,
+        color: palette.surfaceAlt,
       ),
       child: Text(
         text,
-        style: const TextStyle(
-            color: GyeoteColors.primary,
+        style: TextStyle(
+            color: palette.brand,
             fontSize: 12,
             fontWeight: FontWeight.w800),
       ),

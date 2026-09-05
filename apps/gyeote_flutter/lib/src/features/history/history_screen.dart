@@ -34,31 +34,31 @@ class _HistoryScreenState extends State<HistoryScreen> {
         type: '장소',
         title: '준 학교 도착',
         detail: '예상보다 4분 빠름',
-        color: GyeoteColors.primary),
+        tone: GyeoteTone.brand),
     _HistoryEvent(
         time: '12:42',
         type: '조회',
         title: '미라가 내 위치 확인',
         detail: '가족 서클 · 균형 위치',
-        color: GyeoteColors.info),
+        tone: GyeoteTone.move),
     _HistoryEvent(
         time: '17:18',
         type: '동행',
         title: '할아버지 산책 시작',
         detail: '15분 동행 세션 · 상호 동의',
-        color: GyeoteColors.amber),
+        tone: GyeoteTone.warm),
     _HistoryEvent(
         time: '18:02',
         type: '확인',
         title: '준 무사 도착',
         detail: '동행 공유 종료 · 균형 위치로 알림',
-        color: GyeoteColors.primary),
+        tone: GyeoteTone.brand),
     _HistoryEvent(
         time: '18:03',
         type: '데이터',
         title: '위치 기록 삭제 요청',
         detail: '처리 대기 중',
-        color: GyeoteColors.danger),
+        tone: GyeoteTone.alert),
   ];
 
   List<CheckInEvent> _checkIns = const [];
@@ -132,6 +132,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     final events = _hasBackend
         ? _checkIns.map(_historyEventFromCheckIn).toList(growable: false)
         : _demoEvents;
@@ -147,12 +149,12 @@ class _HistoryScreenState extends State<HistoryScreen> {
         const Text('오늘 활동',
             style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
         const SizedBox(height: 4),
-        const Text('장소 알림, 조회 로그, 동행 세션, 안전 확인',
-            style: TextStyle(color: GyeoteColors.muted)),
+        Text('장소 알림, 조회 로그, 동행 세션, 안전 확인',
+            style: TextStyle(color: palette.muted)),
         if (_message != null) ...[
           const SizedBox(height: 4),
           Text(_message!,
-              style: const TextStyle(color: GyeoteColors.danger, fontSize: 12)),
+              style: TextStyle(color: palette.alert, fontSize: 12)),
         ],
         const SizedBox(height: 16),
         _SummaryBand(checkInCount: checkInCount),
@@ -200,14 +202,14 @@ class _HistoryEvent {
     required this.type,
     required this.title,
     required this.detail,
-    required this.color,
+    required this.tone,
   });
 
   final String time;
   final String type;
   final String title;
   final String detail;
-  final Color color;
+  final GyeoteTone tone;
 }
 
 class _SummaryBand extends StatelessWidget {
@@ -217,12 +219,14 @@ class _SummaryBand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surface,
+        color: palette.surface,
       ),
       child: Row(
         children: [
@@ -248,6 +252,8 @@ class _SummaryCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Expanded(
       child: Column(
         children: [
@@ -256,7 +262,7 @@ class _SummaryCell extends StatelessWidget {
                   const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
           const SizedBox(height: 2),
           Text(label,
-              style: const TextStyle(color: GyeoteColors.muted, fontSize: 12)),
+              style: TextStyle(color: palette.muted, fontSize: 12)),
         ],
       ),
     );
@@ -274,12 +280,14 @@ class _SafetySummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.primarySoft,
+        color: palette.brandSoft,
       ),
       child: Row(
         children: [
@@ -288,10 +296,9 @@ class _SafetySummaryCard extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
-              color: GyeoteColors.surface,
+              color: palette.surface,
             ),
-            child: const Icon(Icons.verified_user_outlined,
-                color: GyeoteColors.primary),
+            child: Icon(Icons.verified_user_outlined, color: palette.brand),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -308,7 +315,7 @@ class _SafetySummaryCard extends StatelessWidget {
                       ? '최근 도착 확인이 아직 없습니다.'
                       : latestCheckIn!.title,
                   style:
-                      const TextStyle(color: GyeoteColors.muted, fontSize: 12),
+                      TextStyle(color: palette.muted, fontSize: 12),
                 ),
               ],
             ),
@@ -357,17 +364,19 @@ class _HistoryPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(6),
-        color: GyeoteColors.surface,
+        color: palette.surface,
       ),
       child: Text(
         text,
-        style: const TextStyle(
-            color: GyeoteColors.primary,
+        style: TextStyle(
+            color: palette.brand,
             fontSize: 12,
             fontWeight: FontWeight.w800),
       ),
@@ -380,7 +389,9 @@ class _Divider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 1, height: 34, color: GyeoteColors.border);
+    final palette = context.palette;
+
+    return Container(width: 1, height: 34, color: palette.line);
   }
 }
 
@@ -391,6 +402,8 @@ class _HistoryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -399,16 +412,16 @@ class _HistoryRow extends StatelessWidget {
           SizedBox(
             width: 52,
             child: Text(event.time,
-                style: const TextStyle(
-                    color: GyeoteColors.primary, fontWeight: FontWeight.w900)),
+                style: TextStyle(
+                    color: palette.brand, fontWeight: FontWeight.w900)),
           ),
           Expanded(
             child: Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                border: Border.all(color: GyeoteColors.border),
+                border: Border.all(color: palette.line),
                 borderRadius: BorderRadius.circular(8),
-                color: GyeoteColors.surface,
+                color: palette.surface,
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -418,12 +431,12 @@ class _HistoryRow extends StatelessWidget {
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(6),
-                      color: event.color.withValues(alpha: 0.12),
+                      color: event.tone.resolve(palette).withValues(alpha: 0.12),
                     ),
                     child: Text(
                       event.type,
                       style: TextStyle(
-                          color: event.color,
+                          color: event.tone.resolve(palette),
                           fontWeight: FontWeight.w900,
                           fontSize: 12),
                     ),
@@ -438,7 +451,7 @@ class _HistoryRow extends StatelessWidget {
                                 const TextStyle(fontWeight: FontWeight.w900)),
                         const SizedBox(height: 4),
                         Text(event.detail,
-                            style: const TextStyle(color: GyeoteColors.muted)),
+                            style: TextStyle(color: palette.muted)),
                       ],
                     ),
                   ),
@@ -465,17 +478,19 @@ class _HistoryEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surface,
+        color: palette.surface,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: GyeoteColors.primary),
+          Icon(icon, color: palette.brand),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
@@ -484,7 +499,7 @@ class _HistoryEmptyState extends StatelessWidget {
                 Text(title,
                     style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 3),
-                Text(body, style: const TextStyle(color: GyeoteColors.muted)),
+                Text(body, style: TextStyle(color: palette.muted)),
               ],
             ),
           ),
@@ -500,7 +515,7 @@ _HistoryEvent _historyEventFromCheckIn(CheckInEvent event) {
     type: '확인',
     title: '${event.displayName} ${_checkInStatusLabel(event.status)}',
     detail: '동행 공유 종료 · ${_sharingModeLabel(event.sharingMode)} 위치로 알림',
-    color: GyeoteColors.primary,
+    tone: GyeoteTone.brand,
   );
 }
 

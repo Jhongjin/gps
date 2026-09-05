@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../l10n/app_localizations.dart';
+
 import '../core/backend/backend_config.dart';
 import '../core/backend/supabase_backend.dart';
 import '../core/location/location_bridge.dart';
@@ -29,6 +31,21 @@ class _GyeoteAppState extends State<GyeoteApp> {
 
   @override
   Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      onGenerateTitle: (context) => AppL10n.of(context).appTitle,
+      localizationsDelegates: AppL10n.localizationsDelegates,
+      supportedLocales: AppL10n.supportedLocales,
+      theme: buildGyeoteTheme(),
+      darkTheme: buildGyeoteDarkTheme(),
+      themeMode: ThemeMode.system,
+      // 셸은 MaterialApp 아래에서 만들어야 AppL10n.of(context) 가 닿는다.
+      home: Builder(builder: _buildShell),
+    );
+  }
+
+  Widget _buildShell(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final backend = widget.backendConfig.hasSupabase
         ? SupabaseBackend(
             client: Supabase.instance.client,
@@ -73,36 +90,31 @@ class _GyeoteAppState extends State<GyeoteApp> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tabIndex,
         onDestinationSelected: (index) => setState(() => _tabIndex = index),
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.map_outlined),
-            selectedIcon: Icon(Icons.map),
-            label: '지도',
+            icon: const Icon(Icons.map_outlined),
+            selectedIcon: const Icon(Icons.map),
+            label: l10n.navMap,
           ),
           NavigationDestination(
-            icon: Icon(Icons.group_outlined),
-            selectedIcon: Icon(Icons.group),
-            label: '서클',
+            icon: const Icon(Icons.group_outlined),
+            selectedIcon: const Icon(Icons.group),
+            label: l10n.navCircle,
           ),
           NavigationDestination(
-            icon: Icon(Icons.schedule_outlined),
-            selectedIcon: Icon(Icons.schedule),
-            label: '기록',
+            icon: const Icon(Icons.schedule_outlined),
+            selectedIcon: const Icon(Icons.schedule),
+            label: l10n.navHistory,
           ),
           NavigationDestination(
-            icon: Icon(Icons.shield_outlined),
-            selectedIcon: Icon(Icons.shield),
-            label: '안심',
+            icon: const Icon(Icons.shield_outlined),
+            selectedIcon: const Icon(Icons.shield),
+            label: l10n.navPrivacy,
           ),
         ],
       ),
     );
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: '곁에',
-      theme: buildGyeoteTheme(),
-      home: widget.backendConfig.hasSupabase ? AuthGate(child: shell) : shell,
-    );
+    return widget.backendConfig.hasSupabase ? AuthGate(child: shell) : shell;
   }
 }

@@ -1,6 +1,71 @@
 # Current Handoff
 
-Date: 2026-06-03
+Date: 2026-09-05
+
+## Design System Rewrite — "귀갓길" (2026-09-05)
+
+The visual system and the map shell were rebuilt. Rules now live in
+`.claude/skills/gyeote-design/SKILL.md`; `DESIGN.md` carries the intent and
+defers to the skill where they disagree.
+
+What changed:
+
+- `GyeotePalette` is a `ThemeExtension` with complete light and dark values.
+  `GyeoteColors` (the old light-only static class) is gone — all 179 call sites
+  were migrated to `context.palette`, and `themeMode` is now `ThemeMode.system`.
+- Models no longer hold `Color`. `MapMemberTrack.tone` and `_HistoryEvent.tone`
+  carry `GyeoteTone`, resolved at paint time. Holding a `Color` in a model was
+  what pinned those screens to one theme.
+- Retired rules: the 8px radius cap, hairline borders everywhere, w800/w900
+  weights, the sage canvas, and deep-green markers (which sank into OSM's green
+  landcover — a legibility defect, not a taste one).
+- The map is a full-bleed `Stack` with a `DraggableScrollableSheet` instead of a
+  360px card inside a `ListView`. Place-alert and companion panels moved into the
+  sheet, so no functionality was dropped. Five overlay chips were removed from
+  the map surface; their information moved to the sheet status line.
+- Markers encode state in one ring: fill = battery, style = sharing precision
+  (dashed for area sharing), color = state. `MapMemberTrack.batteryPercent` was
+  added because the snapshot already carried it and the model was discarding it.
+- Member detail sheet added — marker, avatar rail, and list rows all open it.
+  Precision is shown as a request, not a switch, and the viewer log sits at the
+  bottom of every member sheet.
+- SOS is press-and-hold (600ms) plus a cancellable 3s countdown. It could
+  previously fire on a single tap.
+
+## i18n Foundation (2026-09-05)
+
+- `flutter_localizations` + `intl` wired; ARB at `lib/l10n/app_ko.arb` and
+  `app_en.arb`, generated into `lib/l10n/`. The shell is built under a `Builder`
+  so `AppL10n.of(context)` reaches the navigation labels.
+- `RegionSettings` keeps emergency numbers, distance units, and clock format as
+  **region values, not translated strings**. Translating `112` into German
+  produces a number that is wrong in Germany. It keys off country first, then
+  language.
+- Migrated so far: app shell, `SafeAdSlot`, `SosButton`/countdown, member sheet.
+- `tools/check_hardcoded_strings.py` freezes the remaining 488 hardcoded Korean
+  literals as a baseline and fails CI when the count grows. Wired into
+  `.github/workflows/validate.yml`.
+
+Remaining i18n work is the bulk extraction of `map_screen.dart` (145),
+`circle_screen.dart` (137), `privacy_screen.dart` (100), `history_screen.dart`
+(51), and `map_models.dart` (35).
+
+## Verified (2026-09-05)
+
+Flutter SDK found at `D:/Codex/toolchains/flutter`.
+
+- `flutter analyze` — No issues found
+- `flutter test` — 15/15 passing (was 4; added locale, map shell, member sheet,
+  SOS-safety, and region-settings tests)
+- `flutter build web --release` — succeeds, and the shell was checked in a browser
+
+Known preview-only artifact: a couple of Hangul glyphs render as tofu in the web
+build. CanvasKit fetches Noto Sans KR *slices* from `fonts.gstatic.com` at
+runtime and some slices arrive incomplete. Android/iOS use the system Korean
+font and are unaffected. Related: no font files are bundled at all, so the
+theme no longer names `Geist`/`Pretendard` — bundling them (plus Noto subsets
+for ja/hi/ar) is still open.
+
 
 ## Latest Preview
 

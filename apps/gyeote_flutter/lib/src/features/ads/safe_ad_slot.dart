@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../theme/gyeote_theme.dart';
 
+/// 광고 슬롯.
+///
+/// 안전 액션보다 조용해야 한다. 브랜드색을 쓰지 않고 중성 면(`surfaceAlt`)과
+/// `muted` 텍스트로만 그린다.
+///
+/// SOS, 권한, 동의, 프라이버시 저장, 지도, 온보딩에는 **절대** 배치하지 않는다.
+/// 규칙은 `.claude/skills/gyeote-design/SKILL.md` §5.
 class SafeAdSlot extends StatelessWidget {
   const SafeAdSlot({
     super.key,
@@ -12,16 +20,18 @@ class SafeAdSlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppL10n.of(context);
+
     return Semantics(
-      label: '스폰서 영역',
+      label: l10n.adSlotSemantics,
       child: Container(
         key: ValueKey('safe_ad_slot_$placement'),
         width: double.infinity,
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          border: Border.all(color: GyeoteColors.border),
-          borderRadius: BorderRadius.circular(8),
-          color: GyeoteColors.surfaceAlt,
+          borderRadius: BorderRadius.circular(GyeoteRadius.card),
+          color: palette.surfaceAlt,
         ),
         child: Row(
           children: [
@@ -29,24 +39,32 @@ class SafeAdSlot extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: GyeoteColors.surface,
+                borderRadius: BorderRadius.circular(GyeoteRadius.small),
+                color: palette.surface,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.campaign_outlined,
-                color: GyeoteColors.primary,
+                size: 20,
+                // 광고에는 브랜드색을 쓰지 않는다.
+                color: palette.muted,
               ),
             ),
             const SizedBox(width: 10),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('스폰서', style: TextStyle(fontWeight: FontWeight.w900)),
-                  SizedBox(height: 2),
                   Text(
-                    '위치 데이터와 분리된 광고 영역',
-                    style: TextStyle(color: GyeoteColors.muted, fontSize: 12),
+                    l10n.adSlotTitle,
+                    style: TextStyle(
+                      color: palette.inkMuted,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.adSlotBody,
+                    style: TextStyle(color: palette.muted, fontSize: 12),
                   ),
                 ],
               ),
@@ -64,19 +82,21 @@ class _AdPlacementBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppL10n.of(context);
+
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
-        borderRadius: BorderRadius.circular(6),
-        color: GyeoteColors.surface,
+        borderRadius: BorderRadius.circular(GyeoteRadius.pill),
+        color: palette.surface,
       ),
-      child: const Text(
-        '테스트',
+      child: Text(
+        l10n.adSlotBadge,
         style: TextStyle(
-          color: GyeoteColors.muted,
+          color: palette.muted,
           fontSize: 11,
-          fontWeight: FontWeight.w800,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );

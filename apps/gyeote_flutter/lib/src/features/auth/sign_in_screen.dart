@@ -90,6 +90,8 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     final actionLabel = _isSignUp ? '가입하고 시작' : '로그인';
 
     return Scaffold(
@@ -111,9 +113,9 @@ class _SignInScreenState extends State<SignInScreen> {
                       child: Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          border: Border.all(color: GyeoteColors.border),
+                          border: Border.all(color: palette.line),
                           borderRadius: BorderRadius.circular(8),
-                          color: GyeoteColors.surface,
+                          color: palette.surface,
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -224,24 +226,26 @@ class _BrandHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Column(
+    final palette = context.palette;
+
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('곁에', style: TextStyle(fontSize: 42, fontWeight: FontWeight.w900)),
-        SizedBox(height: 8),
-        Text(
+        const Text('곁에', style: TextStyle(fontSize: 42, fontWeight: FontWeight.w900)),
+        const SizedBox(height: 8),
+        const Text(
           '가까운 사람끼리만, 필요한 만큼 위치를 나눠요.',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
         ),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         Text(
           '초대받은 서클과 상호 동의한 동행 모드에서만 위치가 공유됩니다.',
-          style: TextStyle(color: GyeoteColors.muted),
+          style: TextStyle(color: palette.muted),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           '정밀 위치는 광고에 사용하지 않으며, 언제든 공유를 멈출 수 있어요.',
-          style: TextStyle(color: GyeoteColors.muted),
+          style: TextStyle(color: palette.muted),
         ),
       ],
     );
@@ -259,8 +263,10 @@ class _InlineMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isError ? GyeoteColors.danger : GyeoteColors.primary;
-    final background = isError ? GyeoteColors.dangerSoft : GyeoteColors.primarySoft;
+    final palette = context.palette;
+
+    final color = isError ? palette.alert : palette.brand;
+    final background = isError ? palette.alertSoft : palette.brandSoft;
 
     return Container(
       padding: const EdgeInsets.all(10),
@@ -304,19 +310,21 @@ class _TrustPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surface,
+        color: palette.surface,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: GyeoteColors.primary),
+          Icon(icon, size: 16, color: palette.brand),
           const SizedBox(width: 6),
-          Text(label, style: const TextStyle(color: GyeoteColors.primary, fontWeight: FontWeight.w800)),
+          Text(label, style: TextStyle(color: palette.brand, fontWeight: FontWeight.w800)),
         ],
       ),
     );

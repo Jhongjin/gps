@@ -52,6 +52,11 @@ jobs:
         run: |
           ! grep -RInE '🚨|🔔|🛡️|📍|🗺️|👥|🕒|➕' prototype src App.tsx app.json DESIGN.md docs apps supabase
 
+      # 사용자에게 보이는 문자열은 lib/l10n/*.arb 로 간다. 마이그레이션이 끝나기
+      # 전까지는 베이스라인을 허용하되, 늘어나면 실패시켜 빚을 고정한다.
+      - name: Block new hardcoded UI strings
+        run: python tools/check_hardcoded_strings.py
+
   supabase:
     name: Supabase migrations
     runs-on: ubuntu-latest
