@@ -14,6 +14,7 @@ import '../../core/location/place_alert_geofence_sync.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../core/i18n/region_settings.dart';
 import '../../theme/gyeote_theme.dart';
+import 'widgets/animated_tracks.dart';
 import 'widgets/map_chrome.dart';
 import 'widgets/night_tiles.dart';
 import 'widgets/member_sheet.dart';
@@ -914,12 +915,16 @@ class _MapScreenState extends State<MapScreen> {
     return Stack(
       children: [
         Positioned.fill(
-          child: _MapSurface(
+          // 마커만 보간한다. 시트의 멤버 목록은 원래 좌표를 그대로 읽는다.
+          child: AnimatedMemberTracks(
             members: tracks,
-            selectedId: _selectedMemberId,
-            placeDraftPoint: _isPlaceDraftVisible ? draftPlacePoint : null,
-            placeDraftRadiusM: _placeDraftRadiusM,
-            onSelectMember: _openMemberSheet,
+            builder: (context, animated) => _MapSurface(
+              members: animated,
+              selectedId: _selectedMemberId,
+              placeDraftPoint: _isPlaceDraftVisible ? draftPlacePoint : null,
+              placeDraftRadiusM: _placeDraftRadiusM,
+              onSelectMember: _openMemberSheet,
+            ),
           ),
         ),
         Positioned(
