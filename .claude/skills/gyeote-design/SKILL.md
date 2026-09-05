@@ -163,7 +163,10 @@ radius:  sheet 28 · card 16 · chip/button/avatar 999 · small surface 10
 
 ## 7. 다국어
 
-기본은 `ko` + `en`. 문자열은 하드코딩하지 않고 ARB로 관리한다.
+기본은 `ko` + `en`이고 **마이그레이션은 끝났다.** UI 문자열은 전부
+`lib/l10n/app_ko.arb` / `app_en.arb`에 있고 `AppL10n`으로 읽는다.
+`tools/check_hardcoded_strings.py`가 CI에서 새 한국어 리터럴을 **한 건이라도**
+막는다. 새 문구는 반드시 ARB에 넣는다.
 
 출시 순서: `ko` → `en` → **`ja`** → **`de`** → `es`·`fr` → `hi` → `ar`
 
@@ -176,9 +179,23 @@ radius:  sheet 28 · card 16 · chip/button/avatar 999 · small surface 10
 - `ar`은 RTL 전면 전환: `EdgeInsets.only` → `EdgeInsetsDirectional`,
   `Positioned` → `PositionedDirectional`. **지도 자체는 반전하지 않는다.**
 
+### 표시 문자열을 판별에 쓰지 말 것
+
+이 저장소에서 같은 버그가 네 번 나왔다. 전부 **표시용 값을 신원으로 재사용**한
+경우다.
+
+- 모델이 `Color`를 들고 있어 화면이 한 테마에 묶였다 → `GyeoteTone`
+- 모델이 렌더된 문구를 들고 있어 한 언어에 묶였다 → 사실만 담고 그릴 때 계산
+- 필터가 `event.type == '확인'` 으로 비교했다 → `HistoryEventType` enum
+- 배너가 `message.contains('못했습니다')` 로 오류를 판별했다 → 명시적 플래그
+
+규칙: **보여주는 값과 판단하는 값을 같은 것으로 쓰지 않는다.** 모델과 상태는
+역할·enum·불리언을 담고, 문구는 그릴 때 로케일에서 만든다.
+
 ### 지역마다 값이 달라지는 항목 (문자열이 아니다)
 
 문자열로 다루면 안전 기능이 오작동한다. 반드시 지역 설정값으로 분리한다.
+구현은 `lib/src/core/i18n/region_settings.dart`에 있다.
 
 - **긴급번호** — 한국 112·119, 일본 110·119, 독일 110·112, 미국 911,
   인도·스페인·프랑스 112, 사우디 999. 한·일·독이 숫자를 부분 공유해 더 위험하다.
@@ -216,5 +233,16 @@ UI를 새로 만들거나 크게 고칠 때:
    외부 팔레트 카탈로그에서 고르지 않는다.
 2. **build** — 토큰만 참조한다. 리터럴 색상값을 위젯에 직접 쓰지 않는다.
 3. **check** — §5 광고 격리, §6 텍스트 탄력성 체크리스트를 통과시킨다.
-4. **verify** — `flutter analyze` + `flutter test`.
+4. **verify** — `flutter analyze` + `flutter test`
+   + `python tools/check_hardcoded_strings.py`.
    Flutter SDK가 없는 워크스페이스라면 **검증하지 못했다고 명시**한다.
+
+### 알려진 미해결 (스키마 변경 필요)
+
+- `PlaceAlertQuietHours.label`이 DB에 저장된 뒤 번역 문구와 비교된다. 다른
+  언어를 쓰는 멤버가 프리셋을 순환시키면 첫 값으로 되돌아간다. 라벨 대신
+  **프리셋 키를 저장**해야 한다.
+- 방해 금지 시간대가 `Asia/Seoul`로 고정돼 있다. 다른 지역에서는 조용한 시간이
+  어긋난다. 기기의 IANA 존을 받아와야 한다.
+- 폰트가 하나도 번들되지 않아 플랫폼 기본 폰트를 쓴다. `ja`·`hi`·`ar`을 열려면
+  Noto 서브셋 번들이 선행돼야 한다.

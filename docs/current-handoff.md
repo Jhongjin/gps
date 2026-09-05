@@ -46,9 +46,35 @@ What changed:
   literals as a baseline and fails CI when the count grows. Wired into
   `.github/workflows/validate.yml`.
 
-Remaining i18n work is the bulk extraction of `map_screen.dart` (145),
-`circle_screen.dart` (137), `privacy_screen.dart` (100), `history_screen.dart`
-(51), and `map_models.dart` (35).
+**The extraction is finished.** All 530 Korean literals are in ARB
+(396 keys, `ko` and `en`), and the baseline in
+`tools/hardcoded-strings-baseline.json` is empty, so CI now fails on the first
+new literal rather than allowing a budget.
+
+The migration surfaced the same bug shape four times, each one a display value
+reused as an identity:
+
+- `MapMemberTrack.tone` held a `Color`, pinning those screens to one theme.
+- `MapMemberTrack.status`/`meta`/`safetyNote` held rendered Korean, pinning them
+  to one language. They are computed from facts now.
+- `_HistoryEvent.type` held a display string and the filters compared against it
+  (`event.type == '확인'`), so translating the label would have silently matched
+  nothing. It is an enum now.
+- Three status banners picked their error color by testing the message for
+  '못했습니다' / '대기 중'. Failures would have rendered in the success color once
+  translated. They carry explicit flags now.
+
+The rule is in the design skill: never use the same value for what you show and
+what you branch on.
+
+Two problems need a schema change and are documented at their call sites rather
+than half-fixed:
+
+- `PlaceAlertQuietHours.label` is persisted and then compared against a
+  translated string when cycling presets, so a member using another language
+  cycles back to the first preset. The preset key should be stored instead.
+- Quiet hours hardcode `Asia/Seoul`, so the quiet window lands at the wrong
+  local time everywhere else. This needs the device's real IANA zone.
 
 ## Verified (2026-09-05)
 
@@ -57,6 +83,7 @@ Flutter SDK found at `D:/Codex/toolchains/flutter`.
 - `flutter analyze` — No issues found
 - `flutter test` — 15/15 passing (was 4; added locale, map shell, member sheet,
   SOS-safety, and region-settings tests)
+- `python tools/check_hardcoded_strings.py` — 0 hardcoded literals
 - `flutter build web --release` — succeeds, and the shell was checked in a browser
 
 Known preview-only artifact: a couple of Hangul glyphs render as tofu in the web
