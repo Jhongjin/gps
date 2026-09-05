@@ -23,6 +23,12 @@ function body is copied from `009` verbatim with three edits, because a first
 attempt to rewrite it from memory silently dropped the dedupe-key generation,
 the `end_reason`, and the `sharing_precision` column type.
 
+`017_meetups.sql` adds the meetup object: a place, a time, RSVPs, and expiry.
+Expiry is a read-time predicate (`is_meetup_over`) rather than a worker, because
+a stalled worker would leave sharing on — which is the exact failure the feature
+exists to prevent. `list_active_meetups` applies the predicate, so a meetup
+disappears on time even if nothing is running.
+
 Quick replies work against the old schema too: the three new statuses simply
 fail the constraint until `016` lands, and the UI surfaces that as a send
 failure rather than corrupting anything.

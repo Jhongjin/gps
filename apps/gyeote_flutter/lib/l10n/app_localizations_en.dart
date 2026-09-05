@@ -1435,4 +1435,92 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get quickReplyNeedsCircle => 'Join a circle to send these.';
+
+  @override
+  String get meetupSectionTitle => 'Meetups';
+
+  @override
+  String get meetupCreate => 'Plan a meetup';
+
+  @override
+  String get meetupNone => 'No meetup planned';
+
+  @override
+  String get meetupNoneBody =>
+      'Set a place and a time, and everyone\'s time to arrive shows up here.';
+
+  @override
+  String get meetupNameLabel => 'Meetup name';
+
+  @override
+  String get meetupNameHint => 'Dinner';
+
+  @override
+  String get meetupPlaceHint =>
+      'The point shown on the map becomes the meeting place.';
+
+  @override
+  String get meetupIn30 => 'In 30 min';
+
+  @override
+  String get meetupIn1h => 'In 1 hour';
+
+  @override
+  String get meetupIn2h => 'In 2 hours';
+
+  @override
+  String get meetupSave => 'Create meetup';
+
+  @override
+  String get meetupSaving => 'Creating the meetup';
+
+  @override
+  String get meetupCreated => 'Meetup created.';
+
+  @override
+  String get meetupCreateFailed => 'Could not create the meetup.';
+
+  @override
+  String get meetupNeedsCircle => 'Join a circle to plan a meetup.';
+
+  @override
+  String get meetupGoing => 'Going';
+
+  @override
+  String get meetupMaybe => 'Maybe';
+
+  @override
+  String get meetupDeclined => 'Can\'t make it';
+
+  @override
+  String get meetupRespondFailed => 'Could not save your response.';
+
+  @override
+  String get meetupEnd => 'End meetup';
+
+  @override
+  String get meetupEndFailed => 'Could not end the meetup.';
+
+  @override
+  String meetupGoingCount(int going, int total) {
+    return '$going of $total going';
+  }
+
+  @override
+  String meetupStartsIn(String time) {
+    return 'in $time';
+  }
+
+  @override
+  String meetupStartedAgo(String time) {
+    return '$time ago';
+  }
+
+  @override
+  String meetupAutoEnds(int minutes) {
+    return 'Disappears on its own $minutes min after the meeting time';
+  }
+
+  @override
+  String get meetupDestination => 'Meeting place';
 }

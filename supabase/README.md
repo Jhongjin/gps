@@ -43,6 +43,7 @@ Current production project:
   - `migrations/014_place_alert_quiet_hours_rpc.sql`
   - `migrations/015_place_alert_event_ingest_rpc.sql`
   - `migrations/016_quick_reply_statuses.sql`
+  - `migrations/017_meetups.sql`
 - Read-only verification queries:
   - `verification_after_008.sql`
   - `verification_after_009.sql`
@@ -52,6 +53,8 @@ Current production project:
   - `verification_after_013.sql`
   - `verification_after_014.sql`
   - `verification_after_015.sql`
+  - `verification_after_016.sql`
+  - `verification_after_017.sql`
 - Rollback-only negative test:
   - `negative_tests_after_010.sql`
   - `negative_tests_after_011.sql`

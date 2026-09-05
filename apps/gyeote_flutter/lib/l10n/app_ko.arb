@@ -757,5 +757,62 @@
         "type": "String"
       }
     }
-  }
+  },
+  "meetupSectionTitle": "약속",
+  "meetupCreate": "약속 만들기",
+  "meetupNone": "잡힌 약속이 없습니다",
+  "meetupNoneBody": "집결 장소와 시각을 정하면 서로의 도착까지 남은 시간이 보입니다.",
+  "meetupNameLabel": "약속 이름",
+  "meetupNameHint": "저녁 약속",
+  "meetupPlaceHint": "지도에 표시된 자리가 집결 장소가 됩니다.",
+  "meetupIn30": "30분 뒤",
+  "meetupIn1h": "1시간 뒤",
+  "meetupIn2h": "2시간 뒤",
+  "meetupSave": "약속 만들기",
+  "meetupSaving": "약속 만드는 중",
+  "meetupCreated": "약속을 만들었습니다.",
+  "meetupCreateFailed": "약속을 만들지 못했습니다.",
+  "meetupNeedsCircle": "서클에 연결되면 약속을 만들 수 있습니다.",
+  "meetupGoing": "참석",
+  "meetupMaybe": "미정",
+  "meetupDeclined": "불참",
+  "meetupRespondFailed": "응답을 저장하지 못했습니다.",
+  "meetupEnd": "약속 끝내기",
+  "meetupEndFailed": "약속을 끝내지 못했습니다.",
+  "meetupGoingCount": "참석 {going}/{total}",
+  "@meetupGoingCount": {
+    "placeholders": {
+      "going": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "meetupStartsIn": "{time} 뒤",
+  "@meetupStartsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "meetupStartedAgo": "{time} 지남",
+  "@meetupStartedAgo": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "meetupAutoEnds": "약속 시각 {minutes}분 뒤 자동으로 사라집니다",
+  "@meetupAutoEnds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "meetupDestination": "집결 장소"
 }

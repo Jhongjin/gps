@@ -22,6 +22,8 @@ class SupabaseBackend {
 
   CheckInRepository get checkIns => SupabaseCheckInRepository(client);
 
+  MeetupRepository get meetups => SupabaseMeetupRepository(client);
+
   DeviceRepository get devices => SupabaseDeviceRepository(client);
 
   LocationIngestRepository get locations =>
@@ -342,6 +344,114 @@ class SupabaseCheckInRepository implements CheckInRepository {
     return (rows as List)
         .map((row) => _checkInEventFromRow(Map<String, Object?>.from(row)))
         .toList(growable: false);
+  }
+}
+
+class SupabaseMeetupRepository implements MeetupRepository {
+  const SupabaseMeetupRepository(this._client);
+
+  final SupabaseClient _client;
+
+  @override
+  Future<List<Meetup>> listActiveMeetups(String circleId) async {
+    final rows = await _client.rpc(
+      'list_active_meetups',
+      params: {'target_circle_id': circleId},
+    );
+    return _rowsFrom(rows).map(_meetupFromRow).toList(growable: false);
+  }
+
+  @override
+  Future<Meetup> createMeetup(MeetupDraft draft) async {
+    final rows = await _client.rpc(
+      'create_meetup',
+      params: {
+        'target_circle_id': draft.circleId,
+        'meetup_name': draft.name,
+        'meetup_place_lat': draft.placeLat,
+        'meetup_place_lng': draft.placeLng,
+        'meetup_meet_at': draft.meetAt.toUtc().toIso8601String(),
+        'meetup_place_name': draft.placeName,
+        'meetup_grace_minutes': draft.graceMinutes,
+        'attendee_profile_ids': draft.attendeeProfileIds,
+      },
+    );
+    final list = _rowsFrom(rows);
+    if (list.isEmpty) {
+      throw StateError('create_meetup returned no row');
+    }
+    return _meetupFromRow(list.first);
+  }
+
+  @override
+  Future<void> respondToMeetup({
+    required String meetupId,
+    required MeetupResponse response,
+  }) async {
+    await _client.rpc(
+      'respond_to_meetup',
+      params: {
+        'target_meetup_id': meetupId,
+        'attendee_response': _meetupResponseToJson(response),
+      },
+    );
+  }
+
+  @override
+  Future<void> endMeetup(String meetupId) async {
+    await _client.rpc(
+      'end_meetup',
+      params: {'target_meetup_id': meetupId},
+    );
+  }
+}
+
+List<Map<String, Object?>> _rowsFrom(Object? rows) {
+  if (rows is! List) return const [];
+  return rows.whereType<Map<String, Object?>>().toList(growable: false);
+}
+
+Meetup _meetupFromRow(Map<String, Object?> row) {
+  return Meetup(
+    id: '${row['id']}',
+    circleId: '${row['circle_id']}',
+    createdBy: '${row['created_by']}',
+    name: '${row['name'] ?? ''}',
+    placeName: row['place_name'] as String?,
+    placeLat: (row['place_lat'] as num).toDouble(),
+    placeLng: (row['place_lng'] as num).toDouble(),
+    meetAt: DateTime.parse('${row['meet_at']}').toLocal(),
+    graceMinutes: (row['grace_minutes'] as num?)?.toInt() ?? 30,
+    myResponse: _meetupResponseFromJson(row['my_response'] as String?),
+    goingCount: (row['going_count'] as num?)?.toInt() ?? 0,
+    attendeeCount: (row['attendee_count'] as num?)?.toInt() ?? 0,
+  );
+}
+
+MeetupResponse _meetupResponseFromJson(String? value) {
+  switch (value) {
+    case 'going':
+      return MeetupResponse.going;
+    case 'maybe':
+      return MeetupResponse.maybe;
+    case 'declined':
+      return MeetupResponse.declined;
+    case 'invited':
+    default:
+      return MeetupResponse.invited;
+  }
+}
+
+String _meetupResponseToJson(MeetupResponse value) {
+  switch (value) {
+    case MeetupResponse.invited:
+      return 'invited';
+    case MeetupResponse.going:
+      return 'going';
+    case MeetupResponse.maybe:
+      return 'maybe';
+    case MeetupResponse.declined:
+      return 'declined';
   }
 }
 

@@ -17,6 +17,8 @@ import '../../theme/gyeote_theme.dart';
 import '../onboarding/permission_primer.dart';
 import 'widgets/animated_tracks.dart';
 import 'widgets/map_chrome.dart';
+import 'widgets/meetup_card.dart';
+import 'widgets/meetup_composer.dart';
 import 'widgets/night_tiles.dart';
 import 'widgets/quick_reply_bar.dart';
 import 'widgets/member_sheet.dart';
@@ -37,6 +39,7 @@ class MapScreen extends StatefulWidget {
     this.companionRepository,
     this.checkInRepository,
     this.placeAlertRepository,
+    this.meetupRepository,
     this.backendConfig,
     this.onOpenCircle,
     LocationBridge? locationBridge,
@@ -47,6 +50,7 @@ class MapScreen extends StatefulWidget {
   final CompanionRepository? companionRepository;
   final CheckInRepository? checkInRepository;
   final PlaceAlertRepository? placeAlertRepository;
+  final MeetupRepository? meetupRepository;
   final BackendConfig? backendConfig;
   final VoidCallback? onOpenCircle;
   final LocationBridge locationBridge;
@@ -88,6 +92,17 @@ class _MapScreenState extends State<MapScreen> {
 
   /// 지금 보내는 중인 정형 반응. 하나가 나가는 동안 나머지를 잠근다.
   CheckInStatus? _sendingQuickReply;
+
+  List<Meetup> _meetups = const [];
+  bool _isMeetupBusy = false;
+
+  /// 위젯 트리에서 Supabase.instance 를 직접 만지면 데모 모드에서 던진다.
+  /// 백엔드가 있을 때만 한 번 읽어 둔다.
+  String? get _currentProfileId {
+    final config = widget.backendConfig;
+    if (config == null || !config.hasSupabase) return null;
+    return Supabase.instance.client.auth.currentUser?.id;
+  }
 
   AppL10n get _l10n => AppL10n.of(context);
   bool _placeNotifyArrival = true;
@@ -191,6 +206,7 @@ class _MapScreenState extends State<MapScreen> {
         _activeCircleId = activeCircle.id;
       });
       await _loadRecentCheckIns(activeCircle.id);
+      await _loadMeetups(activeCircle.id);
 
       _locationSubscription =
           repository.watchLatestLocations(activeCircle.id).listen(
@@ -255,6 +271,91 @@ class _MapScreenState extends State<MapScreen> {
       if (mounted) {
         setState(() => _checkInStatusMessage = _l10n.checkInSyncPending);
       }
+    }
+  }
+
+  Future<void> _loadMeetups(String circleId) async {
+    final repository = widget.meetupRepository;
+    if (repository == null) return;
+
+    try {
+      final meetups = await repository.listActiveMeetups(circleId);
+      if (!mounted) return;
+      setState(() => _meetups = meetups);
+    } catch (_) {
+      // 약속을 못 불러와도 지도는 계속 동작해야 한다. 조용히 넘어간다.
+    }
+  }
+
+  /// 약속을 만든다. 집결 장소는 지도에 보이는 내 위치를 쓴다.
+  Future<void> _createMeetup(LatLng place) async {
+    final repository = widget.meetupRepository;
+    final circleId = _activeCircleId;
+    if (repository == null || circleId == null) {
+      setState(() => _bridgeStatus = _l10n.meetupNeedsCircle);
+      return;
+    }
+
+    final composed = await showMeetupComposer(context);
+    if (composed == null || !mounted) return;
+
+    setState(() {
+      _isMeetupBusy = true;
+      _bridgeStatus = _l10n.meetupSaving;
+    });
+    try {
+      await repository.createMeetup(
+        MeetupDraft(
+          circleId: circleId,
+          name: composed.name,
+          placeLat: place.latitude,
+          placeLng: place.longitude,
+          meetAt: composed.meetAt,
+        ),
+      );
+      await _loadMeetups(circleId);
+      if (!mounted) return;
+      setState(() => _bridgeStatus = _l10n.meetupCreated);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _bridgeStatus = _l10n.meetupCreateFailed);
+    } finally {
+      if (mounted) setState(() => _isMeetupBusy = false);
+    }
+  }
+
+  Future<void> _respondToMeetup(Meetup meetup, MeetupResponse response) async {
+    final repository = widget.meetupRepository;
+    if (repository == null) return;
+
+    setState(() => _isMeetupBusy = true);
+    try {
+      await repository.respondToMeetup(
+        meetupId: meetup.id,
+        response: response,
+      );
+      await _loadMeetups(meetup.circleId);
+    } catch (_) {
+      if (mounted) {
+        setState(() => _bridgeStatus = _l10n.meetupRespondFailed);
+      }
+    } finally {
+      if (mounted) setState(() => _isMeetupBusy = false);
+    }
+  }
+
+  Future<void> _endMeetup(Meetup meetup) async {
+    final repository = widget.meetupRepository;
+    if (repository == null) return;
+
+    setState(() => _isMeetupBusy = true);
+    try {
+      await repository.endMeetup(meetup.id);
+      await _loadMeetups(meetup.circleId);
+    } catch (_) {
+      if (mounted) setState(() => _bridgeStatus = _l10n.meetupEndFailed);
+    } finally {
+      if (mounted) setState(() => _isMeetupBusy = false);
     }
   }
 
@@ -989,6 +1090,7 @@ class _MapScreenState extends State<MapScreen> {
               selectedId: _selectedMemberId,
               placeDraftPoint: _isPlaceDraftVisible ? draftPlacePoint : null,
               placeDraftRadiusM: _placeDraftRadiusM,
+              meetups: _meetups,
               onSelectMember: _openMemberSheet,
             ),
           ),
@@ -1088,6 +1190,16 @@ class _MapScreenState extends State<MapScreen> {
                       onTap: () => _openMemberSheet(member),
                     ),
                   const SizedBox(height: 4),
+                  _MeetupSection(
+                    meetups: _meetups,
+                    currentUserId: _currentProfileId,
+                    isBusy: _isMeetupBusy,
+                    canCreate: !hasNoCircle && widget.meetupRepository != null,
+                    onCreate: () => _createMeetup(draftPlacePoint),
+                    onRespond: _respondToMeetup,
+                    onEnd: _endMeetup,
+                  ),
+                  const SizedBox(height: 12),
                   QuickReplyBar(
                     onSend: _sendQuickReply,
                     isEnabled: !hasNoCircle && !_isCheckingIn,
@@ -1341,6 +1453,7 @@ class _MapSurface extends StatelessWidget {
     required this.selectedId,
     required this.placeDraftPoint,
     required this.placeDraftRadiusM,
+    required this.meetups,
     required this.onSelectMember,
   });
 
@@ -1348,6 +1461,7 @@ class _MapSurface extends StatelessWidget {
   final String? selectedId;
   final LatLng? placeDraftPoint;
   final int placeDraftRadiusM;
+  final List<Meetup> meetups;
   final ValueChanged<MapMemberTrack> onSelectMember;
 
   @override
@@ -1432,6 +1546,14 @@ class _MapSurface extends StatelessWidget {
                 ),
               MarkerLayer(
                 markers: [
+                  // 집결 장소는 멤버 아래에 깔린다. 사람이 먼저 보여야 한다.
+                  for (final meetup in meetups)
+                    Marker(
+                      point: LatLng(meetup.placeLat, meetup.placeLng),
+                      width: 44,
+                      height: 44,
+                      child: _MeetupPin(name: meetup.name),
+                    ),
                   for (final member in members)
                     Marker(
                       point: member.point,
@@ -2360,6 +2482,107 @@ class _SheetStatusLine extends StatelessWidget {
             style: TextStyle(fontSize: 12, color: tone.resolve(palette)),
           ),
       ],
+    );
+  }
+}
+
+
+/// 시트 안의 약속 구역.
+class _MeetupSection extends StatelessWidget {
+  const _MeetupSection({
+    required this.meetups,
+    required this.currentUserId,
+    required this.isBusy,
+    required this.canCreate,
+    required this.onCreate,
+    required this.onRespond,
+    required this.onEnd,
+  });
+
+  final List<Meetup> meetups;
+  final String? currentUserId;
+  final bool isBusy;
+  final bool canCreate;
+  final VoidCallback onCreate;
+  final void Function(Meetup, MeetupResponse) onRespond;
+  final ValueChanged<Meetup> onEnd;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppL10n.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.meetupSectionTitle,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: palette.ink,
+                ),
+              ),
+            ),
+            if (canCreate)
+              TextButton(
+                onPressed: isBusy ? null : onCreate,
+                child: Text(l10n.meetupCreate),
+              ),
+          ],
+        ),
+        if (meetups.isEmpty)
+          Text(
+            l10n.meetupNoneBody,
+            style: TextStyle(fontSize: 12, color: palette.muted),
+          )
+        else
+          for (final meetup in meetups) ...[
+            MeetupCard(
+              meetup: meetup,
+              isCreator: meetup.createdBy == currentUserId,
+              isBusy: isBusy,
+              onRespond: (response) => onRespond(meetup, response),
+              onEnd: () => onEnd(meetup),
+            ),
+            const SizedBox(height: 8),
+          ],
+      ],
+    );
+  }
+}
+
+/// 집결 장소 핀. 사람 마커와 헷갈리지 않도록 깃발 모양을 쓴다.
+class _MeetupPin extends StatelessWidget {
+  const _MeetupPin({required this.name});
+
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+
+    return Semantics(
+      label: '${AppL10n.of(context).meetupDestination}. $name',
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: palette.surface,
+          border: Border.all(color: palette.brand, width: 2.5),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.22),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Icon(Icons.flag, size: 20, color: palette.brand),
+      ),
     );
   }
 }

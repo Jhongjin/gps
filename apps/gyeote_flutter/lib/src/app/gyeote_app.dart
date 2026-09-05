@@ -90,6 +90,7 @@ class _GyeoteAppState extends State<GyeoteApp> {
         companionRepository: backend?.companions,
         checkInRepository: backend?.checkIns,
         placeAlertRepository: backend?.placeAlerts,
+        meetupRepository: backend?.meetups,
         backendConfig: widget.backendConfig,
         locationBridge: _locationBridge,
         onOpenCircle: () => setState(() => _tabIndex = 1),

@@ -1370,4 +1370,90 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get quickReplyNeedsCircle => '서클에 연결되면 보낼 수 있습니다.';
+
+  @override
+  String get meetupSectionTitle => '약속';
+
+  @override
+  String get meetupCreate => '약속 만들기';
+
+  @override
+  String get meetupNone => '잡힌 약속이 없습니다';
+
+  @override
+  String get meetupNoneBody => '집결 장소와 시각을 정하면 서로의 도착까지 남은 시간이 보입니다.';
+
+  @override
+  String get meetupNameLabel => '약속 이름';
+
+  @override
+  String get meetupNameHint => '저녁 약속';
+
+  @override
+  String get meetupPlaceHint => '지도에 표시된 자리가 집결 장소가 됩니다.';
+
+  @override
+  String get meetupIn30 => '30분 뒤';
+
+  @override
+  String get meetupIn1h => '1시간 뒤';
+
+  @override
+  String get meetupIn2h => '2시간 뒤';
+
+  @override
+  String get meetupSave => '약속 만들기';
+
+  @override
+  String get meetupSaving => '약속 만드는 중';
+
+  @override
+  String get meetupCreated => '약속을 만들었습니다.';
+
+  @override
+  String get meetupCreateFailed => '약속을 만들지 못했습니다.';
+
+  @override
+  String get meetupNeedsCircle => '서클에 연결되면 약속을 만들 수 있습니다.';
+
+  @override
+  String get meetupGoing => '참석';
+
+  @override
+  String get meetupMaybe => '미정';
+
+  @override
+  String get meetupDeclined => '불참';
+
+  @override
+  String get meetupRespondFailed => '응답을 저장하지 못했습니다.';
+
+  @override
+  String get meetupEnd => '약속 끝내기';
+
+  @override
+  String get meetupEndFailed => '약속을 끝내지 못했습니다.';
+
+  @override
+  String meetupGoingCount(int going, int total) {
+    return '참석 $going/$total';
+  }
+
+  @override
+  String meetupStartsIn(String time) {
+    return '$time 뒤';
+  }
+
+  @override
+  String meetupStartedAgo(String time) {
+    return '$time 지남';
+  }
+
+  @override
+  String meetupAutoEnds(int minutes) {
+    return '약속 시각 $minutes분 뒤 자동으로 사라집니다';
+  }
+
+  @override
+  String get meetupDestination => '집결 장소';
 }

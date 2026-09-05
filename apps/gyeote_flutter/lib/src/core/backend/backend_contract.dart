@@ -362,6 +362,103 @@ abstract interface class InvitationRepository {
   Future<void> revokeInvite(String inviteId);
 }
 
+/// 참석 응답.
+enum MeetupResponse {
+  invited,
+  going,
+  maybe,
+  declined;
+
+  /// 아직 답하지 않은 상태인지.
+  bool get isPending => this == MeetupResponse.invited;
+}
+
+/// 집결 장소와 시각.
+///
+/// 사람이 끄는 물건이 아니라 **시각이 지나면 스스로 끝나는** 물건이다. 이
+/// 카테고리에서 사람들이 가장 불안해하는 것이 "끝났는데도 계속 공유되는 것"이라,
+/// 끄는 걸 잊어도 꺼지게 만든다.
+class Meetup {
+  const Meetup({
+    required this.id,
+    required this.circleId,
+    required this.createdBy,
+    required this.name,
+    required this.placeLat,
+    required this.placeLng,
+    required this.meetAt,
+    required this.graceMinutes,
+    required this.myResponse,
+    required this.goingCount,
+    required this.attendeeCount,
+    this.placeName,
+  });
+
+  final String id;
+  final String circleId;
+  final String createdBy;
+  final String name;
+  final String? placeName;
+  final double placeLat;
+  final double placeLng;
+  final DateTime meetAt;
+
+  /// 약속 시각이 지나도 곧바로 사라지면 늦는 사람이 길을 잃는다.
+  final int graceMinutes;
+
+  final MeetupResponse myResponse;
+  final int goingCount;
+  final int attendeeCount;
+
+  /// 만료 시각. SQL 의 `is_meetup_over` 와 같은 규칙이다.
+  DateTime get endsAt => meetAt.add(Duration(minutes: graceMinutes));
+
+  bool get isOver => DateTime.now().isAfter(endsAt);
+
+  /// 약속 시각까지 남은 시간. 이미 지났으면 음수다.
+  Duration get timeUntil => meetAt.difference(DateTime.now());
+}
+
+class MeetupDraft {
+  const MeetupDraft({
+    required this.circleId,
+    required this.name,
+    required this.placeLat,
+    required this.placeLng,
+    required this.meetAt,
+    this.placeName,
+    this.graceMinutes = 30,
+    this.attendeeProfileIds,
+  });
+
+  final String circleId;
+  final String name;
+  final String? placeName;
+  final double placeLat;
+  final double placeLng;
+  final DateTime meetAt;
+  final int graceMinutes;
+
+  /// null 이면 서클 전체를 부른다.
+  final List<String>? attendeeProfileIds;
+}
+
+abstract interface class MeetupRepository {
+  /// 끝나지 않은 약속만 돌려준다. 만료 판정은 서버가 한다 — 클라이언트 시계를
+  /// 믿으면 기기마다 다른 시각에 사라진다.
+  Future<List<Meetup>> listActiveMeetups(String circleId);
+
+  Future<Meetup> createMeetup(MeetupDraft draft);
+
+  Future<void> respondToMeetup({
+    required String meetupId,
+    required MeetupResponse response,
+  });
+
+  /// 만든 사람만 끝낼 수 있다.
+  Future<void> endMeetup(String meetupId);
+}
+
 abstract interface class PlaceAlertRepository {
   Future<List<PlaceAlertRule>> listPlaceAlerts(String circleId);
 

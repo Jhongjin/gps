@@ -2640,6 +2640,162 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'서클에 연결되면 보낼 수 있습니다.'**
   String get quickReplyNeedsCircle;
+
+  /// No description provided for @meetupSectionTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속'**
+  String get meetupSectionTitle;
+
+  /// No description provided for @meetupCreate.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속 만들기'**
+  String get meetupCreate;
+
+  /// No description provided for @meetupNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'잡힌 약속이 없습니다'**
+  String get meetupNone;
+
+  /// No description provided for @meetupNoneBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'집결 장소와 시각을 정하면 서로의 도착까지 남은 시간이 보입니다.'**
+  String get meetupNoneBody;
+
+  /// No description provided for @meetupNameLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속 이름'**
+  String get meetupNameLabel;
+
+  /// No description provided for @meetupNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'저녁 약속'**
+  String get meetupNameHint;
+
+  /// No description provided for @meetupPlaceHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'지도에 표시된 자리가 집결 장소가 됩니다.'**
+  String get meetupPlaceHint;
+
+  /// No description provided for @meetupIn30.
+  ///
+  /// In ko, this message translates to:
+  /// **'30분 뒤'**
+  String get meetupIn30;
+
+  /// No description provided for @meetupIn1h.
+  ///
+  /// In ko, this message translates to:
+  /// **'1시간 뒤'**
+  String get meetupIn1h;
+
+  /// No description provided for @meetupIn2h.
+  ///
+  /// In ko, this message translates to:
+  /// **'2시간 뒤'**
+  String get meetupIn2h;
+
+  /// No description provided for @meetupSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속 만들기'**
+  String get meetupSave;
+
+  /// No description provided for @meetupSaving.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속 만드는 중'**
+  String get meetupSaving;
+
+  /// No description provided for @meetupCreated.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속을 만들었습니다.'**
+  String get meetupCreated;
+
+  /// No description provided for @meetupCreateFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속을 만들지 못했습니다.'**
+  String get meetupCreateFailed;
+
+  /// No description provided for @meetupNeedsCircle.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클에 연결되면 약속을 만들 수 있습니다.'**
+  String get meetupNeedsCircle;
+
+  /// No description provided for @meetupGoing.
+  ///
+  /// In ko, this message translates to:
+  /// **'참석'**
+  String get meetupGoing;
+
+  /// No description provided for @meetupMaybe.
+  ///
+  /// In ko, this message translates to:
+  /// **'미정'**
+  String get meetupMaybe;
+
+  /// No description provided for @meetupDeclined.
+  ///
+  /// In ko, this message translates to:
+  /// **'불참'**
+  String get meetupDeclined;
+
+  /// No description provided for @meetupRespondFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'응답을 저장하지 못했습니다.'**
+  String get meetupRespondFailed;
+
+  /// No description provided for @meetupEnd.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속 끝내기'**
+  String get meetupEnd;
+
+  /// No description provided for @meetupEndFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속을 끝내지 못했습니다.'**
+  String get meetupEndFailed;
+
+  /// No description provided for @meetupGoingCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'참석 {going}/{total}'**
+  String meetupGoingCount(int going, int total);
+
+  /// No description provided for @meetupStartsIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 뒤'**
+  String meetupStartsIn(String time);
+
+  /// No description provided for @meetupStartedAgo.
+  ///
+  /// In ko, this message translates to:
+  /// **'{time} 지남'**
+  String meetupStartedAgo(String time);
+
+  /// No description provided for @meetupAutoEnds.
+  ///
+  /// In ko, this message translates to:
+  /// **'약속 시각 {minutes}분 뒤 자동으로 사라집니다'**
+  String meetupAutoEnds(int minutes);
+
+  /// No description provided for @meetupDestination.
+  ///
+  /// In ko, this message translates to:
+  /// **'집결 장소'**
+  String get meetupDestination;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
