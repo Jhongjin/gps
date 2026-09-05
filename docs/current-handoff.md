@@ -1,6 +1,27 @@
 # Current Handoff
 
-Date: 2026-09-05
+Date: 2026-09-06
+
+## Migration State (2026-09-06)
+
+The blocker moved. `supabase` CLI is on PATH now (2.109.0), so the SQL-Editor
+workaround is no longer needed. What is still missing is credentials — no
+`.env.local`, and the DB password is deliberately not stored in one.
+
+`tools/apply-migrations.ps1` makes the apply a two-step: it links, prints the
+local-vs-remote migration list, and stops. `-Apply` pushes. Whoever holds the
+credentials runs it.
+
+Before pushing, read `supabase/README.md`. `007` through `011` were applied by
+hand in the SQL Editor and are almost certainly unrecorded in the remote
+migration table, so a naive `db push` would try to re-run them and `001` along
+with them.
+
+Meanwhile `tools/check_rpc_contract.py` closes the gap that unapplied migrations
+actually open. RPC names and argument names are plain strings on both sides —
+nothing in Dart or SQL checks that `set_place_alert_enabled(alert_id, is_enabled)`
+in the app matches the function in the migration. The check compares all 13 calls
+and their 47 arguments, and it runs in CI. They match today.
 
 ## Design System Rewrite — "귀갓길" (2026-09-05)
 

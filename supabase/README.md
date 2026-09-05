@@ -2,13 +2,31 @@
 
 This folder contains the initial Supabase/Postgres backend scaffold for `곁에`.
 
-The current desktop environment does not have the Supabase CLI configured. On a development machine:
+The Supabase CLI is available now, so applying the pending migrations no longer
+means pasting SQL into the dashboard. Use the script, which inspects before it
+changes anything:
+
+```powershell
+.	oolspply-migrations.ps1          # compare local and remote, change nothing
+.	oolspply-migrations.ps1 -Apply   # push after you have read the comparison
+```
+
+**Read the comparison before pushing.** Two hazards are stacked here.
+
+`007` through `011` were applied by hand in the SQL Editor, which leaves no row
+in the remote `supabase_migrations.schema_migrations`. The CLI only reads that
+table, so it treats those five as unapplied and will try to run them again —
+along with `001`, which creates tables. Mark them first:
 
 ```bash
-supabase init
-supabase link --project-ref <project-ref>
-supabase db push
+supabase migration repair --status applied 007   # ... through 011
 ```
+
+The file names are also non-standard. The CLI generates
+`20260905150519_name.sql` and compares versions in that shape; this repo uses
+`012_place_alert_management_rpcs.sql`. Renaming them after some are already
+applied would be worse than living with it, so the comparison step is how you
+confirm the CLI read them the way you expect.
 
 Current production project:
 
