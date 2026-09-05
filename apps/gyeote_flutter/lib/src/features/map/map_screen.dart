@@ -18,6 +18,7 @@ import '../onboarding/permission_primer.dart';
 import 'widgets/animated_tracks.dart';
 import 'widgets/map_chrome.dart';
 import 'widgets/night_tiles.dart';
+import 'widgets/quick_reply_bar.dart';
 import 'widgets/member_sheet.dart';
 import 'widgets/sos_control.dart';
 import 'map_models.dart';
@@ -84,6 +85,9 @@ class _MapScreenState extends State<MapScreen> {
   bool _isSavingPlaceAlert = false;
   bool _isPlaceDraftVisible = false;
   String? _selectedMemberId;
+
+  /// 지금 보내는 중인 정형 반응. 하나가 나가는 동안 나머지를 잠근다.
+  CheckInStatus? _sendingQuickReply;
 
   AppL10n get _l10n => AppL10n.of(context);
   bool _placeNotifyArrival = true;
@@ -533,6 +537,43 @@ class _MapScreenState extends State<MapScreen> {
         _activeCompanionSessionId = null;
         _bridgeStatus = _l10n.companionStopped;
       });
+    }
+  }
+
+  /// 정형 반응을 서클에 보낸다.
+  ///
+  /// 도착 확인은 동행 세션을 끝내는 부수 효과가 있어 기존 경로를 그대로 탄다.
+  /// 나머지 셋은 이벤트만 남긴다 — '가는 중'으로 공유가 꺼지면 마침 필요한
+  /// 순간에 위치가 사라진다. 같은 규칙이 마이그레이션 016 에도 있다.
+  Future<void> _sendQuickReply(CheckInStatus status) async {
+    if (status.endsCompanionSession) {
+      await _sendArrivalCheckIn();
+      return;
+    }
+
+    final circleId = _activeCircleId;
+    final repository = widget.checkInRepository;
+    if (repository == null || circleId == null) {
+      setState(() => _checkInStatusMessage = _l10n.quickReplyNeedsCircle);
+      return;
+    }
+
+    setState(() => _sendingQuickReply = status);
+    try {
+      final saved = await repository.performCheckIn(
+        circleId: circleId,
+        status: status,
+      );
+      if (!mounted) return;
+      setState(() {
+        _lastCheckInEvent = saved;
+        _checkInStatusMessage = _l10n.quickReplySent(status.label(_l10n));
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _checkInStatusMessage = _l10n.quickReplyFailed);
+    } finally {
+      if (mounted) setState(() => _sendingQuickReply = null);
     }
   }
 
@@ -992,11 +1033,13 @@ class _MapScreenState extends State<MapScreen> {
           child: SosButton(onArmed: _armSos),
         ),
         DraggableScrollableSheet(
+          // 시작 크기는 snapSizes 안에 있어야 한다. 밖에 두면 첫 드래그가
+          // 가장 가까운 지점으로 튀어, 시트가 손에 안 잡히는 느낌이 된다.
           initialChildSize: 0.30,
           minChildSize: 0.16,
           maxChildSize: 0.92,
           snap: true,
-          snapSizes: const [0.16, 0.45, 0.92],
+          snapSizes: const [0.16, 0.30, 0.62, 0.92],
           builder: (context, controller) {
             return DecoratedBox(
               decoration: BoxDecoration(
@@ -1044,8 +1087,14 @@ class _MapScreenState extends State<MapScreen> {
                       member: member,
                       onTap: () => _openMemberSheet(member),
                     ),
+                  const SizedBox(height: 4),
+                  QuickReplyBar(
+                    onSend: _sendQuickReply,
+                    isEnabled: !hasNoCircle && !_isCheckingIn,
+                    sending: _sendingQuickReply,
+                  ),
                   if (hasNoCircle) ...[
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 12),
                     _MapOnboardingPanel(onOpenCircle: widget.onOpenCircle),
                   ],
                   const SizedBox(height: 4),
@@ -1238,11 +1287,7 @@ String _relativeTimeLabel(AppL10n l10n, DateTime recordedAt) {
 }
 
 String _checkInEventText(AppL10n l10n, CheckInEvent event) {
-  final status = switch (event.status) {
-    CheckInStatus.safeArrived => l10n.checkInSafeArrived,
-    CheckInStatus.needsCheck => l10n.checkInNeedsCheck,
-    CheckInStatus.signalWeak => l10n.checkInWeakSignal,
-  };
+  final status = event.status.label(l10n);
   return l10n.checkInEventLine(
     event.displayName.isEmpty ? l10n.memberFallbackName : event.displayName,
     status,

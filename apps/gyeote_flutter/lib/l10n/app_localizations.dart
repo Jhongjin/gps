@@ -2598,6 +2598,48 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'정밀 위치는 광고에 쓰지 않고, 공유는 언제든 멈출 수 있습니다.'**
   String get primerPromise;
+
+  /// No description provided for @checkInOnTheWay.
+  ///
+  /// In ko, this message translates to:
+  /// **'가는 중'**
+  String get checkInOnTheWay;
+
+  /// No description provided for @checkInImOk.
+  ///
+  /// In ko, this message translates to:
+  /// **'괜찮아'**
+  String get checkInImOk;
+
+  /// No description provided for @checkInCallMe.
+  ///
+  /// In ko, this message translates to:
+  /// **'전화해줘'**
+  String get checkInCallMe;
+
+  /// No description provided for @quickReplyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'한 번에 알리기'**
+  String get quickReplyTitle;
+
+  /// No description provided for @quickReplySent.
+  ///
+  /// In ko, this message translates to:
+  /// **'{label} 보냈어요'**
+  String quickReplySent(String label);
+
+  /// No description provided for @quickReplyFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'보내지 못했습니다. 잠시 후 다시 시도해 주세요.'**
+  String get quickReplyFailed;
+
+  /// No description provided for @quickReplyNeedsCircle.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클에 연결되면 보낼 수 있습니다.'**
+  String get quickReplyNeedsCircle;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

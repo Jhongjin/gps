@@ -24,9 +24,48 @@ enum DataRequestType {
 }
 
 enum CheckInStatus {
+  /// 도착했어. 동행 세션을 끝내는 유일한 값이다.
   safeArrived,
+
+  /// 시스템이 판단한다. 사용자가 누르는 값이 아니다.
   needsCheck,
   signalWeak,
+
+  /// 정형 반응. 한 번 눌러 서클에 보내는 짧은 말이다.
+  onTheWay,
+  imOk,
+  callMe;
+
+  /// 사용자가 직접 보낼 수 있는 값인지.
+  bool get isQuickReply => switch (this) {
+        CheckInStatus.safeArrived ||
+        CheckInStatus.onTheWay ||
+        CheckInStatus.imOk ||
+        CheckInStatus.callMe =>
+          true,
+        CheckInStatus.needsCheck || CheckInStatus.signalWeak => false,
+      };
+
+  /// 동행 세션을 끝내는 값인지. 마이그레이션 016 의 가드와 같은 규칙이다.
+  bool get endsCompanionSession => this == CheckInStatus.safeArrived;
+
+  /// 사용자가 고를 수 있는 정형 반응 네 가지. 화면에 이 순서로 놓는다.
+  static const quickReplies = [
+    CheckInStatus.safeArrived,
+    CheckInStatus.onTheWay,
+    CheckInStatus.imOk,
+    CheckInStatus.callMe,
+  ];
+
+  /// 표시 문구. 화면마다 복사하면 곧 서로 어긋난다.
+  String label(AppL10n l10n) => switch (this) {
+        CheckInStatus.safeArrived => l10n.checkInSafeArrived,
+        CheckInStatus.needsCheck => l10n.checkInNeedsCheck,
+        CheckInStatus.signalWeak => l10n.checkInWeakSignal,
+        CheckInStatus.onTheWay => l10n.checkInOnTheWay,
+        CheckInStatus.imOk => l10n.checkInImOk,
+        CheckInStatus.callMe => l10n.checkInCallMe,
+      };
 }
 
 enum DevicePlatform {

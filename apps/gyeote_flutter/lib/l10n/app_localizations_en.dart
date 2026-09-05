@@ -1411,4 +1411,28 @@ class AppL10nEn extends AppL10n {
   @override
   String get primerPromise =>
       'Precise location is never used for ads, and you can stop sharing at any time.';
+
+  @override
+  String get checkInOnTheWay => 'On my way';
+
+  @override
+  String get checkInImOk => 'I\'m OK';
+
+  @override
+  String get checkInCallMe => 'Call me';
+
+  @override
+  String get quickReplyTitle => 'Say it in one tap';
+
+  @override
+  String quickReplySent(String label) {
+    return 'Sent: $label';
+  }
+
+  @override
+  String get quickReplyFailed =>
+      'Could not send. Please try again in a moment.';
+
+  @override
+  String get quickReplyNeedsCircle => 'Join a circle to send these.';
 }

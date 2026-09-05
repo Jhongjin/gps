@@ -37,11 +37,12 @@ Current production project:
   - `migrations/009_check_in_events.sql`
   - `migrations/010_check_in_session_ownership.sql`
   - `migrations/011_place_alert_target_rpc.sql`
-- Pending SQL Editor application:
+- Pending application:
   - `migrations/012_place_alert_management_rpcs.sql`
   - `migrations/013_active_companion_route_tail_rpc.sql`
   - `migrations/014_place_alert_quiet_hours_rpc.sql`
   - `migrations/015_place_alert_event_ingest_rpc.sql`
+  - `migrations/016_quick_reply_statuses.sql`
 - Read-only verification queries:
   - `verification_after_008.sql`
   - `verification_after_009.sql`

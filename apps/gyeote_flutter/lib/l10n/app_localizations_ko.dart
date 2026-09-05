@@ -1347,4 +1347,27 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get primerPromise => '정밀 위치는 광고에 쓰지 않고, 공유는 언제든 멈출 수 있습니다.';
+
+  @override
+  String get checkInOnTheWay => '가는 중';
+
+  @override
+  String get checkInImOk => '괜찮아';
+
+  @override
+  String get checkInCallMe => '전화해줘';
+
+  @override
+  String get quickReplyTitle => '한 번에 알리기';
+
+  @override
+  String quickReplySent(String label) {
+    return '$label 보냈어요';
+  }
+
+  @override
+  String get quickReplyFailed => '보내지 못했습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get quickReplyNeedsCircle => '서클에 연결되면 보낼 수 있습니다.';
 }

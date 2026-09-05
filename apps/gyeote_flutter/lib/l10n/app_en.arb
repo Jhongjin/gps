@@ -416,5 +416,12 @@
   "primerWhenInUseBody": "Companion mode draws your position on the map. The system asks on the next screen.",
   "primerAlwaysTitle": "Place alerts need background location",
   "primerAlwaysBody": "Checking arrivals and departures while the app is closed needs this. Place alerts do not work without it.",
-  "primerPromise": "Precise location is never used for ads, and you can stop sharing at any time."
+  "primerPromise": "Precise location is never used for ads, and you can stop sharing at any time.",
+  "checkInOnTheWay": "On my way",
+  "checkInImOk": "I'm OK",
+  "checkInCallMe": "Call me",
+  "quickReplyTitle": "Say it in one tap",
+  "quickReplySent": "Sent: {label}",
+  "quickReplyFailed": "Could not send. Please try again in a moment.",
+  "quickReplyNeedsCircle": "Join a circle to send these."
 }

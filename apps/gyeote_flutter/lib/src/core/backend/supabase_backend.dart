@@ -731,6 +731,12 @@ CheckInStatus _checkInStatusFromJson(String value) {
   switch (value) {
     case 'needs_check':
       return CheckInStatus.needsCheck;
+    case 'on_the_way':
+      return CheckInStatus.onTheWay;
+    case 'im_ok':
+      return CheckInStatus.imOk;
+    case 'call_me':
+      return CheckInStatus.callMe;
     case 'signal_weak':
       return CheckInStatus.signalWeak;
     case 'safe_arrived':
@@ -747,6 +753,12 @@ String _checkInStatusToJson(CheckInStatus status) {
       return 'needs_check';
     case CheckInStatus.signalWeak:
       return 'signal_weak';
+    case CheckInStatus.onTheWay:
+      return 'on_the_way';
+    case CheckInStatus.imOk:
+      return 'im_ok';
+    case CheckInStatus.callMe:
+      return 'call_me';
   }
 }
 

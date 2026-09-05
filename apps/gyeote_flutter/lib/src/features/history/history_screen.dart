@@ -593,16 +593,8 @@ String _timeLabel(DateTime dateTime) {
   return '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
 }
 
-String _checkInStatusLabel(AppL10n l10n, CheckInStatus status) {
-  switch (status) {
-    case CheckInStatus.safeArrived:
-      return l10n.checkInSafeArrived;
-    case CheckInStatus.needsCheck:
-      return l10n.checkInNeedsCheck;
-    case CheckInStatus.signalWeak:
-      return l10n.checkInWeakSignal;
-  }
-}
+String _checkInStatusLabel(AppL10n l10n, CheckInStatus status) =>
+    status.label(l10n);
 
 String _sharingModeLabel(AppL10n l10n, SharingMode mode) {
   switch (mode) {

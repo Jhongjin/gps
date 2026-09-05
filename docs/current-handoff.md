@@ -17,6 +17,16 @@ hand in the SQL Editor and are almost certainly unrecorded in the remote
 migration table, so a naive `db push` would try to re-run them and `001` along
 with them.
 
+`016_quick_reply_statuses.sql` joins the pending set. It widens the
+`check_in_events` status constraint and rewrites `perform_check_in` — the
+function body is copied from `009` verbatim with three edits, because a first
+attempt to rewrite it from memory silently dropped the dedupe-key generation,
+the `end_reason`, and the `sharing_precision` column type.
+
+Quick replies work against the old schema too: the three new statuses simply
+fail the constraint until `016` lands, and the UI surfaces that as a send
+failure rather than corrupting anything.
+
 Meanwhile `tools/check_rpc_contract.py` closes the gap that unapplied migrations
 actually open. RPC names and argument names are plain strings on both sides —
 nothing in Dart or SQL checks that `set_place_alert_enabled(alert_id, is_enabled)`
