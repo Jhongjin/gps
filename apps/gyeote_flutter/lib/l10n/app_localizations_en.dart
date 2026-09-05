@@ -265,4 +265,112 @@ class AppL10nEn extends AppL10n {
   @override
   String get deviceArrivedMeta =>
       'Companion sharing ended · notified with balanced location';
+
+  @override
+  String get historyTitle => 'Today';
+
+  @override
+  String get historySubtitle =>
+      'Place alerts, view log, companion sessions, check-ins';
+
+  @override
+  String get historySyncing => 'Syncing activity';
+
+  @override
+  String get historyLoadFailed => 'Could not load activity.';
+
+  @override
+  String get historyFilterAll => 'All';
+
+  @override
+  String get historyFilterCheckIn => 'Check-ins';
+
+  @override
+  String get historyFilterPlace => 'Places';
+
+  @override
+  String get historyFilterCompanion => 'Companion';
+
+  @override
+  String get historyFilterData => 'Data';
+
+  @override
+  String get historyFilterEmpty => 'Nothing under this filter';
+
+  @override
+  String get historyFilterEmptyHint =>
+      'Pick another filter to see today\'s activity again.';
+
+  @override
+  String historyCheckInCount(int count) {
+    return '$count check-ins';
+  }
+
+  @override
+  String get historyNoAds => 'No ads';
+
+  @override
+  String get historySafetyLoading => 'Loading check-ins and companion endings.';
+
+  @override
+  String get historySafetyEmpty => 'No check-ins today';
+
+  @override
+  String get historySafetyEmptyHint =>
+      'Send an arrival check-in during a companion session and it lands here.';
+
+  @override
+  String get historySafetyNoRecent => 'No recent arrival check-ins yet.';
+
+  @override
+  String get checkInSafeArrived => 'Arrived safely';
+
+  @override
+  String get checkInPending => 'Waiting for a check-in';
+
+  @override
+  String get checkInNeedsCheck => 'Needs a check';
+
+  @override
+  String get checkInWeakSignal => 'Signal is weak right now';
+
+  @override
+  String companionEndedNote(String mode) {
+    return 'Companion sharing ended · notified with $mode location';
+  }
+
+  @override
+  String get demoEventPlaceArrival => 'Jun arrived at school';
+
+  @override
+  String get demoEventPlaceArrivalDetail => '4 min earlier than expected';
+
+  @override
+  String get demoEventViewed => 'Mira checked your location';
+
+  @override
+  String get demoEventViewedDetail => 'Family circle · balanced location';
+
+  @override
+  String get demoEventCompanion => 'Grandpa started a walk';
+
+  @override
+  String get demoEventCompanionDetail =>
+      '15 min companion session · mutual consent';
+
+  @override
+  String get demoEventCheckIn => 'Jun arrived safely';
+
+  @override
+  String get demoEventCheckInDetail =>
+      'Companion sharing ended · notified with balanced location';
+
+  @override
+  String get demoEventDataRequest => 'Location history deletion request';
+
+  @override
+  String get demoEventDataRequestDetail => 'Pending';
+
+  @override
+  String get historyTypeViewed => 'Viewed';
 }

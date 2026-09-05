@@ -261,4 +261,107 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get deviceArrivedMeta => '동행 공유 종료 · 균형 위치로 알림';
+
+  @override
+  String get historyTitle => '오늘 활동';
+
+  @override
+  String get historySubtitle => '장소 알림, 조회 로그, 동행 세션, 안전 확인';
+
+  @override
+  String get historySyncing => '활동 기록 동기화 중';
+
+  @override
+  String get historyLoadFailed => '활동 기록을 불러오지 못했습니다.';
+
+  @override
+  String get historyFilterAll => '전체';
+
+  @override
+  String get historyFilterCheckIn => '확인';
+
+  @override
+  String get historyFilterPlace => '장소';
+
+  @override
+  String get historyFilterCompanion => '동행';
+
+  @override
+  String get historyFilterData => '데이터';
+
+  @override
+  String get historyFilterEmpty => '이 필터의 활동이 없습니다';
+
+  @override
+  String get historyFilterEmptyHint => '다른 활동 필터를 선택하면 오늘 기록을 다시 볼 수 있습니다.';
+
+  @override
+  String historyCheckInCount(int count) {
+    return '안전 확인 $count개';
+  }
+
+  @override
+  String get historyNoAds => '광고 없음';
+
+  @override
+  String get historySafetyLoading => '안전 확인과 동행 종료 기록을 불러오고 있습니다.';
+
+  @override
+  String get historySafetyEmpty => '오늘 안전 확인이 없습니다';
+
+  @override
+  String get historySafetyEmptyHint => '동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 남습니다.';
+
+  @override
+  String get historySafetyNoRecent => '최근 도착 확인이 아직 없습니다.';
+
+  @override
+  String get checkInSafeArrived => '무사 도착';
+
+  @override
+  String get checkInPending => '안전 확인 대기';
+
+  @override
+  String get checkInNeedsCheck => '확인 필요';
+
+  @override
+  String get checkInWeakSignal => '신호가 잠시 약해요';
+
+  @override
+  String companionEndedNote(String mode) {
+    return '동행 공유 종료 · $mode 위치로 알림';
+  }
+
+  @override
+  String get demoEventPlaceArrival => '준 학교 도착';
+
+  @override
+  String get demoEventPlaceArrivalDetail => '예상보다 4분 빠름';
+
+  @override
+  String get demoEventViewed => '미라가 내 위치 확인';
+
+  @override
+  String get demoEventViewedDetail => '가족 서클 · 균형 위치';
+
+  @override
+  String get demoEventCompanion => '할아버지 산책 시작';
+
+  @override
+  String get demoEventCompanionDetail => '15분 동행 세션 · 상호 동의';
+
+  @override
+  String get demoEventCheckIn => '준 무사 도착';
+
+  @override
+  String get demoEventCheckInDetail => '동행 공유 종료 · 균형 위치로 알림';
+
+  @override
+  String get demoEventDataRequest => '위치 기록 삭제 요청';
+
+  @override
+  String get demoEventDataRequestDetail => '처리 대기 중';
+
+  @override
+  String get historyTypeViewed => '조회';
 }

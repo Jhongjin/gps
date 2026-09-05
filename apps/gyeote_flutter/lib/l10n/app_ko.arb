@@ -198,5 +198,52 @@
   "demoNameFriend": "하나",
   "demoNameElder": "할아버지",
   "deviceArrivedStatus": "무사 도착 · 방금 확인",
-  "deviceArrivedMeta": "동행 공유 종료 · 균형 위치로 알림"
+  "deviceArrivedMeta": "동행 공유 종료 · 균형 위치로 알림",
+  "historyTitle": "오늘 활동",
+  "historySubtitle": "장소 알림, 조회 로그, 동행 세션, 안전 확인",
+  "historySyncing": "활동 기록 동기화 중",
+  "historyLoadFailed": "활동 기록을 불러오지 못했습니다.",
+  "historyFilterAll": "전체",
+  "historyFilterCheckIn": "확인",
+  "historyFilterPlace": "장소",
+  "historyFilterCompanion": "동행",
+  "historyFilterData": "데이터",
+  "historyFilterEmpty": "이 필터의 활동이 없습니다",
+  "historyFilterEmptyHint": "다른 활동 필터를 선택하면 오늘 기록을 다시 볼 수 있습니다.",
+  "historyCheckInCount": "안전 확인 {count}개",
+  "@historyCheckInCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyNoAds": "광고 없음",
+  "historySafetyLoading": "안전 확인과 동행 종료 기록을 불러오고 있습니다.",
+  "historySafetyEmpty": "오늘 안전 확인이 없습니다",
+  "historySafetyEmptyHint": "동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 남습니다.",
+  "historySafetyNoRecent": "최근 도착 확인이 아직 없습니다.",
+  "checkInSafeArrived": "무사 도착",
+  "checkInPending": "안전 확인 대기",
+  "checkInNeedsCheck": "확인 필요",
+  "checkInWeakSignal": "신호가 잠시 약해요",
+  "companionEndedNote": "동행 공유 종료 · {mode} 위치로 알림",
+  "@companionEndedNote": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "demoEventPlaceArrival": "준 학교 도착",
+  "demoEventPlaceArrivalDetail": "예상보다 4분 빠름",
+  "demoEventViewed": "미라가 내 위치 확인",
+  "demoEventViewedDetail": "가족 서클 · 균형 위치",
+  "demoEventCompanion": "할아버지 산책 시작",
+  "demoEventCompanionDetail": "15분 동행 세션 · 상호 동의",
+  "demoEventCheckIn": "준 무사 도착",
+  "demoEventCheckInDetail": "동행 공유 종료 · 균형 위치로 알림",
+  "demoEventDataRequest": "위치 기록 삭제 요청",
+  "demoEventDataRequestDetail": "처리 대기 중",
+  "historyTypeViewed": "조회"
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_models.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../theme/gyeote_theme.dart';
 import '../ads/safe_ad_slot.dart';
 
@@ -28,36 +29,36 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
-  static const _demoEvents = [
+  List<_HistoryEvent> _demoEvents(AppL10n l10n) => [
     _HistoryEvent(
         time: '08:10',
-        type: '장소',
-        title: '준 학교 도착',
-        detail: '예상보다 4분 빠름',
+        type: HistoryEventType.place,
+        title: l10n.demoEventPlaceArrival,
+        detail: l10n.demoEventPlaceArrivalDetail,
         tone: GyeoteTone.brand),
     _HistoryEvent(
         time: '12:42',
-        type: '조회',
-        title: '미라가 내 위치 확인',
-        detail: '가족 서클 · 균형 위치',
+        type: HistoryEventType.viewed,
+        title: l10n.demoEventViewed,
+        detail: l10n.demoEventViewedDetail,
         tone: GyeoteTone.move),
     _HistoryEvent(
         time: '17:18',
-        type: '동행',
-        title: '할아버지 산책 시작',
-        detail: '15분 동행 세션 · 상호 동의',
+        type: HistoryEventType.companion,
+        title: l10n.demoEventCompanion,
+        detail: l10n.demoEventCompanionDetail,
         tone: GyeoteTone.warm),
     _HistoryEvent(
         time: '18:02',
-        type: '확인',
-        title: '준 무사 도착',
-        detail: '동행 공유 종료 · 균형 위치로 알림',
+        type: HistoryEventType.checkIn,
+        title: l10n.demoEventCheckIn,
+        detail: l10n.demoEventCheckInDetail,
         tone: GyeoteTone.brand),
     _HistoryEvent(
         time: '18:03',
-        type: '데이터',
-        title: '위치 기록 삭제 요청',
-        detail: '처리 대기 중',
+        type: HistoryEventType.data,
+        title: l10n.demoEventDataRequest,
+        detail: l10n.demoEventDataRequestDetail,
         tone: GyeoteTone.alert),
   ];
 
@@ -125,7 +126,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       }
       setState(() {
         _isLoading = false;
-        _message = '활동 기록을 불러오지 못했습니다.';
+        _message = AppL10n.of(context).historyLoadFailed;
       });
     }
   }
@@ -133,23 +134,26 @@ class _HistoryScreenState extends State<HistoryScreen> {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
 
     final events = _hasBackend
-        ? _checkIns.map(_historyEventFromCheckIn).toList(growable: false)
-        : _demoEvents;
+        ? _checkIns
+            .map((event) => _historyEventFromCheckIn(l10n, event))
+            .toList(growable: false)
+        : _demoEvents(l10n);
     final visibleEvents =
         events.where((event) => _matchesFilter(event, _filter)).toList();
     final checkInCount = _hasBackend ? _checkIns.length : 1;
-    final checkInEvents = events.where((event) => event.type == '확인').toList();
+    final checkInEvents = events.where((event) => event.type == HistoryEventType.checkIn).toList();
     final latestCheckIn = checkInEvents.isEmpty ? null : checkInEvents.first;
 
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
-        const Text('오늘 활동',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+        Text(l10n.historyTitle,
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
         const SizedBox(height: 4),
-        Text('장소 알림, 조회 로그, 동행 세션, 안전 확인',
+        Text(l10n.historySubtitle,
             style: TextStyle(color: palette.muted)),
         if (_message != null) ...[
           const SizedBox(height: 4),
@@ -170,22 +174,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
         ),
         const SizedBox(height: 16),
         if (_isLoading)
-          const _HistoryEmptyState(
+          _HistoryEmptyState(
             icon: Icons.sync_outlined,
-            title: '활동 기록 동기화 중',
-            body: '안전 확인과 동행 종료 기록을 불러오고 있습니다.',
+            title: l10n.historySyncing,
+            body: l10n.historySafetyLoading,
           )
         else if (_hasBackend && events.isEmpty)
-          const _HistoryEmptyState(
+          _HistoryEmptyState(
             icon: Icons.check_circle_outline,
-            title: '오늘 안전 확인이 없습니다',
-            body: '동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 남습니다.',
+            title: l10n.historySafetyEmpty,
+            body: l10n.historySafetyEmptyHint,
           )
         else if (visibleEvents.isEmpty)
-          const _HistoryEmptyState(
+          _HistoryEmptyState(
             icon: Icons.filter_alt_off_outlined,
-            title: '이 필터의 활동이 없습니다',
-            body: '다른 활동 필터를 선택하면 오늘 기록을 다시 볼 수 있습니다.',
+            title: l10n.historyFilterEmpty,
+            body: l10n.historyFilterEmptyHint,
           )
         else
           for (final event in visibleEvents) _HistoryRow(event: event),
@@ -194,6 +198,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ],
     );
   }
+}
+
+/// 활동 종류.
+///
+/// 예전에는 이 자리에 표시용 한국어 문자열이 들어가 있었고 필터가
+/// `event.type == '확인'` 으로 비교했다. 라벨을 번역하는 순간 필터가 조용히
+/// 깨지는 구조였다. 판별과 표시를 분리한다.
+enum HistoryEventType {
+  checkIn,
+  place,
+  companion,
+  data,
+  viewed;
+
+  String label(AppL10n l10n) => switch (this) {
+        HistoryEventType.checkIn => l10n.historyFilterCheckIn,
+        HistoryEventType.place => l10n.historyFilterPlace,
+        HistoryEventType.companion => l10n.historyFilterCompanion,
+        HistoryEventType.data => l10n.historyFilterData,
+        HistoryEventType.viewed => l10n.historyTypeViewed,
+      };
 }
 
 class _HistoryEvent {
@@ -206,7 +231,7 @@ class _HistoryEvent {
   });
 
   final String time;
-  final String type;
+  final HistoryEventType type;
   final String title;
   final String detail;
   final GyeoteTone tone;
@@ -220,21 +245,21 @@ class _SummaryBand extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: palette.line),
-        borderRadius: BorderRadius.circular(8),
-        color: palette.surface,
+        borderRadius: BorderRadius.circular(GyeoteRadius.card),
+        color: palette.surfaceAlt,
       ),
       child: Row(
         children: [
-          const _SummaryCell(label: '조회', value: '3'),
+          _SummaryCell(label: l10n.historyTypeViewed, value: '3'),
           const _Divider(),
-          const _SummaryCell(label: '장소', value: '5'),
+          _SummaryCell(label: l10n.historyFilterPlace, value: '5'),
           const _Divider(),
-          _SummaryCell(label: '확인', value: '$checkInCount'),
+          _SummaryCell(label: l10n.historyFilterCheckIn, value: '$checkInCount'),
         ],
       ),
     );
@@ -281,12 +306,12 @@ class _SafetySummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: palette.line),
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(GyeoteRadius.card),
         color: palette.brandSoft,
       ),
       child: Row(
@@ -306,13 +331,15 @@ class _SafetySummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  checkInCount == 0 ? '안전 확인 대기' : '안전 확인 $checkInCount개',
+                  checkInCount == 0
+                      ? l10n.checkInPending
+                      : l10n.historyCheckInCount(checkInCount),
                   style: const TextStyle(fontWeight: FontWeight.w900),
                 ),
                 const SizedBox(height: 3),
                 Text(
                   latestCheckIn == null
-                      ? '최근 도착 확인이 아직 없습니다.'
+                      ? l10n.historySafetyNoRecent
                       : latestCheckIn!.title,
                   style:
                       TextStyle(color: palette.muted, fontSize: 12),
@@ -320,7 +347,7 @@ class _SafetySummaryCard extends StatelessWidget {
               ],
             ),
           ),
-          const _HistoryPill(text: '광고 없음'),
+          _HistoryPill(text: l10n.historyNoAds),
         ],
       ),
     );
@@ -344,7 +371,7 @@ class _HistoryFilterBar extends StatelessWidget {
         children: [
           for (final filter in _HistoryFilter.values) ...[
             ChoiceChip(
-              label: Text(_filterLabel(filter)),
+              label: Text(_filterLabel(AppL10n.of(context), filter)),
               selected: selected == filter,
               onSelected: (_) => onChanged(filter),
               avatar: Icon(_filterIcon(filter), size: 16),
@@ -403,6 +430,7 @@ class _HistoryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
@@ -434,7 +462,7 @@ class _HistoryRow extends StatelessWidget {
                       color: event.tone.resolve(palette).withValues(alpha: 0.12),
                     ),
                     child: Text(
-                      event.type,
+                      event.type.label(l10n),
                       style: TextStyle(
                           color: event.tone.resolve(palette),
                           fontWeight: FontWeight.w900,
@@ -509,12 +537,12 @@ class _HistoryEmptyState extends StatelessWidget {
   }
 }
 
-_HistoryEvent _historyEventFromCheckIn(CheckInEvent event) {
+_HistoryEvent _historyEventFromCheckIn(AppL10n l10n, CheckInEvent event) {
   return _HistoryEvent(
     time: _timeLabel(event.createdAt),
-    type: '확인',
-    title: '${event.displayName} ${_checkInStatusLabel(event.status)}',
-    detail: '동행 공유 종료 · ${_sharingModeLabel(event.sharingMode)} 위치로 알림',
+    type: HistoryEventType.checkIn,
+    title: '${event.displayName} ${_checkInStatusLabel(l10n, event.status)}',
+    detail: l10n.companionEndedNote(_sharingModeLabel(l10n, event.sharingMode)),
     tone: GyeoteTone.brand,
   );
 }
@@ -524,29 +552,24 @@ bool _matchesFilter(_HistoryEvent event, _HistoryFilter filter) {
     case _HistoryFilter.all:
       return true;
     case _HistoryFilter.checkIn:
-      return event.type == '확인';
+      return event.type == HistoryEventType.checkIn;
     case _HistoryFilter.place:
-      return event.type == '장소';
+      return event.type == HistoryEventType.place;
     case _HistoryFilter.companion:
-      return event.type == '동행';
+      return event.type == HistoryEventType.companion;
     case _HistoryFilter.data:
-      return event.type == '데이터';
+      return event.type == HistoryEventType.data;
   }
 }
 
-String _filterLabel(_HistoryFilter filter) {
-  switch (filter) {
-    case _HistoryFilter.all:
-      return '전체';
-    case _HistoryFilter.checkIn:
-      return '확인';
-    case _HistoryFilter.place:
-      return '장소';
-    case _HistoryFilter.companion:
-      return '동행';
-    case _HistoryFilter.data:
-      return '데이터';
-  }
+String _filterLabel(AppL10n l10n, _HistoryFilter filter) {
+  return switch (filter) {
+    _HistoryFilter.all => l10n.historyFilterAll,
+    _HistoryFilter.checkIn => l10n.historyFilterCheckIn,
+    _HistoryFilter.place => l10n.historyFilterPlace,
+    _HistoryFilter.companion => l10n.historyFilterCompanion,
+    _HistoryFilter.data => l10n.historyFilterData,
+  };
 }
 
 IconData _filterIcon(_HistoryFilter filter) {
@@ -569,28 +592,28 @@ String _timeLabel(DateTime dateTime) {
   return '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
 }
 
-String _checkInStatusLabel(CheckInStatus status) {
+String _checkInStatusLabel(AppL10n l10n, CheckInStatus status) {
   switch (status) {
     case CheckInStatus.safeArrived:
-      return '무사 도착';
+      return l10n.checkInSafeArrived;
     case CheckInStatus.needsCheck:
-      return '확인 필요';
+      return l10n.checkInNeedsCheck;
     case CheckInStatus.signalWeak:
-      return '신호가 잠시 약해요';
+      return l10n.checkInWeakSignal;
   }
 }
 
-String _sharingModeLabel(SharingMode mode) {
+String _sharingModeLabel(AppL10n l10n, SharingMode mode) {
   switch (mode) {
     case SharingMode.precise:
-      return '정확';
+      return l10n.sharingModePrecise;
     case SharingMode.balanced:
-      return '균형';
+      return l10n.sharingModeBalanced;
     case SharingMode.area:
-      return '동네 범위';
+      return l10n.sharingModeArea;
     case SharingMode.hidden:
-      return '숨김';
+      return l10n.sharingModeHidden;
     case SharingMode.sosOnly:
-      return '긴급 전용';
+      return l10n.sharingModeSosOnly;
   }
 }

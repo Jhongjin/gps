@@ -540,6 +540,204 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'동행 공유 종료 · 균형 위치로 알림'**
   String get deviceArrivedMeta;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 활동'**
+  String get historyTitle;
+
+  /// No description provided for @historySubtitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림, 조회 로그, 동행 세션, 안전 확인'**
+  String get historySubtitle;
+
+  /// No description provided for @historySyncing.
+  ///
+  /// In ko, this message translates to:
+  /// **'활동 기록 동기화 중'**
+  String get historySyncing;
+
+  /// No description provided for @historyLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'활동 기록을 불러오지 못했습니다.'**
+  String get historyLoadFailed;
+
+  /// No description provided for @historyFilterAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체'**
+  String get historyFilterAll;
+
+  /// No description provided for @historyFilterCheckIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인'**
+  String get historyFilterCheckIn;
+
+  /// No description provided for @historyFilterPlace.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소'**
+  String get historyFilterPlace;
+
+  /// No description provided for @historyFilterCompanion.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행'**
+  String get historyFilterCompanion;
+
+  /// No description provided for @historyFilterData.
+  ///
+  /// In ko, this message translates to:
+  /// **'데이터'**
+  String get historyFilterData;
+
+  /// No description provided for @historyFilterEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 필터의 활동이 없습니다'**
+  String get historyFilterEmpty;
+
+  /// No description provided for @historyFilterEmptyHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'다른 활동 필터를 선택하면 오늘 기록을 다시 볼 수 있습니다.'**
+  String get historyFilterEmptyHint;
+
+  /// No description provided for @historyCheckInCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 확인 {count}개'**
+  String historyCheckInCount(int count);
+
+  /// No description provided for @historyNoAds.
+  ///
+  /// In ko, this message translates to:
+  /// **'광고 없음'**
+  String get historyNoAds;
+
+  /// No description provided for @historySafetyLoading.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 확인과 동행 종료 기록을 불러오고 있습니다.'**
+  String get historySafetyLoading;
+
+  /// No description provided for @historySafetyEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘 안전 확인이 없습니다'**
+  String get historySafetyEmpty;
+
+  /// No description provided for @historySafetyEmptyHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 남습니다.'**
+  String get historySafetyEmptyHint;
+
+  /// No description provided for @historySafetyNoRecent.
+  ///
+  /// In ko, this message translates to:
+  /// **'최근 도착 확인이 아직 없습니다.'**
+  String get historySafetyNoRecent;
+
+  /// No description provided for @checkInSafeArrived.
+  ///
+  /// In ko, this message translates to:
+  /// **'무사 도착'**
+  String get checkInSafeArrived;
+
+  /// No description provided for @checkInPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 확인 대기'**
+  String get checkInPending;
+
+  /// No description provided for @checkInNeedsCheck.
+  ///
+  /// In ko, this message translates to:
+  /// **'확인 필요'**
+  String get checkInNeedsCheck;
+
+  /// No description provided for @checkInWeakSignal.
+  ///
+  /// In ko, this message translates to:
+  /// **'신호가 잠시 약해요'**
+  String get checkInWeakSignal;
+
+  /// No description provided for @companionEndedNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 공유 종료 · {mode} 위치로 알림'**
+  String companionEndedNote(String mode);
+
+  /// No description provided for @demoEventPlaceArrival.
+  ///
+  /// In ko, this message translates to:
+  /// **'준 학교 도착'**
+  String get demoEventPlaceArrival;
+
+  /// No description provided for @demoEventPlaceArrivalDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'예상보다 4분 빠름'**
+  String get demoEventPlaceArrivalDetail;
+
+  /// No description provided for @demoEventViewed.
+  ///
+  /// In ko, this message translates to:
+  /// **'미라가 내 위치 확인'**
+  String get demoEventViewed;
+
+  /// No description provided for @demoEventViewedDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'가족 서클 · 균형 위치'**
+  String get demoEventViewedDetail;
+
+  /// No description provided for @demoEventCompanion.
+  ///
+  /// In ko, this message translates to:
+  /// **'할아버지 산책 시작'**
+  String get demoEventCompanion;
+
+  /// No description provided for @demoEventCompanionDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'15분 동행 세션 · 상호 동의'**
+  String get demoEventCompanionDetail;
+
+  /// No description provided for @demoEventCheckIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'준 무사 도착'**
+  String get demoEventCheckIn;
+
+  /// No description provided for @demoEventCheckInDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 공유 종료 · 균형 위치로 알림'**
+  String get demoEventCheckInDetail;
+
+  /// No description provided for @demoEventDataRequest.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 기록 삭제 요청'**
+  String get demoEventDataRequest;
+
+  /// No description provided for @demoEventDataRequestDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리 대기 중'**
+  String get demoEventDataRequestDetail;
+
+  /// No description provided for @historyTypeViewed.
+  ///
+  /// In ko, this message translates to:
+  /// **'조회'**
+  String get historyTypeViewed;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
