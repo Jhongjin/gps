@@ -674,4 +674,302 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get privacyCompanion15MinLeft => '15분 남음';
+
+  @override
+  String get mapOpenCircle => '서클';
+
+  @override
+  String get mapOnboardTitle => '첫 서클을 시작하세요';
+
+  @override
+  String get mapOnboardBody => '초대가 완료되면 지도에 공유 위치가 표시됩니다.';
+
+  @override
+  String get placeDraftTitle => '장소 반경';
+
+  @override
+  String get placeDraftSubtitle => '도착/이탈 규칙 저장';
+
+  @override
+  String get placeDraftNameLabel => '장소 이름';
+
+  @override
+  String get placeDraftNameHint => '새 장소';
+
+  @override
+  String get placeDraftSave => '장소 알림 저장';
+
+  @override
+  String get placeDraftSaving => '장소 알림 저장 중';
+
+  @override
+  String get placeRuleArrival => '도착';
+
+  @override
+  String get placeRuleDeparture => '이탈';
+
+  @override
+  String get placeRuleLate => '늦음';
+
+  @override
+  String get placeRuleLongStay => '오래 머무름';
+
+  @override
+  String get quietHoursNone => '없음';
+
+  @override
+  String get quietHoursNight => '야간';
+
+  @override
+  String get quietHoursClass => '수업';
+
+  @override
+  String get quietHoursClassOrWork => '수업/근무';
+
+  @override
+  String get quietHoursNoneCopy => '중요한 도착/이탈 알림을 항상 받을 수 있습니다.';
+
+  @override
+  String get quietHoursNightCopy => '22:00-07:00에는 긴급하지 않은 장소 알림을 조용히 처리합니다.';
+
+  @override
+  String get quietHoursClassCopy => '09:00-17:00에는 반복적인 장소 알림을 줄이는 preset입니다.';
+
+  @override
+  String get placeAlertNeedsBackend => 'Supabase 연결 후 저장할 수 있습니다.';
+
+  @override
+  String get placeAlertPickTarget => '대상 멤버를 선택해 주세요.';
+
+  @override
+  String get placeAlertNeedsName => '장소 이름을 입력해 주세요.';
+
+  @override
+  String get placeAlertNeedsRule => '알림 조건을 하나 이상 선택해 주세요.';
+
+  @override
+  String get placeAlertSaveFailed => '장소 알림을 저장하지 못했습니다. 대상과 공유 범위를 확인해 주세요.';
+
+  @override
+  String get placeAlertNeedsLiveCircle => '실제 서클 위치가 연결되면 저장할 수 있습니다.';
+
+  @override
+  String get placeAlertReady => '장소 알림 준비됨';
+
+  @override
+  String get placeAlertUnregistered => '장소 알림 반경이 기기에서 해제됨';
+
+  @override
+  String get placeAlertSavedPendingDevice => '장소 알림은 저장됨 · 기기 반경 등록 대기 중';
+
+  @override
+  String get placeAlertEnter => '저장한 장소 반경에 도착했습니다.';
+
+  @override
+  String get placeAlertExit => '저장한 장소 반경을 벗어났습니다.';
+
+  @override
+  String get placeAlertTransition => '저장한 장소 반경 변화가 감지됐습니다.';
+
+  @override
+  String get companionStart => '시작';
+
+  @override
+  String get companionFifteenMinutes => '15분';
+
+  @override
+  String get companionUntilArrival => '도착까지';
+
+  @override
+  String get companionCheckIn => '도착 확인';
+
+  @override
+  String get companionCheckInSending => '도착 확인을 보내는 중';
+
+  @override
+  String get companionCheckInFailed => '도착 확인을 보내지 못했습니다.';
+
+  @override
+  String get companionArrivedSent => '무사 도착을 보냈어요. 동행 공유는 종료됐습니다.';
+
+  @override
+  String get companionStarted => '동행 모드 위치 공유 시작';
+
+  @override
+  String get companionStartedWithSession => '동행 모드 위치 공유 시작 · 세션 연결됨';
+
+  @override
+  String get companionStopped => '동행 모드 위치 공유 중지';
+
+  @override
+  String get companionStartFailed => '동행 모드를 시작하지 못했습니다.';
+
+  @override
+  String get companionEndSyncPending => '동행 세션 종료 동기화 대기 중';
+
+  @override
+  String get checkInSyncPending => '안전 확인 기록 동기화 대기 중';
+
+  @override
+  String get uploadSyncTitle => '위치 동기화';
+
+  @override
+  String get uploadFlush => '대기 위치 동기화';
+
+  @override
+  String get uploadNothingPending => '업로드할 대기 위치 없음';
+
+  @override
+  String get uploadQueueReady => '업로드 큐 준비됨';
+
+  @override
+  String get uploadQueueWaiting => '업로드 큐 대기';
+
+  @override
+  String get uploadQueueSyncing => '업로드 큐 동기화 중';
+
+  @override
+  String get uploadQueueRequesting => '업로드 큐 동기화 요청 중';
+
+  @override
+  String get uploadQueueRequested => '업로드 큐 동기화 요청됨';
+
+  @override
+  String get uploadQueueRequestFailed => '업로드 큐 동기화를 요청하지 못했습니다.';
+
+  @override
+  String get uploadQueueConfigPending => '업로드 큐 설정 대기 중';
+
+  @override
+  String get uploadDeviceConfigPending => '기기 업로드 큐 설정 대기 중';
+
+  @override
+  String get uploadDeviceReady => '기기 업로드 큐 준비됨';
+
+  @override
+  String get uploadDeviceDisconnected => '기기 업로드 큐 연결 해제';
+
+  @override
+  String get uploadFailedRetryScheduled => '업로드 실패 · 자동 재시도 예약';
+
+  @override
+  String get uploadNeedsSignIn => '로그인 후 업로드 큐 연결';
+
+  @override
+  String get uploadIosPending => 'iOS 업로드 큐 구현 대기 중';
+
+  @override
+  String get uploadBuildOnly => 'Android/iOS 빌드에서 업로드 큐를 사용할 수 있습니다.';
+
+  @override
+  String get deviceLocationBuildOnly => 'Android/iOS 빌드에서 기기 위치를 사용할 수 있습니다.';
+
+  @override
+  String get sosBuildOnly => 'Android/iOS 빌드에서 긴급 위치를 보낼 수 있습니다.';
+
+  @override
+  String get deviceLocationBridgeNote => '기기 위치는 Android/iOS 빌드에서 연결됩니다.';
+
+  @override
+  String get deviceBridgeFailed => '기기 위치 브리지를 연결하지 못했습니다.';
+
+  @override
+  String get deviceReceiving => '내 위치 수신 중';
+
+  @override
+  String get deviceSharingRunning => '위치 공유 실행 중';
+
+  @override
+  String get deviceSharingStopped => '위치 공유 중지됨';
+
+  @override
+  String get devicePermissionChecked => '위치 권한 상태 확인됨';
+
+  @override
+  String get deviceLocationServiceAvailable => '위치 서비스 사용 가능';
+
+  @override
+  String get deviceLocationError => '위치 연결 오류';
+
+  @override
+  String get sosRequesting => '긴급 위치 요청 중';
+
+  @override
+  String get sosRequestFailed => '긴급 위치를 요청하지 못했습니다.';
+
+  @override
+  String get circleLoadFailed => '서클을 불러오지 못했습니다.';
+
+  @override
+  String get locationLoadFailed => '위치를 불러오지 못했습니다.';
+
+  @override
+  String get sharingHidden => '공유 숨김';
+
+  @override
+  String get sharingPausedByPolicy => '공유 정책에 따라 위치 수집 일시정지';
+
+  @override
+  String get precisionExactLocation => '정확 위치';
+
+  @override
+  String get precisionBalancedLocation => '균형 위치';
+
+  @override
+  String get checkInStatusChanged => '상태 변경';
+
+  @override
+  String companionMinutesLeft(int minutes) {
+    return '$minutes분 남음';
+  }
+
+  @override
+  String uploadPendingCount(int count) {
+    return '대기 $count건';
+  }
+
+  @override
+  String uploadCompleted(int count) {
+    return '위치 업로드 완료 · $count건';
+  }
+
+  @override
+  String uploadRetryIn(int seconds) {
+    return '업로드 재시도 대기 · $seconds초 후';
+  }
+
+  @override
+  String placeAlertRegistered(int count) {
+    return '장소 알림 반경 $count개 기기 등록됨';
+  }
+
+  @override
+  String placeAlertSaved(String name, int count) {
+    return '$name 저장됨 · 대상 $count명';
+  }
+
+  @override
+  String deviceLocationService(String status) {
+    return '위치 서비스 $status';
+  }
+
+  @override
+  String precisionRange(String mode, String radius) {
+    return '$mode · 약 $radius 범위';
+  }
+
+  @override
+  String precisionRangeStale(String mode, String radius) {
+    return '마지막 위치 · $mode · 약 $radius 범위';
+  }
+
+  @override
+  String companionConfigNote(int seconds, String mode) {
+    return '최소 $seconds초 간격 · $mode 공유 · 상호 동의 후 시작';
+  }
+
+  @override
+  String checkInEventLine(String name, String status, String time) {
+    return '$name · $status · $time';
+  }
 }

@@ -1356,6 +1356,558 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'15분 남음'**
   String get privacyCompanion15MinLeft;
+
+  /// No description provided for @mapOpenCircle.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클'**
+  String get mapOpenCircle;
+
+  /// No description provided for @mapOnboardTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'첫 서클을 시작하세요'**
+  String get mapOnboardTitle;
+
+  /// No description provided for @mapOnboardBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대가 완료되면 지도에 공유 위치가 표시됩니다.'**
+  String get mapOnboardBody;
+
+  /// No description provided for @placeDraftTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 반경'**
+  String get placeDraftTitle;
+
+  /// No description provided for @placeDraftSubtitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착/이탈 규칙 저장'**
+  String get placeDraftSubtitle;
+
+  /// No description provided for @placeDraftNameLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 이름'**
+  String get placeDraftNameLabel;
+
+  /// No description provided for @placeDraftNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'새 장소'**
+  String get placeDraftNameHint;
+
+  /// No description provided for @placeDraftSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 저장'**
+  String get placeDraftSave;
+
+  /// No description provided for @placeDraftSaving.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 저장 중'**
+  String get placeDraftSaving;
+
+  /// No description provided for @placeRuleArrival.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착'**
+  String get placeRuleArrival;
+
+  /// No description provided for @placeRuleDeparture.
+  ///
+  /// In ko, this message translates to:
+  /// **'이탈'**
+  String get placeRuleDeparture;
+
+  /// No description provided for @placeRuleLate.
+  ///
+  /// In ko, this message translates to:
+  /// **'늦음'**
+  String get placeRuleLate;
+
+  /// No description provided for @placeRuleLongStay.
+  ///
+  /// In ko, this message translates to:
+  /// **'오래 머무름'**
+  String get placeRuleLongStay;
+
+  /// No description provided for @quietHoursNone.
+  ///
+  /// In ko, this message translates to:
+  /// **'없음'**
+  String get quietHoursNone;
+
+  /// No description provided for @quietHoursNight.
+  ///
+  /// In ko, this message translates to:
+  /// **'야간'**
+  String get quietHoursNight;
+
+  /// No description provided for @quietHoursClass.
+  ///
+  /// In ko, this message translates to:
+  /// **'수업'**
+  String get quietHoursClass;
+
+  /// No description provided for @quietHoursClassOrWork.
+  ///
+  /// In ko, this message translates to:
+  /// **'수업/근무'**
+  String get quietHoursClassOrWork;
+
+  /// No description provided for @quietHoursNoneCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'중요한 도착/이탈 알림을 항상 받을 수 있습니다.'**
+  String get quietHoursNoneCopy;
+
+  /// No description provided for @quietHoursNightCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'22:00-07:00에는 긴급하지 않은 장소 알림을 조용히 처리합니다.'**
+  String get quietHoursNightCopy;
+
+  /// No description provided for @quietHoursClassCopy.
+  ///
+  /// In ko, this message translates to:
+  /// **'09:00-17:00에는 반복적인 장소 알림을 줄이는 preset입니다.'**
+  String get quietHoursClassCopy;
+
+  /// No description provided for @placeAlertNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'Supabase 연결 후 저장할 수 있습니다.'**
+  String get placeAlertNeedsBackend;
+
+  /// No description provided for @placeAlertPickTarget.
+  ///
+  /// In ko, this message translates to:
+  /// **'대상 멤버를 선택해 주세요.'**
+  String get placeAlertPickTarget;
+
+  /// No description provided for @placeAlertNeedsName.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 이름을 입력해 주세요.'**
+  String get placeAlertNeedsName;
+
+  /// No description provided for @placeAlertNeedsRule.
+  ///
+  /// In ko, this message translates to:
+  /// **'알림 조건을 하나 이상 선택해 주세요.'**
+  String get placeAlertNeedsRule;
+
+  /// No description provided for @placeAlertSaveFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림을 저장하지 못했습니다. 대상과 공유 범위를 확인해 주세요.'**
+  String get placeAlertSaveFailed;
+
+  /// No description provided for @placeAlertNeedsLiveCircle.
+  ///
+  /// In ko, this message translates to:
+  /// **'실제 서클 위치가 연결되면 저장할 수 있습니다.'**
+  String get placeAlertNeedsLiveCircle;
+
+  /// No description provided for @placeAlertReady.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 준비됨'**
+  String get placeAlertReady;
+
+  /// No description provided for @placeAlertUnregistered.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 반경이 기기에서 해제됨'**
+  String get placeAlertUnregistered;
+
+  /// No description provided for @placeAlertSavedPendingDevice.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림은 저장됨 · 기기 반경 등록 대기 중'**
+  String get placeAlertSavedPendingDevice;
+
+  /// No description provided for @placeAlertEnter.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장한 장소 반경에 도착했습니다.'**
+  String get placeAlertEnter;
+
+  /// No description provided for @placeAlertExit.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장한 장소 반경을 벗어났습니다.'**
+  String get placeAlertExit;
+
+  /// No description provided for @placeAlertTransition.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장한 장소 반경 변화가 감지됐습니다.'**
+  String get placeAlertTransition;
+
+  /// No description provided for @companionStart.
+  ///
+  /// In ko, this message translates to:
+  /// **'시작'**
+  String get companionStart;
+
+  /// No description provided for @companionFifteenMinutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'15분'**
+  String get companionFifteenMinutes;
+
+  /// No description provided for @companionUntilArrival.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착까지'**
+  String get companionUntilArrival;
+
+  /// No description provided for @companionCheckIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 확인'**
+  String get companionCheckIn;
+
+  /// No description provided for @companionCheckInSending.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 확인을 보내는 중'**
+  String get companionCheckInSending;
+
+  /// No description provided for @companionCheckInFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'도착 확인을 보내지 못했습니다.'**
+  String get companionCheckInFailed;
+
+  /// No description provided for @companionArrivedSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'무사 도착을 보냈어요. 동행 공유는 종료됐습니다.'**
+  String get companionArrivedSent;
+
+  /// No description provided for @companionStarted.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 모드 위치 공유 시작'**
+  String get companionStarted;
+
+  /// No description provided for @companionStartedWithSession.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 모드 위치 공유 시작 · 세션 연결됨'**
+  String get companionStartedWithSession;
+
+  /// No description provided for @companionStopped.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 모드 위치 공유 중지'**
+  String get companionStopped;
+
+  /// No description provided for @companionStartFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 모드를 시작하지 못했습니다.'**
+  String get companionStartFailed;
+
+  /// No description provided for @companionEndSyncPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'동행 세션 종료 동기화 대기 중'**
+  String get companionEndSyncPending;
+
+  /// No description provided for @checkInSyncPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'안전 확인 기록 동기화 대기 중'**
+  String get checkInSyncPending;
+
+  /// No description provided for @uploadSyncTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 동기화'**
+  String get uploadSyncTitle;
+
+  /// No description provided for @uploadFlush.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 위치 동기화'**
+  String get uploadFlush;
+
+  /// No description provided for @uploadNothingPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드할 대기 위치 없음'**
+  String get uploadNothingPending;
+
+  /// No description provided for @uploadQueueReady.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 큐 준비됨'**
+  String get uploadQueueReady;
+
+  /// No description provided for @uploadQueueWaiting.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 큐 대기'**
+  String get uploadQueueWaiting;
+
+  /// No description provided for @uploadQueueSyncing.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 큐 동기화 중'**
+  String get uploadQueueSyncing;
+
+  /// No description provided for @uploadQueueRequesting.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 큐 동기화 요청 중'**
+  String get uploadQueueRequesting;
+
+  /// No description provided for @uploadQueueRequested.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 큐 동기화 요청됨'**
+  String get uploadQueueRequested;
+
+  /// No description provided for @uploadQueueRequestFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 큐 동기화를 요청하지 못했습니다.'**
+  String get uploadQueueRequestFailed;
+
+  /// No description provided for @uploadQueueConfigPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 큐 설정 대기 중'**
+  String get uploadQueueConfigPending;
+
+  /// No description provided for @uploadDeviceConfigPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 업로드 큐 설정 대기 중'**
+  String get uploadDeviceConfigPending;
+
+  /// No description provided for @uploadDeviceReady.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 업로드 큐 준비됨'**
+  String get uploadDeviceReady;
+
+  /// No description provided for @uploadDeviceDisconnected.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 업로드 큐 연결 해제'**
+  String get uploadDeviceDisconnected;
+
+  /// No description provided for @uploadFailedRetryScheduled.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 실패 · 자동 재시도 예약'**
+  String get uploadFailedRetryScheduled;
+
+  /// No description provided for @uploadNeedsSignIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인 후 업로드 큐 연결'**
+  String get uploadNeedsSignIn;
+
+  /// No description provided for @uploadIosPending.
+  ///
+  /// In ko, this message translates to:
+  /// **'iOS 업로드 큐 구현 대기 중'**
+  String get uploadIosPending;
+
+  /// No description provided for @uploadBuildOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'Android/iOS 빌드에서 업로드 큐를 사용할 수 있습니다.'**
+  String get uploadBuildOnly;
+
+  /// No description provided for @deviceLocationBuildOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'Android/iOS 빌드에서 기기 위치를 사용할 수 있습니다.'**
+  String get deviceLocationBuildOnly;
+
+  /// No description provided for @sosBuildOnly.
+  ///
+  /// In ko, this message translates to:
+  /// **'Android/iOS 빌드에서 긴급 위치를 보낼 수 있습니다.'**
+  String get sosBuildOnly;
+
+  /// No description provided for @deviceLocationBridgeNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 위치는 Android/iOS 빌드에서 연결됩니다.'**
+  String get deviceLocationBridgeNote;
+
+  /// No description provided for @deviceBridgeFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'기기 위치 브리지를 연결하지 못했습니다.'**
+  String get deviceBridgeFailed;
+
+  /// No description provided for @deviceReceiving.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 위치 수신 중'**
+  String get deviceReceiving;
+
+  /// No description provided for @deviceSharingRunning.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공유 실행 중'**
+  String get deviceSharingRunning;
+
+  /// No description provided for @deviceSharingStopped.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공유 중지됨'**
+  String get deviceSharingStopped;
+
+  /// No description provided for @devicePermissionChecked.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 권한 상태 확인됨'**
+  String get devicePermissionChecked;
+
+  /// No description provided for @deviceLocationServiceAvailable.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 서비스 사용 가능'**
+  String get deviceLocationServiceAvailable;
+
+  /// No description provided for @deviceLocationError.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 연결 오류'**
+  String get deviceLocationError;
+
+  /// No description provided for @sosRequesting.
+  ///
+  /// In ko, this message translates to:
+  /// **'긴급 위치 요청 중'**
+  String get sosRequesting;
+
+  /// No description provided for @sosRequestFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'긴급 위치를 요청하지 못했습니다.'**
+  String get sosRequestFailed;
+
+  /// No description provided for @circleLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클을 불러오지 못했습니다.'**
+  String get circleLoadFailed;
+
+  /// No description provided for @locationLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치를 불러오지 못했습니다.'**
+  String get locationLoadFailed;
+
+  /// No description provided for @sharingHidden.
+  ///
+  /// In ko, this message translates to:
+  /// **'공유 숨김'**
+  String get sharingHidden;
+
+  /// No description provided for @sharingPausedByPolicy.
+  ///
+  /// In ko, this message translates to:
+  /// **'공유 정책에 따라 위치 수집 일시정지'**
+  String get sharingPausedByPolicy;
+
+  /// No description provided for @precisionExactLocation.
+  ///
+  /// In ko, this message translates to:
+  /// **'정확 위치'**
+  String get precisionExactLocation;
+
+  /// No description provided for @precisionBalancedLocation.
+  ///
+  /// In ko, this message translates to:
+  /// **'균형 위치'**
+  String get precisionBalancedLocation;
+
+  /// No description provided for @checkInStatusChanged.
+  ///
+  /// In ko, this message translates to:
+  /// **'상태 변경'**
+  String get checkInStatusChanged;
+
+  /// No description provided for @companionMinutesLeft.
+  ///
+  /// In ko, this message translates to:
+  /// **'{minutes}분 남음'**
+  String companionMinutesLeft(int minutes);
+
+  /// No description provided for @uploadPendingCount.
+  ///
+  /// In ko, this message translates to:
+  /// **'대기 {count}건'**
+  String uploadPendingCount(int count);
+
+  /// No description provided for @uploadCompleted.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 업로드 완료 · {count}건'**
+  String uploadCompleted(int count);
+
+  /// No description provided for @uploadRetryIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'업로드 재시도 대기 · {seconds}초 후'**
+  String uploadRetryIn(int seconds);
+
+  /// No description provided for @placeAlertRegistered.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소 알림 반경 {count}개 기기 등록됨'**
+  String placeAlertRegistered(int count);
+
+  /// No description provided for @placeAlertSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name} 저장됨 · 대상 {count}명'**
+  String placeAlertSaved(String name, int count);
+
+  /// No description provided for @deviceLocationService.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 서비스 {status}'**
+  String deviceLocationService(String status);
+
+  /// No description provided for @precisionRange.
+  ///
+  /// In ko, this message translates to:
+  /// **'{mode} · 약 {radius} 범위'**
+  String precisionRange(String mode, String radius);
+
+  /// No description provided for @precisionRangeStale.
+  ///
+  /// In ko, this message translates to:
+  /// **'마지막 위치 · {mode} · 약 {radius} 범위'**
+  String precisionRangeStale(String mode, String radius);
+
+  /// No description provided for @companionConfigNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'최소 {seconds}초 간격 · {mode} 공유 · 상호 동의 후 시작'**
+  String companionConfigNote(int seconds, String mode);
+
+  /// No description provided for @checkInEventLine.
+  ///
+  /// In ko, this message translates to:
+  /// **'{name} · {status} · {time}'**
+  String checkInEventLine(String name, String status, String time);
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

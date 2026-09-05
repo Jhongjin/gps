@@ -348,5 +348,192 @@
   "privacyPending": "대기",
   "privacyCompanionMode": "동행 모드",
   "privacyCompanionConsentNote": "준과 상호 동의 완료 후 시작",
-  "privacyCompanion15MinLeft": "15분 남음"
+  "privacyCompanion15MinLeft": "15분 남음",
+  "mapOpenCircle": "서클",
+  "mapOnboardTitle": "첫 서클을 시작하세요",
+  "mapOnboardBody": "초대가 완료되면 지도에 공유 위치가 표시됩니다.",
+  "placeDraftTitle": "장소 반경",
+  "placeDraftSubtitle": "도착/이탈 규칙 저장",
+  "placeDraftNameLabel": "장소 이름",
+  "placeDraftNameHint": "새 장소",
+  "placeDraftSave": "장소 알림 저장",
+  "placeDraftSaving": "장소 알림 저장 중",
+  "placeRuleArrival": "도착",
+  "placeRuleDeparture": "이탈",
+  "placeRuleLate": "늦음",
+  "placeRuleLongStay": "오래 머무름",
+  "quietHoursNone": "없음",
+  "quietHoursNight": "야간",
+  "quietHoursClass": "수업",
+  "quietHoursClassOrWork": "수업/근무",
+  "quietHoursNoneCopy": "중요한 도착/이탈 알림을 항상 받을 수 있습니다.",
+  "quietHoursNightCopy": "22:00-07:00에는 긴급하지 않은 장소 알림을 조용히 처리합니다.",
+  "quietHoursClassCopy": "09:00-17:00에는 반복적인 장소 알림을 줄이는 preset입니다.",
+  "placeAlertNeedsBackend": "Supabase 연결 후 저장할 수 있습니다.",
+  "placeAlertPickTarget": "대상 멤버를 선택해 주세요.",
+  "placeAlertNeedsName": "장소 이름을 입력해 주세요.",
+  "placeAlertNeedsRule": "알림 조건을 하나 이상 선택해 주세요.",
+  "placeAlertSaveFailed": "장소 알림을 저장하지 못했습니다. 대상과 공유 범위를 확인해 주세요.",
+  "placeAlertNeedsLiveCircle": "실제 서클 위치가 연결되면 저장할 수 있습니다.",
+  "placeAlertReady": "장소 알림 준비됨",
+  "placeAlertUnregistered": "장소 알림 반경이 기기에서 해제됨",
+  "placeAlertSavedPendingDevice": "장소 알림은 저장됨 · 기기 반경 등록 대기 중",
+  "placeAlertEnter": "저장한 장소 반경에 도착했습니다.",
+  "placeAlertExit": "저장한 장소 반경을 벗어났습니다.",
+  "placeAlertTransition": "저장한 장소 반경 변화가 감지됐습니다.",
+  "companionStart": "시작",
+  "companionFifteenMinutes": "15분",
+  "companionUntilArrival": "도착까지",
+  "companionCheckIn": "도착 확인",
+  "companionCheckInSending": "도착 확인을 보내는 중",
+  "companionCheckInFailed": "도착 확인을 보내지 못했습니다.",
+  "companionArrivedSent": "무사 도착을 보냈어요. 동행 공유는 종료됐습니다.",
+  "companionStarted": "동행 모드 위치 공유 시작",
+  "companionStartedWithSession": "동행 모드 위치 공유 시작 · 세션 연결됨",
+  "companionStopped": "동행 모드 위치 공유 중지",
+  "companionStartFailed": "동행 모드를 시작하지 못했습니다.",
+  "companionEndSyncPending": "동행 세션 종료 동기화 대기 중",
+  "checkInSyncPending": "안전 확인 기록 동기화 대기 중",
+  "uploadSyncTitle": "위치 동기화",
+  "uploadFlush": "대기 위치 동기화",
+  "uploadNothingPending": "업로드할 대기 위치 없음",
+  "uploadQueueReady": "업로드 큐 준비됨",
+  "uploadQueueWaiting": "업로드 큐 대기",
+  "uploadQueueSyncing": "업로드 큐 동기화 중",
+  "uploadQueueRequesting": "업로드 큐 동기화 요청 중",
+  "uploadQueueRequested": "업로드 큐 동기화 요청됨",
+  "uploadQueueRequestFailed": "업로드 큐 동기화를 요청하지 못했습니다.",
+  "uploadQueueConfigPending": "업로드 큐 설정 대기 중",
+  "uploadDeviceConfigPending": "기기 업로드 큐 설정 대기 중",
+  "uploadDeviceReady": "기기 업로드 큐 준비됨",
+  "uploadDeviceDisconnected": "기기 업로드 큐 연결 해제",
+  "uploadFailedRetryScheduled": "업로드 실패 · 자동 재시도 예약",
+  "uploadNeedsSignIn": "로그인 후 업로드 큐 연결",
+  "uploadIosPending": "iOS 업로드 큐 구현 대기 중",
+  "uploadBuildOnly": "Android/iOS 빌드에서 업로드 큐를 사용할 수 있습니다.",
+  "deviceLocationBuildOnly": "Android/iOS 빌드에서 기기 위치를 사용할 수 있습니다.",
+  "sosBuildOnly": "Android/iOS 빌드에서 긴급 위치를 보낼 수 있습니다.",
+  "deviceLocationBridgeNote": "기기 위치는 Android/iOS 빌드에서 연결됩니다.",
+  "deviceBridgeFailed": "기기 위치 브리지를 연결하지 못했습니다.",
+  "deviceReceiving": "내 위치 수신 중",
+  "deviceSharingRunning": "위치 공유 실행 중",
+  "deviceSharingStopped": "위치 공유 중지됨",
+  "devicePermissionChecked": "위치 권한 상태 확인됨",
+  "deviceLocationServiceAvailable": "위치 서비스 사용 가능",
+  "deviceLocationError": "위치 연결 오류",
+  "sosRequesting": "긴급 위치 요청 중",
+  "sosRequestFailed": "긴급 위치를 요청하지 못했습니다.",
+  "circleLoadFailed": "서클을 불러오지 못했습니다.",
+  "locationLoadFailed": "위치를 불러오지 못했습니다.",
+  "sharingHidden": "공유 숨김",
+  "sharingPausedByPolicy": "공유 정책에 따라 위치 수집 일시정지",
+  "precisionExactLocation": "정확 위치",
+  "precisionBalancedLocation": "균형 위치",
+  "checkInStatusChanged": "상태 변경",
+  "companionMinutesLeft": "{minutes}분 남음",
+  "@companionMinutesLeft": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadPendingCount": "대기 {count}건",
+  "@uploadPendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadCompleted": "위치 업로드 완료 · {count}건",
+  "@uploadCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadRetryIn": "업로드 재시도 대기 · {seconds}초 후",
+  "@uploadRetryIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "placeAlertRegistered": "장소 알림 반경 {count}개 기기 등록됨",
+  "@placeAlertRegistered": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placeAlertSaved": "{name} 저장됨 · 대상 {count}명",
+  "@placeAlertSaved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deviceLocationService": "위치 서비스 {status}",
+  "@deviceLocationService": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "precisionRange": "{mode} · 약 {radius} 범위",
+  "@precisionRange": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "radius": {
+        "type": "String"
+      }
+    }
+  },
+  "precisionRangeStale": "마지막 위치 · {mode} · 약 {radius} 범위",
+  "@precisionRangeStale": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "radius": {
+        "type": "String"
+      }
+    }
+  },
+  "companionConfigNote": "최소 {seconds}초 간격 · {mode} 공유 · 상호 동의 후 시작",
+  "@companionConfigNote": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "checkInEventLine": "{name} · {status} · {time}",
+  "@checkInEventLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  }
 }

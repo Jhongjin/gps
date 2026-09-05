@@ -64,6 +64,11 @@ class _MapScreenState extends State<MapScreen> {
   String? _uploadStatus;
   String? _checkInStatusMessage;
   String? _placeAlertStatusMessage;
+
+  /// 오류 색을 문구 내용으로 추측하지 않기 위한 플래그.
+  /// 예전에는 '못했습니다'/'선택'/'입력' 부분 문자열로 판별해서, 번역하는 순간
+  /// 실패가 성공 색으로 표시됐다.
+  bool _placeAlertStatusIsError = false;
   int? _uploadPendingCount;
   bool? _hasServerCircle;
   String? _activeCircleId;
@@ -86,7 +91,18 @@ class _MapScreenState extends State<MapScreen> {
   int _placeDraftRadiusM = 300;
   int _routeTailRequestSerial = 0;
   Set<String> _placeDraftTargetIds = const {};
-  final _placeAlertNameController = TextEditingController(text: '새 장소');
+  final _placeAlertNameController = TextEditingController();
+  bool _didSeedPlaceName = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 기본 장소 이름은 로케일이 정해진 뒤에야 만들 수 있다.
+    if (!_didSeedPlaceName) {
+      _didSeedPlaceName = true;
+      _placeAlertNameController.text = _l10n.placeDraftNameHint;
+    }
+  }
 
   @override
   void initState() {
@@ -198,7 +214,7 @@ class _MapScreenState extends State<MapScreen> {
           }
           setState(() {
             _isLoading = false;
-            _loadError = '위치를 불러오지 못했습니다.';
+            _loadError = _l10n.locationLoadFailed;
           });
         },
       );
@@ -208,7 +224,7 @@ class _MapScreenState extends State<MapScreen> {
       }
       setState(() {
         _isLoading = false;
-        _loadError = '서클을 불러오지 못했습니다.';
+        _loadError = _l10n.circleLoadFailed;
       });
     }
   }
@@ -230,7 +246,7 @@ class _MapScreenState extends State<MapScreen> {
       setState(() => _lastCheckInEvent = events.first);
     } catch (_) {
       if (mounted) {
-        setState(() => _checkInStatusMessage = '안전 확인 기록 동기화 대기 중');
+        setState(() => _checkInStatusMessage = _l10n.checkInSyncPending);
       }
     }
   }
@@ -298,8 +314,8 @@ class _MapScreenState extends State<MapScreen> {
         widget.locationBridge.clearUploadConfig();
         if (mounted) {
           setState(() {
-            _bridgeStatus = '기기 업로드 큐 연결 해제';
-            _uploadStatus = '로그인 후 업로드 큐 연결';
+            _bridgeStatus = _l10n.uploadDeviceDisconnected;
+            _uploadStatus = _l10n.uploadNeedsSignIn;
             _uploadPendingCount = null;
           });
         }
@@ -325,7 +341,7 @@ class _MapScreenState extends State<MapScreen> {
     if (session == null || profileId == null) {
       await widget.locationBridge.clearUploadConfig();
       if (mounted) {
-        setState(() => _uploadStatus = '로그인 후 업로드 큐 연결');
+        setState(() => _uploadStatus = _l10n.uploadNeedsSignIn);
       }
       return;
     }
@@ -348,15 +364,15 @@ class _MapScreenState extends State<MapScreen> {
       );
       if (mounted) {
         setState(() {
-          _bridgeStatus = '기기 업로드 큐 준비됨';
-          _uploadStatus = '업로드 큐 준비됨';
+          _bridgeStatus = _l10n.uploadDeviceReady;
+          _uploadStatus = _l10n.uploadQueueReady;
         });
       }
     } catch (_) {
       if (mounted) {
         setState(() {
-          _bridgeStatus = '기기 업로드 큐 설정 대기 중';
-          _uploadStatus = '업로드 큐 설정 대기 중';
+          _bridgeStatus = _l10n.uploadDeviceConfigPending;
+          _uploadStatus = _l10n.uploadQueueConfigPending;
         });
       }
     }
@@ -364,7 +380,7 @@ class _MapScreenState extends State<MapScreen> {
 
   void _connectDeviceLocation() {
     if (!_supportsNativeLocation) {
-      _bridgeStatus = '기기 위치는 Android/iOS 빌드에서 연결됩니다.';
+      _bridgeStatus = _l10n.deviceLocationBridgeNote;
       return;
     }
 
@@ -383,14 +399,14 @@ class _MapScreenState extends State<MapScreen> {
           setState(() {
             _deviceTrack = track;
             _deviceRoute = track.routeTail;
-            _bridgeStatus = '내 위치 수신 중';
+            _bridgeStatus = _l10n.deviceReceiving;
           });
         } else if (type == 'permission.changed') {
-          setState(() => _bridgeStatus = '위치 권한 상태 확인됨');
+          setState(() => _bridgeStatus = _l10n.devicePermissionChecked);
         } else if (type == 'geofence.entered' ||
             type == 'geofence.exited' ||
             type == 'geofence.transition') {
-          final message = _geofenceStatusText(type);
+          final message = _geofenceStatusText(_l10n, type);
           setState(() {
             _bridgeStatus = message;
             _placeAlertStatusMessage = message;
@@ -409,7 +425,7 @@ class _MapScreenState extends State<MapScreen> {
           });
         } else if (type == 'location.error') {
           final code = '${event['code'] ?? ''}';
-          final message = '${event['message'] ?? '위치 연결 오류'}';
+          final message = '${event['message'] ?? _l10n.deviceLocationError}';
           final pendingCount = _intFromEvent(event['pendingCount']);
           setState(() {
             _bridgeStatus = message;
@@ -422,7 +438,7 @@ class _MapScreenState extends State<MapScreen> {
       },
       onError: (_) {
         if (mounted) {
-          setState(() => _bridgeStatus = '기기 위치 브리지를 연결하지 못했습니다.');
+          setState(() => _bridgeStatus = _l10n.deviceBridgeFailed);
         }
       },
     );
@@ -461,7 +477,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _startCompanionSession(Duration duration) async {
     if (!_supportsNativeLocation) {
-      setState(() => _bridgeStatus = 'Android/iOS 빌드에서 기기 위치를 사용할 수 있습니다.');
+      setState(() => _bridgeStatus = _l10n.deviceLocationBuildOnly);
       return;
     }
 
@@ -482,12 +498,12 @@ class _MapScreenState extends State<MapScreen> {
         _isCompanionActive = true;
         _activeCompanionSessionId = companionSessionId;
         _bridgeStatus = companionSessionId == null
-            ? '동행 모드 위치 공유 시작'
-            : '동행 모드 위치 공유 시작 · 세션 연결됨';
+            ? _l10n.companionStarted
+            : _l10n.companionStartedWithSession;
       });
     } catch (_) {
       if (mounted) {
-        setState(() => _bridgeStatus = '동행 모드를 시작하지 못했습니다.');
+        setState(() => _bridgeStatus = _l10n.companionStartFailed);
       }
     }
   }
@@ -504,7 +520,7 @@ class _MapScreenState extends State<MapScreen> {
       setState(() {
         _isCompanionActive = false;
         _activeCompanionSessionId = null;
-        _bridgeStatus = '동행 모드 위치 공유 중지';
+        _bridgeStatus = _l10n.companionStopped;
       });
     }
   }
@@ -513,7 +529,7 @@ class _MapScreenState extends State<MapScreen> {
     final circleId = _activeCircleId;
     setState(() {
       _isCheckingIn = true;
-      _checkInStatusMessage = '도착 확인을 보내는 중';
+      _checkInStatusMessage = _l10n.companionCheckInSending;
     });
 
     CheckInEvent? savedEvent;
@@ -546,7 +562,7 @@ class _MapScreenState extends State<MapScreen> {
               circleId: circleId ?? 'local',
               actorProfileId: 'device-me',
               subjectProfileId: 'device-me',
-              displayName: '나',
+              displayName: _l10n.mapMeShort,
               status: CheckInStatus.safeArrived,
               sharingMode: SharingMode.balanced,
               createdAt: DateTime.now(),
@@ -559,12 +575,12 @@ class _MapScreenState extends State<MapScreen> {
           isStale: false,
           hasLowBattery: false,
         );
-        _bridgeStatus = '무사 도착을 보냈어요. 동행 공유는 종료됐습니다.';
+        _bridgeStatus = _l10n.companionArrivedSent;
         _checkInStatusMessage = _bridgeStatus;
       });
     } catch (_) {
       if (mounted) {
-        setState(() => _checkInStatusMessage = '도착 확인을 보내지 못했습니다.');
+        setState(() => _checkInStatusMessage = _l10n.companionCheckInFailed);
       }
     } finally {
       if (mounted) {
@@ -589,7 +605,7 @@ class _MapScreenState extends State<MapScreen> {
 
   /// 길게 누르기로 무장한 뒤 취소 유예를 준다. 탭 한 번으로는 나가지 않는다.
   Future<void> _armSos() async {
-    final audience = _circleName ?? '우리 서클';
+    final audience = _circleName ?? _l10n.mapDefaultCircleName;
     final confirmed = await showSosCountdown(context, audienceLabel: audience);
     if (!confirmed || !mounted) return;
     await _requestSosFix();
@@ -597,7 +613,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _requestSosFix() async {
     if (!_supportsNativeLocation) {
-      setState(() => _bridgeStatus = 'Android/iOS 빌드에서 긴급 위치를 보낼 수 있습니다.');
+      setState(() => _bridgeStatus = _l10n.sosBuildOnly);
       return;
     }
 
@@ -605,34 +621,34 @@ class _MapScreenState extends State<MapScreen> {
       await widget.locationBridge.requestWhenInUse();
       await widget.locationBridge.requestSosFix();
       if (mounted) {
-        setState(() => _bridgeStatus = '긴급 위치 요청 중');
+        setState(() => _bridgeStatus = _l10n.sosRequesting);
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _bridgeStatus = '긴급 위치를 요청하지 못했습니다.');
+        setState(() => _bridgeStatus = _l10n.sosRequestFailed);
       }
     }
   }
 
   Future<void> _flushPendingLocations() async {
     if (!_supportsNativeLocation) {
-      setState(() => _uploadStatus = 'Android/iOS 빌드에서 업로드 큐를 사용할 수 있습니다.');
+      setState(() => _uploadStatus = _l10n.uploadBuildOnly);
       return;
     }
 
     setState(() {
       _isUploadFlushRunning = true;
-      _uploadStatus = '업로드 큐 동기화 요청 중';
+      _uploadStatus = _l10n.uploadQueueRequesting;
     });
 
     try {
       await widget.locationBridge.flushPendingLocations();
       if (mounted) {
-        setState(() => _uploadStatus = '업로드 큐 동기화 요청됨');
+        setState(() => _uploadStatus = _l10n.uploadQueueRequested);
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _uploadStatus = '업로드 큐 동기화를 요청하지 못했습니다.');
+        setState(() => _uploadStatus = _l10n.uploadQueueRequestFailed);
       }
     } finally {
       if (mounted) {
@@ -671,7 +687,7 @@ class _MapScreenState extends State<MapScreen> {
           sessionId: sessionId, reason: reason);
     } catch (_) {
       if (mounted) {
-        setState(() => _bridgeStatus = '동행 세션 종료 동기화 대기 중');
+        setState(() => _bridgeStatus = _l10n.companionEndSyncPending);
       }
     }
   }
@@ -741,7 +757,8 @@ class _MapScreenState extends State<MapScreen> {
       final nextLate = late ?? _placeNotifyLate;
       final nextLongStay = longStay ?? _placeNotifyLongStay;
       if (!(nextArrival || nextDeparture || nextLate || nextLongStay)) {
-        _placeAlertStatusMessage = '알림 조건을 하나 이상 선택해 주세요.';
+        _placeAlertStatusMessage = _l10n.placeAlertNeedsRule;
+      _placeAlertStatusIsError = true;
         return;
       }
       _placeNotifyArrival = nextArrival;
@@ -749,6 +766,7 @@ class _MapScreenState extends State<MapScreen> {
       _placeNotifyLate = nextLate;
       _placeNotifyLongStay = nextLongStay;
       _placeAlertStatusMessage = null;
+      _placeAlertStatusIsError = false;
     });
   }
 
@@ -765,21 +783,31 @@ class _MapScreenState extends State<MapScreen> {
     final name = _placeAlertNameController.text.trim();
 
     if (repository == null || circleId == null) {
-      setState(() => _placeAlertStatusMessage = 'Supabase 연결 후 저장할 수 있습니다.');
+      setState(() {
+        _placeAlertStatusMessage = _l10n.placeAlertNeedsBackend;
+        _placeAlertStatusIsError = true;
+      });
       return;
     }
     if (targetIds.isEmpty) {
-      setState(() => _placeAlertStatusMessage = '대상 멤버를 선택해 주세요.');
+      setState(() {
+        _placeAlertStatusMessage = _l10n.placeAlertPickTarget;
+        _placeAlertStatusIsError = true;
+      });
       return;
     }
     if (name.isEmpty) {
-      setState(() => _placeAlertStatusMessage = '장소 이름을 입력해 주세요.');
+      setState(() {
+        _placeAlertStatusMessage = _l10n.placeAlertNeedsName;
+        _placeAlertStatusIsError = true;
+      });
       return;
     }
 
     setState(() {
       _isSavingPlaceAlert = true;
-      _placeAlertStatusMessage = '장소 알림 저장 중';
+      _placeAlertStatusMessage = _l10n.placeDraftSaving;
+      _placeAlertStatusIsError = false;
     });
 
     try {
@@ -797,7 +825,7 @@ class _MapScreenState extends State<MapScreen> {
           notifyOnDeparture: _placeNotifyDeparture,
           notifyOnLate: _placeNotifyLate,
           notifyOnLongStay: _placeNotifyLongStay,
-          quietHours: _quietHoursFromPreset(_placeQuietHoursPreset),
+          quietHours: _quietHoursFromPreset(_l10n, _placeQuietHoursPreset),
         ),
       );
       if (!mounted) {
@@ -805,14 +833,14 @@ class _MapScreenState extends State<MapScreen> {
       }
       setState(() {
         _placeAlertStatusMessage =
-            '${alert.name} 저장됨 · 대상 ${alert.targetCount}명';
+            _l10n.placeAlertSaved(alert.name, alert.targetCount);
         _isPlaceDraftVisible = true;
       });
       await _syncPlaceAlertGeofences(circleId);
     } catch (_) {
       if (mounted) {
         setState(() => _placeAlertStatusMessage =
-            '장소 알림을 저장하지 못했습니다. 대상과 공유 범위를 확인해 주세요.');
+            _l10n.placeAlertSaveFailed);
       }
     } finally {
       if (mounted) {
@@ -835,18 +863,19 @@ class _MapScreenState extends State<MapScreen> {
       );
       if (mounted) {
         setState(() => _bridgeStatus = registeredCount == 0
-            ? '장소 알림 반경이 기기에서 해제됨'
-            : '장소 알림 반경 $registeredCount개 기기 등록됨');
+            ? _l10n.placeAlertUnregistered
+            : _l10n.placeAlertRegistered(registeredCount ?? 0));
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _bridgeStatus = '장소 알림은 저장됨 · 기기 반경 등록 대기 중');
+        setState(() => _bridgeStatus = _l10n.placeAlertSavedPendingDevice);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final palette = context.palette;
 
     final demoTracks = demoMapTracks(_l10n);
@@ -868,7 +897,7 @@ class _MapScreenState extends State<MapScreen> {
         placeTargetCandidates.isNotEmpty &&
         effectivePlaceTargetIds.isNotEmpty &&
         !_isSavingPlaceAlert;
-    final circleTitle = _circleName ?? '우리 서클';
+    final circleTitle = _circleName ?? l10n.mapDefaultCircleName;
     final companionConfig = _companionConfig(const Duration(minutes: 15));
     final draftPlacePoint = tracks.isEmpty
         ? const LatLng(37.50768, 127.04382)
@@ -908,9 +937,9 @@ class _MapScreenState extends State<MapScreen> {
                   onTap: widget.onOpenCircle,
                 ),
               ),
-              const MapIconButton(
+              MapIconButton(
                 icon: Icons.layers_outlined,
-                tooltip: '지도 종류',
+                tooltip: l10n.mapLayersTooltip,
                 onPressed: null,
               ),
             ],
@@ -999,7 +1028,7 @@ class _MapScreenState extends State<MapScreen> {
                     checkInStatus: _checkInStatusMessage,
                     lastCheckInText: _lastCheckInEvent == null
                         ? null
-                        : _checkInEventText(_lastCheckInEvent!),
+                        : _checkInEventText(l10n, _lastCheckInEvent!),
                     isFlushAvailable: _supportsNativeLocation,
                     isFlushing: _isUploadFlushRunning,
                     isCheckingIn: _isCheckingIn,
@@ -1024,6 +1053,7 @@ class _MapScreenState extends State<MapScreen> {
                     notifyLongStay: _placeNotifyLongStay,
                     quietHoursPreset: _placeQuietHoursPreset,
                     statusMessage: _placeAlertStatusMessage,
+                    statusIsError: _placeAlertStatusIsError,
                     canSave: canSavePlaceAlert,
                     isSaving: _isSavingPlaceAlert,
                     onVisibilityChanged: (visible) =>
@@ -1118,41 +1148,41 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   String _serviceStatusText(Map<Object?, Object?> event) {
-    final status = '${event['status'] ?? '상태 변경'}';
+    final status = '${event['status'] ?? _l10n.checkInStatusChanged}';
     final uploadedCount = _intFromEvent(event['uploadedCount']);
     final retryInSeconds = _intFromEvent(event['retryInSeconds']);
 
     switch (status) {
       case 'started':
-        return '위치 공유 실행 중';
+        return _l10n.deviceSharingRunning;
       case 'stopped':
-        return '위치 공유 중지됨';
+        return _l10n.deviceSharingStopped;
       case 'policy_paused':
-        return '공유 정책에 따라 위치 수집 일시정지';
+        return _l10n.sharingPausedByPolicy;
       case 'provider_enabled':
-        return '위치 서비스 사용 가능';
+        return _l10n.deviceLocationServiceAvailable;
       case 'sos_requested':
-        return '긴급 위치 요청 중';
+        return _l10n.sosRequesting;
       case 'geofences_registered':
-        return '장소 알림 준비됨';
+        return _l10n.placeAlertReady;
       case 'upload_not_configured':
-        return '업로드 큐 설정 대기 중';
+        return _l10n.uploadQueueConfigPending;
       case 'upload_configured':
-        return '업로드 큐 준비됨';
+        return _l10n.uploadQueueReady;
       case 'upload_queue_empty':
-        return '업로드할 대기 위치 없음';
+        return _l10n.uploadNothingPending;
       case 'upload_already_running':
-        return '업로드 큐 동기화 중';
+        return _l10n.uploadQueueSyncing;
       case 'upload_flushed':
-        return '위치 업로드 완료 · ${uploadedCount ?? 0}건';
+        return _l10n.uploadCompleted(uploadedCount ?? 0);
       case 'upload_retry_wait':
-        return '업로드 재시도 대기 · ${retryInSeconds ?? 0}초 후';
+        return _l10n.uploadRetryIn(retryInSeconds ?? 0);
       case 'upload_retry_scheduled':
-        return '업로드 실패 · 자동 재시도 예약';
+        return _l10n.uploadFailedRetryScheduled;
       case 'upload_ios_queue_pending':
-        return 'iOS 업로드 큐 구현 대기 중';
+        return _l10n.uploadIosPending;
       default:
-        return '위치 서비스 $status';
+        return _l10n.deviceLocationService(status);
     }
   }
 
@@ -1164,43 +1194,47 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 
-String _relativeTimeLabel(DateTime recordedAt) {
+String _relativeTimeLabel(AppL10n l10n, DateTime recordedAt) {
   final diff = DateTime.now().difference(recordedAt);
   if (diff.inSeconds < 60) {
-    return '방금';
+    return l10n.agoJustNow;
   }
   if (diff.inMinutes < 60) {
-    return '${diff.inMinutes}분 전';
+    return l10n.agoMinutes(diff.inMinutes);
   }
   if (diff.inHours < 24) {
-    return '${diff.inHours}시간 전';
+    return l10n.agoHours(diff.inHours);
   }
-  return '${diff.inDays}일 전';
+  return l10n.agoDays(diff.inDays);
 }
 
-String _checkInEventText(CheckInEvent event) {
+String _checkInEventText(AppL10n l10n, CheckInEvent event) {
   final status = switch (event.status) {
-    CheckInStatus.safeArrived => '무사 도착',
-    CheckInStatus.needsCheck => '확인 필요',
-    CheckInStatus.signalWeak => '신호가 잠시 약해요',
+    CheckInStatus.safeArrived => l10n.checkInSafeArrived,
+    CheckInStatus.needsCheck => l10n.checkInNeedsCheck,
+    CheckInStatus.signalWeak => l10n.checkInWeakSignal,
   };
-  return '${event.displayName} · $status · ${_relativeTimeLabel(event.createdAt)}';
+  return l10n.checkInEventLine(
+    event.displayName,
+    status,
+    _relativeTimeLabel(l10n, event.createdAt),
+  );
 }
 
-String _precisionText(MapMemberTrack member) {
+String _precisionText(AppL10n l10n, MapMemberTrack member) {
   final radiusLabel = _radiusLabel(member);
   final modeLabel = switch (member.sharingMode) {
-    SharingMode.precise => '정확 위치',
-    SharingMode.balanced => '균형 위치',
-    SharingMode.area => '동네 범위',
-    SharingMode.hidden => '공유 숨김',
-    SharingMode.sosOnly => '긴급 전용',
+    SharingMode.precise => l10n.precisionExactLocation,
+    SharingMode.balanced => l10n.precisionBalancedLocation,
+    SharingMode.area => l10n.sharingModeArea,
+    SharingMode.hidden => l10n.sharingHidden,
+    SharingMode.sosOnly => l10n.sharingModeSosOnly,
   };
 
   if (member.isStale) {
-    return '마지막 위치 · $modeLabel · 약 $radiusLabel 범위';
+    return l10n.precisionRangeStale(modeLabel, radiusLabel);
   }
-  return '$modeLabel · 약 $radiusLabel 범위';
+  return l10n.precisionRange(modeLabel, radiusLabel);
 }
 
 String _radiusLabel(MapMemberTrack member) {
@@ -1379,6 +1413,7 @@ class _MapOnboardingPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final palette = context.palette;
 
     return Container(
@@ -1405,10 +1440,10 @@ class _MapOnboardingPanel extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('첫 서클을 시작하세요',
-                    style: TextStyle(fontWeight: FontWeight.w900)),
+                Text(l10n.mapOnboardTitle,
+                    style: const TextStyle(fontWeight: FontWeight.w900)),
                 const SizedBox(height: 3),
-                Text('초대가 완료되면 지도에 공유 위치가 표시됩니다.',
+                Text(l10n.mapOnboardBody,
                     style: TextStyle(color: palette.muted, fontSize: 12)),
               ],
             ),
@@ -1417,7 +1452,7 @@ class _MapOnboardingPanel extends StatelessWidget {
           FilledButton.icon(
             onPressed: onOpenCircle,
             icon: const Icon(Icons.arrow_forward_outlined),
-            label: const Text('서클'),
+            label: Text(l10n.mapOpenCircle),
           ),
         ],
       ),
@@ -1438,6 +1473,7 @@ class _PlaceDraftPanel extends StatelessWidget {
     required this.notifyLongStay,
     required this.quietHoursPreset,
     required this.statusMessage,
+    required this.statusIsError,
     required this.canSave,
     required this.isSaving,
     required this.onVisibilityChanged,
@@ -1462,6 +1498,7 @@ class _PlaceDraftPanel extends StatelessWidget {
   final bool notifyLongStay;
   final _PlaceQuietHoursPreset quietHoursPreset;
   final String? statusMessage;
+  final bool statusIsError;
   final bool canSave;
   final bool isSaving;
   final ValueChanged<bool> onVisibilityChanged;
@@ -1476,6 +1513,7 @@ class _PlaceDraftPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final palette = context.palette;
 
     final hasTargets = targetCandidates.isNotEmpty;
@@ -1507,10 +1545,10 @@ class _PlaceDraftPanel extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('장소 반경',
-                        style: TextStyle(fontWeight: FontWeight.w900)),
+                    Text(l10n.placeDraftTitle,
+                        style: const TextStyle(fontWeight: FontWeight.w900)),
                     const SizedBox(height: 2),
-                    Text('도착/이탈 규칙 저장',
+                    Text(l10n.placeDraftSubtitle,
                         style:
                             TextStyle(color: palette.muted, fontSize: 12)),
                   ],
@@ -1523,9 +1561,9 @@ class _PlaceDraftPanel extends StatelessWidget {
           TextField(
             controller: nameController,
             textInputAction: TextInputAction.done,
-            decoration: const InputDecoration(
-              labelText: '장소 이름',
-              prefixIcon: Icon(Icons.place_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.placeDraftNameLabel,
+              prefixIcon: const Icon(Icons.place_outlined),
             ),
           ),
           const SizedBox(height: 12),
@@ -1565,7 +1603,7 @@ class _PlaceDraftPanel extends StatelessWidget {
             runSpacing: 8,
             children: [
               if (!hasTargets)
-                const _PlaceDraftHint(text: '실제 서클 위치가 연결되면 저장할 수 있습니다.'),
+                _PlaceDraftHint(text: l10n.placeAlertNeedsLiveCircle),
               for (final member in targetCandidates)
                 FilterChip(
                   avatar: CircleAvatar(
@@ -1579,7 +1617,7 @@ class _PlaceDraftPanel extends StatelessWidget {
                       ),
                     ),
                   ),
-                  label: Text(member.isCurrentUser ? '나' : member.name),
+                  label: Text(member.isCurrentUser ? l10n.mapMeShort : member.name),
                   selected: selectedTargetIds.contains(member.id),
                   onSelected: (selected) =>
                       onTargetChanged(member.id, selected),
@@ -1593,25 +1631,25 @@ class _PlaceDraftPanel extends StatelessWidget {
             children: [
               FilterChip(
                 avatar: const Icon(Icons.login_outlined, size: 18),
-                label: const Text('도착'),
+                label: Text(l10n.placeRuleArrival),
                 selected: notifyArrival,
                 onSelected: onNotifyArrivalChanged,
               ),
               FilterChip(
                 avatar: const Icon(Icons.logout_outlined, size: 18),
-                label: const Text('이탈'),
+                label: Text(l10n.placeRuleDeparture),
                 selected: notifyDeparture,
                 onSelected: onNotifyDepartureChanged,
               ),
               FilterChip(
                 avatar: const Icon(Icons.schedule_outlined, size: 18),
-                label: const Text('늦음'),
+                label: Text(l10n.placeRuleLate),
                 selected: notifyLate,
                 onSelected: onNotifyLateChanged,
               ),
               FilterChip(
                 avatar: const Icon(Icons.timelapse_outlined, size: 18),
-                label: const Text('오래 머무름'),
+                label: Text(l10n.placeRuleLongStay),
                 selected: notifyLongStay,
                 onSelected: onNotifyLongStayChanged,
               ),
@@ -1622,21 +1660,21 @@ class _PlaceDraftPanel extends StatelessWidget {
             width: double.infinity,
             child: SegmentedButton<_PlaceQuietHoursPreset>(
               showSelectedIcon: false,
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: _PlaceQuietHoursPreset.none,
-                  icon: Icon(Icons.notifications_none_outlined),
-                  label: Text('없음'),
+                  icon: const Icon(Icons.notifications_none_outlined),
+                  label: Text(l10n.quietHoursNone),
                 ),
                 ButtonSegment(
                   value: _PlaceQuietHoursPreset.night,
-                  icon: Icon(Icons.bedtime_outlined),
-                  label: Text('야간'),
+                  icon: const Icon(Icons.bedtime_outlined),
+                  label: Text(l10n.quietHoursNight),
                 ),
                 ButtonSegment(
                   value: _PlaceQuietHoursPreset.schoolOrWork,
-                  icon: Icon(Icons.work_history_outlined),
-                  label: Text('수업'),
+                  icon: const Icon(Icons.work_history_outlined),
+                  label: Text(l10n.quietHoursClass),
                 ),
               ],
               selected: {quietHoursPreset},
@@ -1649,7 +1687,7 @@ class _PlaceDraftPanel extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            _quietHoursPresetCopy(quietHoursPreset),
+            _quietHoursPresetCopy(l10n, quietHoursPreset),
             style: TextStyle(color: palette.muted, fontSize: 12),
           ),
           if (statusMessage != null) ...[
@@ -1657,11 +1695,7 @@ class _PlaceDraftPanel extends StatelessWidget {
             Text(
               statusMessage!,
               style: TextStyle(
-                color: statusMessage!.contains('못했습니다') ||
-                        statusMessage!.contains('선택') ||
-                        statusMessage!.contains('입력')
-                    ? palette.alert
-                    : palette.brand,
+                color: statusIsError ? palette.alert : palette.brand,
                 fontSize: 12,
                 fontWeight: FontWeight.w700,
               ),
@@ -1683,7 +1717,7 @@ class _PlaceDraftPanel extends StatelessWidget {
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.notifications_active_outlined),
-              label: Text(isSaving ? '저장 중' : '장소 알림 저장'),
+              label: Text(isSaving ? l10n.privacySaving : l10n.placeDraftSave),
             ),
           ),
         ],
@@ -1751,6 +1785,7 @@ class _CompanionPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final palette = context.palette;
 
     final expiresAt = config.sharingPolicy.expiresAt;
@@ -1758,8 +1793,8 @@ class _CompanionPanel extends StatelessWidget {
         ? 15
         : expiresAt.difference(DateTime.now()).inMinutes.clamp(1, 60);
     final uploadText = [
-      uploadStatus ?? '업로드 큐 대기',
-      if (uploadPendingCount != null) '대기 ${uploadPendingCount!}건',
+      uploadStatus ?? l10n.uploadQueueWaiting,
+      if (uploadPendingCount != null) l10n.uploadPendingCount(uploadPendingCount!),
     ].join(' · ');
 
     return Container(
@@ -1774,17 +1809,20 @@ class _CompanionPanel extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Expanded(
-                child: Text('동행 모드',
+              Expanded(
+                child: Text(l10n.privacyCompanionMode,
                     style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
+                        const TextStyle(fontSize: 16, fontWeight: FontWeight.w900)),
               ),
-              _StatusBadge(text: '$minutes분 남음'),
+              _StatusBadge(text: l10n.companionMinutesLeft(minutes)),
             ],
           ),
           const SizedBox(height: 6),
           Text(
-            '최소 ${config.minIntervalSeconds}초 간격 · ${config.sharingPolicy.mode.name} 공유 · 상호 동의 후 시작',
+            l10n.companionConfigNote(
+              config.minIntervalSeconds,
+              config.sharingPolicy.mode.name,
+            ),
             style: TextStyle(color: palette.muted),
           ),
           const SizedBox(height: 12),
@@ -1802,14 +1840,14 @@ class _CompanionPanel extends StatelessWidget {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : const Icon(Icons.check_circle_outline),
-                    label: const Text('도착 확인'),
+                    label: Text(l10n.companionCheckIn),
                   ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: OutlinedButton(
                     onPressed: isCheckingIn ? null : onStop,
-                    child: const Text('공유 멈춤'),
+                    child: Text(l10n.privacyPauseSharing),
                   ),
                 ),
               ],
@@ -1819,17 +1857,17 @@ class _CompanionPanel extends StatelessWidget {
               children: [
                 Expanded(
                     child: OutlinedButton(
-                        onPressed: onStart15, child: const Text('15분'))),
+                        onPressed: onStart15, child: Text(l10n.companionFifteenMinutes))),
                 const SizedBox(width: 8),
                 Expanded(
                     child: OutlinedButton(
                         onPressed: onStartUntilArrival,
-                        child: const Text('도착까지'))),
+                        child: Text(l10n.companionUntilArrival))),
                 const SizedBox(width: 8),
                 Expanded(
                   child: FilledButton(
                     onPressed: onStart15,
-                    child: const Text('시작'),
+                    child: Text(l10n.companionStart),
                   ),
                 ),
               ],
@@ -1857,8 +1895,8 @@ class _CompanionPanel extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('위치 동기화',
-                          style: TextStyle(fontWeight: FontWeight.w900)),
+                      Text(l10n.uploadSyncTitle,
+                          style: const TextStyle(fontWeight: FontWeight.w900)),
                       const SizedBox(height: 2),
                       Text(uploadText,
                           style: TextStyle(
@@ -1867,7 +1905,7 @@ class _CompanionPanel extends StatelessWidget {
                   ),
                 ),
                 Tooltip(
-                  message: '대기 위치 동기화',
+                  message: l10n.uploadFlush,
                   child: IconButton.filledTonal(
                     onPressed: isFlushAvailable && !isFlushing ? onFlush : null,
                     icon: isFlushing
@@ -1995,8 +2033,9 @@ class _MemberPrecisionLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
 
-    final text = _precisionText(member);
+    final text = _precisionText(l10n, member);
     return Row(
       children: [
         Icon(
@@ -2047,48 +2086,57 @@ class _MemberSafetyNote extends StatelessWidget {
   }
 }
 
-PlaceAlertQuietHours _quietHoursFromPreset(_PlaceQuietHoursPreset preset) {
+/// 방해 금지 프리셋.
+///
+/// `label` 은 DB 에 저장돼 다른 멤버에게도 보인다. 만든 사람의 언어로 굳는다는
+/// 뜻이므로, 장기적으로는 라벨 대신 프리셋 키를 저장하고 읽는 쪽에서 번역해야
+/// 한다. `timeZone` 도 지금 서울로 고정돼 있어 다른 지역에서는 조용한 시간대가
+/// 어긋난다 — IANA 존을 구해 오도록 고쳐야 한다.
+PlaceAlertQuietHours _quietHoursFromPreset(
+  AppL10n l10n,
+  _PlaceQuietHoursPreset preset,
+) {
   switch (preset) {
     case _PlaceQuietHoursPreset.none:
       return const PlaceAlertQuietHours.none();
     case _PlaceQuietHoursPreset.night:
-      return const PlaceAlertQuietHours(
+      return PlaceAlertQuietHours(
         enabled: true,
         start: '22:00',
         end: '07:00',
         timeZone: 'Asia/Seoul',
-        label: '야간',
+        label: l10n.quietHoursNight,
       );
     case _PlaceQuietHoursPreset.schoolOrWork:
-      return const PlaceAlertQuietHours(
+      return PlaceAlertQuietHours(
         enabled: true,
         start: '09:00',
         end: '17:00',
         timeZone: 'Asia/Seoul',
-        label: '수업/근무',
+        label: l10n.quietHoursClassOrWork,
       );
   }
 }
 
-String _quietHoursPresetCopy(_PlaceQuietHoursPreset preset) {
+String _quietHoursPresetCopy(AppL10n l10n, _PlaceQuietHoursPreset preset) {
   switch (preset) {
     case _PlaceQuietHoursPreset.none:
-      return '중요한 도착/이탈 알림을 항상 받을 수 있습니다.';
+      return l10n.quietHoursNoneCopy;
     case _PlaceQuietHoursPreset.night:
-      return '22:00-07:00에는 긴급하지 않은 장소 알림을 조용히 처리합니다.';
+      return l10n.quietHoursNightCopy;
     case _PlaceQuietHoursPreset.schoolOrWork:
-      return '09:00-17:00에는 반복적인 장소 알림을 줄이는 preset입니다.';
+      return l10n.quietHoursClassCopy;
   }
 }
 
-String _geofenceStatusText(String type) {
+String _geofenceStatusText(AppL10n l10n, String type) {
   switch (type) {
     case 'geofence.entered':
-      return '저장한 장소 반경에 도착했습니다.';
+      return l10n.placeAlertEnter;
     case 'geofence.exited':
-      return '저장한 장소 반경을 벗어났습니다.';
+      return l10n.placeAlertExit;
     default:
-      return '저장한 장소 반경 변화가 감지됐습니다.';
+      return l10n.placeAlertTransition;
   }
 }
 
@@ -2175,6 +2223,7 @@ class _SheetStatusLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final palette = context.palette;
 
     final (String? note, GyeoteTone tone) = switch ((
@@ -2184,9 +2233,9 @@ class _SheetStatusLine extends StatelessWidget {
       isDemo
     )) {
       (final String error, _, _, _) => (error, GyeoteTone.alert),
-      (_, true, _, _) => ('서클 위치 연결 중', GyeoteTone.muted),
-      (_, _, true, _) => ('아직 연결된 서클 없음', GyeoteTone.muted),
-      (_, _, _, true) => ('아직 서버 위치가 없어 데모 위치 표시 중', GyeoteTone.warm),
+      (_, true, _, _) => (l10n.mapConnecting, GyeoteTone.muted),
+      (_, _, true, _) => (l10n.mapNoCircle, GyeoteTone.muted),
+      (_, _, _, true) => (l10n.mapDemoNotice, GyeoteTone.warm),
       _ => (bridgeStatus, GyeoteTone.muted),
     };
 
@@ -2197,7 +2246,7 @@ class _SheetStatusLine extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                '$memberCount명이 위치 공유 중',
+                l10n.mapSharingCount(memberCount),
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
@@ -2214,7 +2263,7 @@ class _SheetStatusLine extends StatelessWidget {
                   borderRadius: BorderRadius.circular(GyeoteRadius.pill),
                 ),
                 child: Text(
-                  '확인 필요 $attentionCount',
+                  l10n.mapAttentionCount(attentionCount),
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w700,

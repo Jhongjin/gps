@@ -704,4 +704,317 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get privacyCompanion15MinLeft => '15 min left';
+
+  @override
+  String get mapOpenCircle => 'Circle';
+
+  @override
+  String get mapOnboardTitle => 'Start your first circle';
+
+  @override
+  String get mapOnboardBody =>
+      'Once someone accepts an invite, their shared location appears on the map.';
+
+  @override
+  String get placeDraftTitle => 'Place radius';
+
+  @override
+  String get placeDraftSubtitle => 'Save arrival and departure rules';
+
+  @override
+  String get placeDraftNameLabel => 'Place name';
+
+  @override
+  String get placeDraftNameHint => 'New place';
+
+  @override
+  String get placeDraftSave => 'Save place alert';
+
+  @override
+  String get placeDraftSaving => 'Saving place alert';
+
+  @override
+  String get placeRuleArrival => 'Arrival';
+
+  @override
+  String get placeRuleDeparture => 'Departure';
+
+  @override
+  String get placeRuleLate => 'Late';
+
+  @override
+  String get placeRuleLongStay => 'Long stay';
+
+  @override
+  String get quietHoursNone => 'None';
+
+  @override
+  String get quietHoursNight => 'Night';
+
+  @override
+  String get quietHoursClass => 'Class';
+
+  @override
+  String get quietHoursClassOrWork => 'Class or work';
+
+  @override
+  String get quietHoursNoneCopy =>
+      'Important arrival and departure alerts always come through.';
+
+  @override
+  String get quietHoursNightCopy =>
+      'Between 22:00 and 07:00, non-urgent place alerts stay quiet.';
+
+  @override
+  String get quietHoursClassCopy =>
+      'Between 09:00 and 17:00, repeated place alerts are reduced.';
+
+  @override
+  String get placeAlertNeedsBackend => 'Connect Supabase to save.';
+
+  @override
+  String get placeAlertPickTarget => 'Pick at least one member.';
+
+  @override
+  String get placeAlertNeedsName => 'Enter a place name.';
+
+  @override
+  String get placeAlertNeedsRule => 'Pick at least one alert condition.';
+
+  @override
+  String get placeAlertSaveFailed =>
+      'Could not save the place alert. Check the targets and sharing scope.';
+
+  @override
+  String get placeAlertNeedsLiveCircle =>
+      'You can save this once your circle reports real locations.';
+
+  @override
+  String get placeAlertReady => 'Place alert ready';
+
+  @override
+  String get placeAlertUnregistered => 'Place radius removed from this device';
+
+  @override
+  String get placeAlertSavedPendingDevice =>
+      'Place alert saved · waiting for the device radius';
+
+  @override
+  String get placeAlertEnter => 'Arrived inside a saved place radius.';
+
+  @override
+  String get placeAlertExit => 'Left a saved place radius.';
+
+  @override
+  String get placeAlertTransition => 'A saved place radius changed.';
+
+  @override
+  String get companionStart => 'Start';
+
+  @override
+  String get companionFifteenMinutes => '15 min';
+
+  @override
+  String get companionUntilArrival => 'Until arrival';
+
+  @override
+  String get companionCheckIn => 'Confirm arrival';
+
+  @override
+  String get companionCheckInSending => 'Sending your arrival check-in';
+
+  @override
+  String get companionCheckInFailed => 'Could not send the arrival check-in.';
+
+  @override
+  String get companionArrivedSent =>
+      'Arrival sent. Companion sharing has ended.';
+
+  @override
+  String get companionStarted => 'Companion sharing started';
+
+  @override
+  String get companionStartedWithSession =>
+      'Companion sharing started · session connected';
+
+  @override
+  String get companionStopped => 'Companion sharing stopped';
+
+  @override
+  String get companionStartFailed => 'Could not start companion mode.';
+
+  @override
+  String get companionEndSyncPending => 'Waiting to sync the session ending';
+
+  @override
+  String get checkInSyncPending => 'Waiting to sync check-in history';
+
+  @override
+  String get uploadSyncTitle => 'Location sync';
+
+  @override
+  String get uploadFlush => 'Sync pending locations';
+
+  @override
+  String get uploadNothingPending => 'No pending locations to upload';
+
+  @override
+  String get uploadQueueReady => 'Upload queue ready';
+
+  @override
+  String get uploadQueueWaiting => 'Upload queue waiting';
+
+  @override
+  String get uploadQueueSyncing => 'Syncing the upload queue';
+
+  @override
+  String get uploadQueueRequesting => 'Requesting an upload sync';
+
+  @override
+  String get uploadQueueRequested => 'Upload sync requested';
+
+  @override
+  String get uploadQueueRequestFailed => 'Could not request an upload sync.';
+
+  @override
+  String get uploadQueueConfigPending => 'Waiting for upload queue setup';
+
+  @override
+  String get uploadDeviceConfigPending =>
+      'Waiting for device upload queue setup';
+
+  @override
+  String get uploadDeviceReady => 'Device upload queue ready';
+
+  @override
+  String get uploadDeviceDisconnected => 'Device upload queue disconnected';
+
+  @override
+  String get uploadFailedRetryScheduled => 'Upload failed · retry scheduled';
+
+  @override
+  String get uploadNeedsSignIn => 'Sign in to connect the upload queue';
+
+  @override
+  String get uploadIosPending => 'iOS upload queue is not implemented yet';
+
+  @override
+  String get uploadBuildOnly =>
+      'The upload queue works in the Android and iOS builds.';
+
+  @override
+  String get deviceLocationBuildOnly =>
+      'Device location works in the Android and iOS builds.';
+
+  @override
+  String get sosBuildOnly =>
+      'Emergency location works in the Android and iOS builds.';
+
+  @override
+  String get deviceLocationBridgeNote =>
+      'Device location connects in the Android and iOS builds.';
+
+  @override
+  String get deviceBridgeFailed =>
+      'Could not connect the device location bridge.';
+
+  @override
+  String get deviceReceiving => 'Receiving your location';
+
+  @override
+  String get deviceSharingRunning => 'Location sharing is running';
+
+  @override
+  String get deviceSharingStopped => 'Location sharing stopped';
+
+  @override
+  String get devicePermissionChecked => 'Permission status checked';
+
+  @override
+  String get deviceLocationServiceAvailable => 'Location service available';
+
+  @override
+  String get deviceLocationError => 'Location connection error';
+
+  @override
+  String get sosRequesting => 'Requesting emergency location';
+
+  @override
+  String get sosRequestFailed => 'Could not request the emergency location.';
+
+  @override
+  String get circleLoadFailed => 'Could not load your circle.';
+
+  @override
+  String get locationLoadFailed => 'Could not load locations.';
+
+  @override
+  String get sharingHidden => 'Hidden';
+
+  @override
+  String get sharingPausedByPolicy => 'Collection paused by the sharing policy';
+
+  @override
+  String get precisionExactLocation => 'Exact location';
+
+  @override
+  String get precisionBalancedLocation => 'Balanced location';
+
+  @override
+  String get checkInStatusChanged => 'Status changed';
+
+  @override
+  String companionMinutesLeft(int minutes) {
+    return '$minutes min left';
+  }
+
+  @override
+  String uploadPendingCount(int count) {
+    return '$count pending';
+  }
+
+  @override
+  String uploadCompleted(int count) {
+    return 'Uploaded $count locations';
+  }
+
+  @override
+  String uploadRetryIn(int seconds) {
+    return 'Retrying upload in ${seconds}s';
+  }
+
+  @override
+  String placeAlertRegistered(int count) {
+    return '$count place radii registered on this device';
+  }
+
+  @override
+  String placeAlertSaved(String name, int count) {
+    return '$name saved · $count targets';
+  }
+
+  @override
+  String deviceLocationService(String status) {
+    return 'Location service $status';
+  }
+
+  @override
+  String precisionRange(String mode, String radius) {
+    return '$mode · about $radius';
+  }
+
+  @override
+  String precisionRangeStale(String mode, String radius) {
+    return 'Last location · $mode · about $radius';
+  }
+
+  @override
+  String companionConfigNote(int seconds, String mode) {
+    return 'Every ${seconds}s at most · $mode sharing · starts after both agree';
+  }
+
+  @override
+  String checkInEventLine(String name, String status, String time) {
+    return '$name · $status · $time';
+  }
 }
