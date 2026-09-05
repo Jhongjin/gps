@@ -351,7 +351,9 @@ class MemberAvatarRail extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: _RailEntry(
-                label: member.isCurrentUser ? '나' : member.name,
+                label: member.isCurrentUser
+                    ? AppL10n.of(context).mapMeShort
+                    : member.name,
                 isSelected: member.id == selectedId,
                 onTap: () => onSelect(member),
                 avatar: MemberAvatar(
@@ -362,7 +364,7 @@ class MemberAvatarRail extends StatelessWidget {
               ),
             ),
           _RailEntry(
-            label: '초대',
+            label: AppL10n.of(context).mapInvite,
             isSelected: false,
             onTap: onInvite,
             avatar: Container(

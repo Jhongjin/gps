@@ -106,5 +106,21 @@
   "demoEventCheckInDetail": "Companion sharing ended · notified with balanced location",
   "demoEventDataRequest": "Location history deletion request",
   "demoEventDataRequestDetail": "Pending",
-  "historyTypeViewed": "Viewed"
+  "historyTypeViewed": "Viewed",
+  "authTagline": "Share your location with the people close to you, only as much as you want.",
+  "authBadgeConsent": "Consent-based sharing",
+  "authBadgeViewerLog": "View log",
+  "authBadgeNoAdTargeting": "No precise-location ads",
+  "authSignIn": "Sign in",
+  "authSignUp": "Sign up",
+  "authSignUpCta": "Create an account",
+  "authEmail": "Email",
+  "authPassword": "Password",
+  "authDisplayName": "Name or nickname",
+  "authEmailRequired": "Enter your email.",
+  "authPasswordTooShort": "Use at least 6 characters.",
+  "authGenericError": "Something went wrong. Please try again in a moment.",
+  "authVerifyEmailSent": "We sent a confirmation email. Confirm it, then sign in again.",
+  "authConsentNote": "Location is shared only inside circles you joined and companion sessions you both agreed to.",
+  "authPrivacyNote": "Precise location is never used for ads, and you can stop sharing at any time."
 }

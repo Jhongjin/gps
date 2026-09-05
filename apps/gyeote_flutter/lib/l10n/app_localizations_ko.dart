@@ -364,4 +364,52 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get historyTypeViewed => '조회';
+
+  @override
+  String get authTagline => '가까운 사람끼리만, 필요한 만큼 위치를 나눠요.';
+
+  @override
+  String get authBadgeConsent => '동의 기반 공유';
+
+  @override
+  String get authBadgeViewerLog => '조회 기록';
+
+  @override
+  String get authBadgeNoAdTargeting => '정밀 위치 광고 차단';
+
+  @override
+  String get authSignIn => '로그인';
+
+  @override
+  String get authSignUp => '가입';
+
+  @override
+  String get authSignUpCta => '가입하고 시작';
+
+  @override
+  String get authEmail => '이메일';
+
+  @override
+  String get authPassword => '비밀번호';
+
+  @override
+  String get authDisplayName => '이름 또는 별명';
+
+  @override
+  String get authEmailRequired => '이메일을 입력해 주세요.';
+
+  @override
+  String get authPasswordTooShort => '6자 이상 입력해 주세요.';
+
+  @override
+  String get authGenericError => '처리 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get authVerifyEmailSent => '가입 확인 메일을 보냈습니다. 메일 확인 후 다시 로그인해 주세요.';
+
+  @override
+  String get authConsentNote => '초대받은 서클과 상호 동의한 동행 모드에서만 위치가 공유됩니다.';
+
+  @override
+  String get authPrivacyNote => '정밀 위치는 광고에 사용하지 않으며, 언제든 공유를 멈출 수 있어요.';
 }

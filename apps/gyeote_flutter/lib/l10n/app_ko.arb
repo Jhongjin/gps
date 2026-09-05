@@ -245,5 +245,21 @@
   "demoEventCheckInDetail": "동행 공유 종료 · 균형 위치로 알림",
   "demoEventDataRequest": "위치 기록 삭제 요청",
   "demoEventDataRequestDetail": "처리 대기 중",
-  "historyTypeViewed": "조회"
+  "historyTypeViewed": "조회",
+  "authTagline": "가까운 사람끼리만, 필요한 만큼 위치를 나눠요.",
+  "authBadgeConsent": "동의 기반 공유",
+  "authBadgeViewerLog": "조회 기록",
+  "authBadgeNoAdTargeting": "정밀 위치 광고 차단",
+  "authSignIn": "로그인",
+  "authSignUp": "가입",
+  "authSignUpCta": "가입하고 시작",
+  "authEmail": "이메일",
+  "authPassword": "비밀번호",
+  "authDisplayName": "이름 또는 별명",
+  "authEmailRequired": "이메일을 입력해 주세요.",
+  "authPasswordTooShort": "6자 이상 입력해 주세요.",
+  "authGenericError": "처리 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.",
+  "authVerifyEmailSent": "가입 확인 메일을 보냈습니다. 메일 확인 후 다시 로그인해 주세요.",
+  "authConsentNote": "초대받은 서클과 상호 동의한 동행 모드에서만 위치가 공유됩니다.",
+  "authPrivacyNote": "정밀 위치는 광고에 사용하지 않으며, 언제든 공유를 멈출 수 있어요."
 }

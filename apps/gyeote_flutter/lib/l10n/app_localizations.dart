@@ -738,6 +738,102 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'조회'**
   String get historyTypeViewed;
+
+  /// No description provided for @authTagline.
+  ///
+  /// In ko, this message translates to:
+  /// **'가까운 사람끼리만, 필요한 만큼 위치를 나눠요.'**
+  String get authTagline;
+
+  /// No description provided for @authBadgeConsent.
+  ///
+  /// In ko, this message translates to:
+  /// **'동의 기반 공유'**
+  String get authBadgeConsent;
+
+  /// No description provided for @authBadgeViewerLog.
+  ///
+  /// In ko, this message translates to:
+  /// **'조회 기록'**
+  String get authBadgeViewerLog;
+
+  /// No description provided for @authBadgeNoAdTargeting.
+  ///
+  /// In ko, this message translates to:
+  /// **'정밀 위치 광고 차단'**
+  String get authBadgeNoAdTargeting;
+
+  /// No description provided for @authSignIn.
+  ///
+  /// In ko, this message translates to:
+  /// **'로그인'**
+  String get authSignIn;
+
+  /// No description provided for @authSignUp.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입'**
+  String get authSignUp;
+
+  /// No description provided for @authSignUpCta.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입하고 시작'**
+  String get authSignUpCta;
+
+  /// No description provided for @authEmail.
+  ///
+  /// In ko, this message translates to:
+  /// **'이메일'**
+  String get authEmail;
+
+  /// No description provided for @authPassword.
+  ///
+  /// In ko, this message translates to:
+  /// **'비밀번호'**
+  String get authPassword;
+
+  /// No description provided for @authDisplayName.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름 또는 별명'**
+  String get authDisplayName;
+
+  /// No description provided for @authEmailRequired.
+  ///
+  /// In ko, this message translates to:
+  /// **'이메일을 입력해 주세요.'**
+  String get authEmailRequired;
+
+  /// No description provided for @authPasswordTooShort.
+  ///
+  /// In ko, this message translates to:
+  /// **'6자 이상 입력해 주세요.'**
+  String get authPasswordTooShort;
+
+  /// No description provided for @authGenericError.
+  ///
+  /// In ko, this message translates to:
+  /// **'처리 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.'**
+  String get authGenericError;
+
+  /// No description provided for @authVerifyEmailSent.
+  ///
+  /// In ko, this message translates to:
+  /// **'가입 확인 메일을 보냈습니다. 메일 확인 후 다시 로그인해 주세요.'**
+  String get authVerifyEmailSent;
+
+  /// No description provided for @authConsentNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'초대받은 서클과 상호 동의한 동행 모드에서만 위치가 공유됩니다.'**
+  String get authConsentNote;
+
+  /// No description provided for @authPrivacyNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'정밀 위치는 광고에 사용하지 않으며, 언제든 공유를 멈출 수 있어요.'**
+  String get authPrivacyNote;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

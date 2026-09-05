@@ -373,4 +373,57 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get historyTypeViewed => 'Viewed';
+
+  @override
+  String get authTagline =>
+      'Share your location with the people close to you, only as much as you want.';
+
+  @override
+  String get authBadgeConsent => 'Consent-based sharing';
+
+  @override
+  String get authBadgeViewerLog => 'View log';
+
+  @override
+  String get authBadgeNoAdTargeting => 'No precise-location ads';
+
+  @override
+  String get authSignIn => 'Sign in';
+
+  @override
+  String get authSignUp => 'Sign up';
+
+  @override
+  String get authSignUpCta => 'Create an account';
+
+  @override
+  String get authEmail => 'Email';
+
+  @override
+  String get authPassword => 'Password';
+
+  @override
+  String get authDisplayName => 'Name or nickname';
+
+  @override
+  String get authEmailRequired => 'Enter your email.';
+
+  @override
+  String get authPasswordTooShort => 'Use at least 6 characters.';
+
+  @override
+  String get authGenericError =>
+      'Something went wrong. Please try again in a moment.';
+
+  @override
+  String get authVerifyEmailSent =>
+      'We sent a confirmation email. Confirm it, then sign in again.';
+
+  @override
+  String get authConsentNote =>
+      'Location is shared only inside circles you joined and companion sessions you both agreed to.';
+
+  @override
+  String get authPrivacyNote =>
+      'Precise location is never used for ads, and you can stop sharing at any time.';
 }

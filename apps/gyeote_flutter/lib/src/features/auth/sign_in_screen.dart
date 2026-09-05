@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../theme/gyeote_theme.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -58,7 +59,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
         if (response.session == null && mounted) {
           setState(() {
-            _message = '가입 확인 메일을 보냈습니다. 메일 확인 후 다시 로그인해 주세요.';
+            _message = AppL10n.of(context).authVerifyEmailSent;
           });
         }
       } else {
@@ -78,7 +79,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (mounted) {
         setState(() {
           _isError = true;
-          _message = '처리 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.';
+          _message = AppL10n.of(context).authGenericError;
         });
       }
     } finally {
@@ -91,8 +92,9 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
 
-    final actionLabel = _isSignUp ? '가입하고 시작' : '로그인';
+    final actionLabel = _isSignUp ? l10n.authSignUpCta : l10n.authSignIn;
 
     return Scaffold(
       body: SafeArea(
@@ -121,9 +123,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             SegmentedButton<bool>(
-                              segments: const [
-                                ButtonSegment(value: false, label: Text('로그인')),
-                                ButtonSegment(value: true, label: Text('가입')),
+                              segments: [
+                                ButtonSegment(value: false, label: Text(l10n.authSignIn)),
+                                ButtonSegment(value: true, label: Text(l10n.authSignUp)),
                               ],
                               selected: {_isSignUp},
                               onSelectionChanged: (value) {
@@ -139,9 +141,9 @@ class _SignInScreenState extends State<SignInScreen> {
                               TextFormField(
                                 controller: _nameController,
                                 textInputAction: TextInputAction.next,
-                                decoration: const InputDecoration(
-                                  labelText: '이름 또는 별명',
-                                  prefixIcon: Icon(Icons.badge_outlined),
+                                decoration: InputDecoration(
+                                  labelText: l10n.authDisplayName,
+                                  prefixIcon: const Icon(Icons.badge_outlined),
                                 ),
                               ),
                               const SizedBox(height: 10),
@@ -151,14 +153,14 @@ class _SignInScreenState extends State<SignInScreen> {
                               keyboardType: TextInputType.emailAddress,
                               textInputAction: TextInputAction.next,
                               autofillHints: const [AutofillHints.email],
-                              decoration: const InputDecoration(
-                                labelText: '이메일',
-                                prefixIcon: Icon(Icons.mail_outline),
+                              decoration: InputDecoration(
+                                labelText: l10n.authEmail,
+                                prefixIcon: const Icon(Icons.mail_outline),
                               ),
                               validator: (value) {
                                 final email = value?.trim() ?? '';
                                 if (email.isEmpty || !email.contains('@')) {
-                                  return '이메일을 입력해 주세요.';
+                                  return l10n.authEmailRequired;
                                 }
                                 return null;
                               },
@@ -169,9 +171,9 @@ class _SignInScreenState extends State<SignInScreen> {
                               obscureText: true,
                               textInputAction: TextInputAction.done,
                               autofillHints: const [AutofillHints.password],
-                              decoration: const InputDecoration(
-                                labelText: '비밀번호',
-                                prefixIcon: Icon(Icons.lock_outline),
+                              decoration: InputDecoration(
+                                labelText: l10n.authPassword,
+                                prefixIcon: const Icon(Icons.lock_outline),
                               ),
                               onFieldSubmitted: (_) {
                                 if (!_isLoading) {
@@ -180,7 +182,7 @@ class _SignInScreenState extends State<SignInScreen> {
                               },
                               validator: (value) {
                                 if ((value ?? '').length < 6) {
-                                  return '6자 이상 입력해 주세요.';
+                                  return l10n.authPasswordTooShort;
                                 }
                                 return null;
                               },
@@ -227,24 +229,25 @@ class _BrandHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final l10n = AppL10n.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('곁에', style: TextStyle(fontSize: 42, fontWeight: FontWeight.w900)),
+        Text(l10n.appTitle, style: const TextStyle(fontSize: 42, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
-        const Text(
-          '가까운 사람끼리만, 필요한 만큼 위치를 나눠요.',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+        Text(
+          l10n.authTagline,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 6),
         Text(
-          '초대받은 서클과 상호 동의한 동행 모드에서만 위치가 공유됩니다.',
+          l10n.authConsentNote,
           style: TextStyle(color: palette.muted),
         ),
         const SizedBox(height: 4),
         Text(
-          '정밀 위치는 광고에 사용하지 않으며, 언제든 공유를 멈출 수 있어요.',
+          l10n.authPrivacyNote,
           style: TextStyle(color: palette.muted),
         ),
       ],
@@ -276,7 +279,7 @@ class _InlineMessage extends StatelessWidget {
       ),
       child: Text(
         message,
-        style: TextStyle(color: color, fontWeight: FontWeight.w800),
+        style: TextStyle(color: color, fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -287,13 +290,15 @@ class _TrustStrip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Wrap(
+    final l10n = AppL10n.of(context);
+
+    return Wrap(
       spacing: 8,
       runSpacing: 8,
       children: [
-        _TrustPill(icon: Icons.visibility_outlined, label: '조회 기록'),
-        _TrustPill(icon: Icons.place_outlined, label: '동의 기반 공유'),
-        _TrustPill(icon: Icons.ads_click_outlined, label: '정밀 위치 광고 차단'),
+        _TrustPill(icon: Icons.visibility_outlined, label: l10n.authBadgeViewerLog),
+        _TrustPill(icon: Icons.place_outlined, label: l10n.authBadgeConsent),
+        _TrustPill(icon: Icons.ads_click_outlined, label: l10n.authBadgeNoAdTargeting),
       ],
     );
   }
@@ -324,7 +329,7 @@ class _TrustPill extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: palette.brand),
           const SizedBox(width: 6),
-          Text(label, style: TextStyle(color: palette.brand, fontWeight: FontWeight.w800)),
+          Text(label, style: TextStyle(color: palette.brand, fontWeight: FontWeight.w700)),
         ],
       ),
     );
