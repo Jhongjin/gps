@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_circle_label">곁에 서클</string>
+    <string name="widget_circle_description">앱을 열지 않아도 지금 누가 공유 중인지 보입니다.</string>
+    <string name="widget_empty_title">아직 서클이 없습니다</string>
+    <string name="widget_empty_body">곁에를 열어 서클을 시작하세요.</string>
+    <string name="widget_stale_notice">업데이트 기다리는 중</string>
+    <string name="widget_needs_check">확인 필요 %1$d</string>
+    <string name="widget_sharing_count">%1$d명 공유 중</string>
+    <string name="widget_open_app">곁에 열기</string>
+    <string name="widget_updated_just_now">방금</string>
+    <string name="widget_updated_minutes">%1$d분 전</string>
+    <string name="widget_updated_hours">%1$d시간 전</string>
+    <string name="widget_sharing_with_age">%1$s · %2$s</string>
+</resources>

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import 'home_widget_snapshot.dart';
 import 'location_models.dart';
 
 class LocationBridge {
@@ -70,6 +71,20 @@ class LocationBridge {
 
   Future<void> flushPendingLocations() {
     return _invokeVoid('flushPendingLocations');
+  }
+
+  /// 홈 화면 위젯에 보여 줄 스냅샷을 넘긴다.
+  ///
+  /// **좌표를 담지 않는다.** 위젯은 잠금화면에서 주머니에서 꺼낸 사람 누구에게나
+  /// 보인다. 이름과 대략의 상태까지가 한계이고, 어디 있는지는 앱을 열어야
+  /// 보인다. 네이티브 쪽도 좌표 키를 아예 읽지 않는다.
+  Future<void> updateHomeWidget(HomeWidgetSnapshot snapshot) {
+    return _invokeVoid('updateHomeWidget', snapshot.toChannel());
+  }
+
+  /// 로그아웃이나 서클 이탈에서 부른다. 남겨 두면 잠금화면에 옛 이름이 남는다.
+  Future<void> clearHomeWidget() {
+    return _invokeVoid('clearHomeWidget');
   }
 
   Future<void> requestSosFix() {

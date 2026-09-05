@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 귀갓길 다크 값. 위젯도 기기 테마를 따른다. -->
+<resources>
+    <color name="gyeote_surface">#FF1D1A16</color>
+    <color name="gyeote_surface_alt">#FF29251F</color>
+    <color name="gyeote_ink">#FFF6F1E9</color>
+    <color name="gyeote_ink_muted">#FFC7BEB2</color>
+    <color name="gyeote_muted">#FF968C80</color>
+    <color name="gyeote_brand">#FF3ED9A4</color>
+    <color name="gyeote_warm">#FFEFB055</color>
+    <color name="gyeote_alert">#FFF08574</color>
+</resources>

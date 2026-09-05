@@ -113,6 +113,32 @@ than half-fixed:
 - Quiet hours hardcode `Asia/Seoul`, so the quiet window lands at the wrong
   local time everywhere else. This needs the device's real IANA zone.
 
+## Android Home Widget (2026-09-06)
+
+`GyeoteCircleWidget` shows who is sharing right now without opening the app.
+Classic `RemoteViews` rather than Glance — this module has no Compose, and
+adding it for one widget is not worth the build weight.
+
+Two decisions are load-bearing.
+
+**The widget never carries a location.** It sits on a home screen and, on many
+devices, a lock screen, where anyone holding the phone can read it. So the
+payload has no coordinate fields at all: `HomeWidgetSnapshot` does not define
+them, and `GyeoteWidgetSnapshot.fromChannel` reads only name, status, and tone,
+discarding anything else the channel sends. Tests on both sides assert that a
+payload containing latitude, longitude, or accuracy still produces a snapshot
+with none of it.
+
+**The widget says how old it is.** Refreshes are push-driven — the app
+broadcasts when it receives new tracks — but a push-only widget freezes at
+"1 min ago" the moment the app is killed, and a safety widget that shows stale
+reassurance as current is worse than one that shows nothing. Every snapshot
+carries `updatedAtMillis`, the subtitle renders the age, and past thirty minutes
+it says it is waiting for an update instead. `updatePeriodMillis` is set to the
+system minimum purely so that age keeps aging without the app.
+
+Kotlin unit tests run in CI via `:app:testDebugUnitTest`.
+
 ## Verified (2026-09-05)
 
 Flutter SDK found at `D:/Codex/toolchains/flutter`.
@@ -121,6 +147,16 @@ Flutter SDK found at `D:/Codex/toolchains/flutter`.
 - `flutter test` — 15/15 passing (was 4; added locale, map shell, member sheet,
   SOS-safety, and region-settings tests)
 - `python tools/check_hardcoded_strings.py` — 0 hardcoded literals
+- `python tools/check_rpc_contract.py` — 17 RPCs, 63 arguments, all matching
+- `gradlew :app:testDebugUnitTest` — 8/8 Kotlin tests
+- `gradlew :app:processDebugResources` — manifest, layouts, and widget metadata
+
+A note for whoever builds next here: `flutter build apk` fails in this
+workspace with `ProcessException: access denied` from the native-assets hook
+runner spawning `cmd.exe`. It is an environment restriction, not a code fault.
+Gradle tasks run fine with `-x :app:compileFlutterBuildDebug`, which is how the
+Kotlin and resource verification above was done. The full APK link step has not
+been run here.
 - `flutter build web --release` — succeeds, and the shell was checked in a browser
 
 Known preview-only artifact: a couple of Hangul glyphs render as tofu in the web

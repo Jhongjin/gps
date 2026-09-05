@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  새 데이터는 앱이 받았을 때 직접 브로드캐스트한다. 그것과 별개로 시스템
+  주기 갱신(최소 30분)을 켜 두는 이유는 **"몇 분 전"이 늙어야 하기 때문**이다.
+  앱이 꺼진 채로 세 시간이 지났는데 위젯이 "1분 전 괜찮음"을 계속 보여 주면,
+  그건 위젯이 거짓말을 하는 것이다. 안전 앱에서는 모르는 것보다 나쁘다.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="1800000"
+    android:initialLayout="@layout/widget_circle"
+    android:description="@string/widget_circle_description"
+    android:previewLayout="@layout/widget_circle"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen" />

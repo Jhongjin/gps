@@ -66,6 +66,23 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+
+        <!--
+          홈 화면 위젯. 앱이 새 스냅샷을 받으면 ACTION_REFRESH 로 직접 깨운다.
+          exported 는 true 여야 런처가 붙일 수 있다.
+        -->
+        <receiver
+            android:name=".GyeoteCircleWidget"
+            android:exported="true"
+            android:label="@string/widget_circle_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="app.gyeote.gyeote.WIDGET_REFRESH" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_circle_info" />
+        </receiver>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

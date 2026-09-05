@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/backend/backend_config.dart';
 import '../../core/backend/backend_contract.dart';
+import '../../core/location/home_widget_snapshot.dart';
 import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
 import '../../core/location/place_alert_geofence_sync.dart';
@@ -142,6 +143,7 @@ class _MapScreenState extends State<MapScreen> {
       _locationSubscription?.cancel();
       _routeTailRequestSerial += 1;
       _serverTracks = const [];
+      unawaited(widget.locationBridge.clearHomeWidget());
       _circleName = null;
       _loadError = null;
       _hasServerCircle = null;
@@ -230,6 +232,9 @@ class _MapScreenState extends State<MapScreen> {
             _isLoading = false;
             _loadError = null;
           });
+          // 새 위치를 받았을 때만 위젯을 깨운다. 시스템 주기 갱신을 쓰지
+          // 않으므로 여기가 유일한 갱신 지점이다.
+          unawaited(_pushHomeWidget(tracks));
         },
         onError: (_) {
           if (!mounted) {
@@ -271,6 +276,46 @@ class _MapScreenState extends State<MapScreen> {
       if (mounted) {
         setState(() => _checkInStatusMessage = _l10n.checkInSyncPending);
       }
+    }
+  }
+
+  /// 홈 화면 위젯에 지금 상태를 밀어 넣는다.
+  ///
+  /// 좌표는 넘기지 않는다. [HomeWidgetSnapshot] 에 그 필드가 아예 없다.
+  Future<void> _pushHomeWidget(List<MapMemberTrack> tracks) async {
+    if (!_supportsNativeLocation) return;
+
+    final others =
+        tracks.where((member) => !member.isCurrentUser).toList(growable: false);
+    final l10n = _l10n;
+
+    try {
+      await widget.locationBridge.updateHomeWidget(
+        HomeWidgetSnapshot(
+          circleName: _circleName ?? l10n.mapDefaultCircleName,
+          sharingCount: tracks.length,
+          attentionCount: tracks
+              .where((member) => member.isStale || member.hasLowBattery)
+              .length,
+          hasCircle: _hasServerCircle != false,
+          updatedAt: DateTime.now(),
+          members: [
+            for (final member in others.take(HomeWidgetSnapshot.maxMembers))
+              HomeWidgetMember(
+                name: member.name,
+                // status() 는 장소 이름을 담지 않는다. meta() 는 정확도를
+                // 담으므로 위젯에 보내지 않는다.
+                status: member.status(l10n),
+                tone: homeWidgetToneFor(
+                  isStale: member.isStale,
+                  hasLowBattery: member.hasLowBattery,
+                ),
+              ),
+          ],
+        ),
+      );
+    } catch (_) {
+      // 위젯 갱신이 실패해도 지도는 계속 동작해야 한다.
     }
   }
 

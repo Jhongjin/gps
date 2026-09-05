@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 카드 라디우스 16. 디자인 스킬의 형태 토큰과 같다. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/gyeote_surface" />
+    <corners android:radius="16dp" />
+</shape>

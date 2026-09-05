@@ -44,6 +44,14 @@ flutter {
     source = "../.."
 }
 
+android.testOptions {
+    unitTests.isReturnDefaultValues = true
+}
+
 dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    testImplementation("junit:junit:4.13.2")
+    // org.json 은 안드로이드 런타임에만 있다. JVM 단위 테스트에서는 스텁이
+    // 예외를 던지므로 실제 구현을 넣어 준다.
+    testImplementation("org.json:json:20240303")
 }

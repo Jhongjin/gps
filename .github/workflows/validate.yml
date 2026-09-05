@@ -34,6 +34,12 @@ jobs:
       - name: Test
         run: flutter test
 
+      # 위젯 스냅샷이 좌표를 버리는지 네이티브 쪽에서도 확인한다. 위젯은
+      # 잠금화면에서 누구에게나 보이므로 이 단언이 깨지면 실제 유출이다.
+      - name: Android unit tests
+        working-directory: apps/gyeote_flutter/android
+        run: ./gradlew :app:testDebugUnitTest --console=plain
+
   static:
     name: Static repository checks
     runs-on: ubuntu-latest

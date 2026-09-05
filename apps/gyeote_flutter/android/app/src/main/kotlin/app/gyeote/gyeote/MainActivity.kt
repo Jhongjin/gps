@@ -82,6 +82,21 @@ class MainActivity : FlutterActivity() {
                         startLocationService(LocationForegroundService.ACTION_SOS)
                         result.success(null)
                     }
+                    "updateHomeWidget" -> {
+                        // 스냅샷에는 좌표가 들어오지 않는다. fromChannel 이
+                        // 이름·상태·톤만 읽고 나머지는 버린다.
+                        GyeoteWidgetSnapshot.write(
+                            this,
+                            GyeoteWidgetSnapshot.fromChannel(call.arguments as? Map<*, *>),
+                        )
+                        GyeoteCircleWidget.refresh(this)
+                        result.success(null)
+                    }
+                    "clearHomeWidget" -> {
+                        GyeoteWidgetSnapshot.clear(this)
+                        GyeoteCircleWidget.refresh(this)
+                        result.success(null)
+                    }
                     else -> result.notImplemented()
                 }
             } catch (error: SecurityException) {
