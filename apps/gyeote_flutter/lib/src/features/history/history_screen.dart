@@ -151,7 +151,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       padding: const EdgeInsets.all(20),
       children: [
         Text(l10n.historyTitle,
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
         Text(l10n.historySubtitle,
             style: TextStyle(color: palette.muted)),
@@ -284,7 +284,7 @@ class _SummaryCell extends StatelessWidget {
         children: [
           Text(value,
               style:
-                  const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                  const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
           const SizedBox(height: 2),
           Text(label,
               style: TextStyle(color: palette.muted, fontSize: 12)),
@@ -334,7 +334,7 @@ class _SafetySummaryCard extends StatelessWidget {
                   checkInCount == 0
                       ? l10n.checkInPending
                       : l10n.historyCheckInCount(checkInCount),
-                  style: const TextStyle(fontWeight: FontWeight.w900),
+                  style: const TextStyle(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 3),
                 Text(
@@ -405,7 +405,7 @@ class _HistoryPill extends StatelessWidget {
         style: TextStyle(
             color: palette.brand,
             fontSize: 12,
-            fontWeight: FontWeight.w800),
+            fontWeight: FontWeight.w700),
       ),
     );
   }
@@ -441,7 +441,7 @@ class _HistoryRow extends StatelessWidget {
             width: 52,
             child: Text(event.time,
                 style: TextStyle(
-                    color: palette.brand, fontWeight: FontWeight.w900)),
+                    color: palette.brand, fontWeight: FontWeight.w700)),
           ),
           Expanded(
             child: Container(
@@ -465,7 +465,7 @@ class _HistoryRow extends StatelessWidget {
                       event.type.label(l10n),
                       style: TextStyle(
                           color: event.tone.resolve(palette),
-                          fontWeight: FontWeight.w900,
+                          fontWeight: FontWeight.w700,
                           fontSize: 12),
                     ),
                   ),
@@ -476,7 +476,7 @@ class _HistoryRow extends StatelessWidget {
                       children: [
                         Text(event.title,
                             style:
-                                const TextStyle(fontWeight: FontWeight.w900)),
+                                const TextStyle(fontWeight: FontWeight.w700)),
                         const SizedBox(height: 4),
                         Text(event.detail,
                             style: TextStyle(color: palette.muted)),
@@ -525,7 +525,7 @@ class _HistoryEmptyState extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title,
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 3),
                 Text(body, style: TextStyle(color: palette.muted)),
               ],

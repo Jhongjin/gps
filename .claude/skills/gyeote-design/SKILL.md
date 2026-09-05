@@ -96,8 +96,17 @@ radius:  sheet 28 · card 16 · chip/button/avatar 999 · small surface 10
 
 ## 4. 타이포
 
-`Geist` + `Pretendard` 스택 유지. 단 다국어 시 아래 서브셋을 번들해야 한다
-(§7 참조).
+**Pretendard 한 자루**를 번들해 한글과 라틴을 함께 그린다
+(`assets/fonts/`, SIL OFL 1.1, Regular 400 · Bold 700).
+
+초안의 `Geist` + `Pretendard` 조합은 폐기했다. 이 앱의 문장은 대부분 한 줄에서
+한글과 숫자를 섞는다 — `배터리 46%`, `정확도 85m`, `집까지 8분`. 두 패밀리를
+섞으면 그 줄에서 x-height 와 베이스라인이 어긋나 글줄이 울렁인다. Pretendard 는
+metric 이 맞춰진 라틴을 함께 담고 있어 한 자루로 해결되고, 용량도 절반이다.
+
+`tnum` 을 지원하므로 ETA·배터리·시각에 `FontFeature.tabularFigures()` 를 쓴다.
+ja·hi·ar 은 Pretendard 가 담지 않으므로, 로케일을 여는 시점에 Noto 서브셋을
+추가해 `fontFamilyFallback` 에 잇는다.
 
 - **굵기는 700까지만.** w800·w900을 쓰지 않는다. 위계는 크기로 만든다.
 - 스케일: 화면 제목 28 / 섹션 18 / 본문 15 / 보조 13 / 메타 11
@@ -226,7 +235,8 @@ radius:  sheet 28 · card 16 · chip/button/avatar 999 · small surface 10
 |---|---|
 | "radius 8px 이하" | sheet 28 / card 16 / chip·avatar 999 |
 | 모든 요소에 헤어라인 보더 | 면의 밝기 차 + 그림자. 선은 구분선에만 |
-| 앱 이름·제목 heavy(w800·w900) | 최대 700. 위계는 크기로 |
+| 앱 이름·제목 heavy(w800·w900) | 최대 700. 위계는 크기로. 번들 폰트도 400/700 두 자루뿐이다 |
+| Geist + Pretendard 혼용 | Pretendard 단일. 한 줄에 두 문자가 섞이므로 metric 이 맞아야 한다 |
 | Canvas `#F4F6F1` / Surface `#FFFEFA` | §2 따뜻한 중성 |
 | Primary `#0F6A53` | `brand` — 지도 위 가독성 때문 |
 | Amber는 광고·주의 전용 | `warm`은 도착·온기. 광고는 중성 회색 |
@@ -256,5 +266,6 @@ UI를 새로 만들거나 크게 고칠 때:
   **프리셋 키를 저장**해야 한다.
 - 방해 금지 시간대가 `Asia/Seoul`로 고정돼 있다. 다른 지역에서는 조용한 시간이
   어긋난다. 기기의 IANA 존을 받아와야 한다.
-- 폰트가 하나도 번들되지 않아 플랫폼 기본 폰트를 쓴다. `ja`·`hi`·`ar`을 열려면
-  Noto 서브셋 번들이 선행돼야 한다.
+- `ja`·`hi`·`ar` 용 문자 폰트는 아직 없다. Pretendard 는 가나·한자·데바나가리·
+  아랍 문자를 담지 않으므로, 해당 로케일을 여는 시점에 Noto 서브셋을 추가해야
+  한다. 자루당 5~9MB 라 용량 판단이 따라온다.

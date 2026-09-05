@@ -83,16 +83,25 @@ Two rules that are easy to get wrong:
 
 ## Typography
 
-Use Geist for Latin UI, numbers, and controls, with a Korean-capable fallback
-for Hangul. Recommended stack:
+Bundle Pretendard and use it for both scripts. It ships in `assets/fonts/`
+under SIL OFL 1.1, in Regular and Bold only.
 
-`"Geist", "Geist Sans", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif`
+The earlier Geist-for-Latin, Pretendard-for-Hangul pairing is retired. Almost
+every line in this product mixes the two scripts — `배터리 46%`, `정확도 85m`,
+`집까지 8분` — and two families in one line means two x-heights and two
+baselines, which makes the line wobble. Pretendard exists to solve exactly that:
+it carries a Latin set drawn to the same metrics as its Hangul. One family, and
+half the bytes.
 
-Localized builds must bundle the matching subset — Geist and Pretendard cover
-neither Devanagari nor Arabic, and Japanese needs Noto Sans JP for correct
-glyph shapes.
+Pretendard supports `tnum`, so ETA, battery, time, and counters use
+`FontFeature.tabularFigures()`.
 
-Use `Geist Mono` or tabular numbers for ETA, battery, time, and counters.
+Localized builds must bundle the matching subset — Pretendard covers neither
+Devanagari nor Arabic, and Japanese needs Noto Sans JP for correct glyph
+shapes.
+
+Use tabular numbers for ETA, battery, time, and counters. No mono family is
+bundled; Pretendard's `tnum` covers the alignment those figures need.
 
 - Screen title: 28px
 - Section title: 18px

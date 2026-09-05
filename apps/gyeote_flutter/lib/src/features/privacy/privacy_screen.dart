@@ -296,7 +296,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                 children: [
                   Text(l10n.privacyTitle,
                       style:
-                          const TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+                          const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 4),
                   Text(l10n.privacySubtitle,
                       style: TextStyle(color: palette.muted)),
@@ -772,7 +772,7 @@ class _ModeRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(detail,
                     style: TextStyle(
@@ -816,7 +816,7 @@ class _PrivacyCard extends StatelessWidget {
             children: [
               Expanded(
                   child: Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.w900))),
+                      style: const TextStyle(fontWeight: FontWeight.w700))),
               if (trailing != null) trailing!,
             ],
           ),
@@ -849,7 +849,7 @@ class _Badge extends StatelessWidget {
         style: TextStyle(
             color: palette.brand,
             fontSize: 12,
-            fontWeight: FontWeight.w800),
+            fontWeight: FontWeight.w700),
       ),
     );
   }

@@ -290,10 +290,10 @@ ThemeData _buildTheme(GyeotePalette palette, Brightness brightness) {
     scaffoldBackgroundColor: palette.canvas,
     canvasColor: palette.canvas,
     dividerColor: palette.line,
-    // Geist/Pretendard 를 지정하려면 pubspec 의 `fonts:` 에 실제 파일을 번들해야
-    // 한다. 지금은 번들된 폰트가 없어서, 없는 패밀리를 지정하면 폴백 사슬이 끊겨
-    // 일부 한글이 두부 글자로 깨진다(웹에서 재현됨). 번들 전까지는 플랫폼 기본
-    // 폰트를 쓴다. 다국어 확장 시 ja/hi/ar 용 Noto 서브셋도 함께 번들해야 한다.
+    // 한글과 라틴을 한 패밀리로 그린다. 두 패밀리를 섞으면 `배터리 46%` 처럼
+    // 한 줄에서 문자가 섞일 때 x-height 와 베이스라인이 어긋난다.
+    // ja/hi/ar 을 열 때는 해당 문자용 Noto 서브셋을 담아 fallback 에 잇는다.
+    fontFamily: 'Pretendard',
     useMaterial3: true,
     extensions: [palette],
     dividerTheme: DividerThemeData(color: palette.line, space: 1, thickness: 1),

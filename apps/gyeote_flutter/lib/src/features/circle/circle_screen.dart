@@ -571,7 +571,7 @@ class _CircleScreenState extends State<CircleScreen> {
                 children: [
                   Text(title,
                       style: const TextStyle(
-                          fontSize: 28, fontWeight: FontWeight.w900)),
+                          fontSize: 28, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 4),
                   Text(subtitle,
                       style: TextStyle(color: palette.muted)),
@@ -673,7 +673,7 @@ class _EmptyMembersState extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.circleNoMembers, style: const TextStyle(fontWeight: FontWeight.w900)),
+          Text(l10n.circleNoMembers, style: const TextStyle(fontWeight: FontWeight.w700)),
           const SizedBox(height: 4),
           Text(l10n.circleNoMembersBody,
               style: TextStyle(color: palette.muted)),
@@ -781,7 +781,7 @@ class _InviteCard extends StatelessWidget {
           Text(
             invite == null ? 'GYE-42K' : invite.codeHint,
             style: const TextStyle(
-                fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 0),
+                fontSize: 24, fontWeight: FontWeight.w700, letterSpacing: 0),
           ),
           const SizedBox(height: 6),
           Text(
@@ -863,7 +863,7 @@ class _MemberRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(member.name,
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(member.role,
                     style: TextStyle(
@@ -893,7 +893,7 @@ class _CompanionRequestCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.companionRequestDemo,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
           Text(l10n.companionRequestBody,
               style: TextStyle(color: palette.muted)),
@@ -1056,7 +1056,7 @@ class _CheckInRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('$name · $status',
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(body,
                     style: TextStyle(
@@ -1265,7 +1265,7 @@ class _InlineNoticeState extends StatelessWidget {
               children: [
                 Text(title,
                     style:
-                        TextStyle(color: color, fontWeight: FontWeight.w900)),
+                        TextStyle(color: color, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(body,
                     style: TextStyle(
@@ -1319,7 +1319,7 @@ class _AlertRule extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(title,
-                          style: const TextStyle(fontWeight: FontWeight.w900)),
+                          style: const TextStyle(fontWeight: FontWeight.w700)),
                     ),
                     if (isBusy)
                       const SizedBox(
@@ -1439,7 +1439,7 @@ class _InlineEmptyState extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title,
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 3),
                 Text(body,
                     style: TextStyle(
@@ -1593,7 +1593,7 @@ class _SectionCard extends StatelessWidget {
             children: [
               Expanded(
                   child: Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.w900))),
+                      style: const TextStyle(fontWeight: FontWeight.w700))),
               if (trailing != null) trailing!,
             ],
           ),
@@ -1626,7 +1626,7 @@ class _StatusChip extends StatelessWidget {
         style: TextStyle(
             color: palette.brand,
             fontSize: 12,
-            fontWeight: FontWeight.w800),
+            fontWeight: FontWeight.w700),
       ),
     );
   }

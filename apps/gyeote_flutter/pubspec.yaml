@@ -27,3 +27,12 @@ flutter:
   generate: true
   assets:
     - assets/
+  fonts:
+    # 한글과 라틴을 metric 이 맞춰진 한 패밀리로 그린다. 근거는
+    # assets/fonts/README.md 참조. SIL OFL 1.1.
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+          weight: 400
+        - asset: assets/fonts/Pretendard-Bold.otf
+          weight: 700

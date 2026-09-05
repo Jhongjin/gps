@@ -1454,7 +1454,7 @@ class _MapOnboardingPanel extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(l10n.mapOnboardTitle,
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 3),
                 Text(l10n.mapOnboardBody,
                     style: TextStyle(color: palette.muted, fontSize: 12)),
@@ -1559,7 +1559,7 @@ class _PlaceDraftPanel extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(l10n.placeDraftTitle,
-                        style: const TextStyle(fontWeight: FontWeight.w900)),
+                        style: const TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 2),
                     Text(l10n.placeDraftSubtitle,
                         style: TextStyle(color: palette.muted, fontSize: 12)),
@@ -1624,7 +1624,7 @@ class _PlaceDraftPanel extends StatelessWidget {
                       member.name.characters.first,
                       style: TextStyle(
                         color: member.tone.resolve(palette),
-                        fontWeight: FontWeight.w900,
+                        fontWeight: FontWeight.w700,
                         fontSize: 12,
                       ),
                     ),
@@ -1826,7 +1826,7 @@ class _CompanionPanel extends StatelessWidget {
               Expanded(
                 child: Text(l10n.privacyCompanionMode,
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w900)),
+                        fontSize: 16, fontWeight: FontWeight.w700)),
               ),
               _StatusBadge(text: l10n.companionMinutesLeft(minutes)),
             ],
@@ -1911,7 +1911,7 @@ class _CompanionPanel extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(l10n.uploadSyncTitle,
-                          style: const TextStyle(fontWeight: FontWeight.w900)),
+                          style: const TextStyle(fontWeight: FontWeight.w700)),
                       const SizedBox(height: 2),
                       Text(uploadText,
                           style: TextStyle(color: palette.muted, fontSize: 12)),
@@ -1969,7 +1969,7 @@ class _SafetyStatusStrip extends StatelessWidget {
             child: Text(
               text,
               style:
-                  TextStyle(color: palette.brand, fontWeight: FontWeight.w800),
+                  TextStyle(color: palette.brand, fontWeight: FontWeight.w700),
             ),
           ),
         ],
@@ -2208,7 +2208,7 @@ class _StatusBadge extends StatelessWidget {
       ),
       child: Text(text,
           style: TextStyle(
-              color: palette.brand, fontWeight: FontWeight.w800, fontSize: 12)),
+              color: palette.brand, fontWeight: FontWeight.w700, fontSize: 12)),
     );
   }
 }
