@@ -68,7 +68,9 @@ class GyeoteCircleWidget : AppWidgetProvider() {
             ids.forEach { manager.updateAppWidget(it, views) }
         }
 
-        private fun buildViews(context: Context): RemoteViews {
+        /** 테스트가 그려진 결과를 확인할 수 있도록 internal 로 연다. */
+        @androidx.annotation.VisibleForTesting
+        internal fun buildViews(context: Context): RemoteViews {
             val views = RemoteViews(context.packageName, R.layout.widget_circle)
             val snapshot = GyeoteWidgetSnapshot.read(context)
 
