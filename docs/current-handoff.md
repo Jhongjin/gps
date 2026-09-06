@@ -272,3 +272,52 @@ Current local limitation:
 1. Apply the pending production SQL bundle, then run verification/negative tests for `012` through `015`.
 2. Add push notification delivery rules after event ingestion is production-applied.
 3. Add real-device Android/iOS QA for geofence event delivery and dedupe.
+
+## Private places, and the raw coordinates that were never read (2026-09-06)
+
+Two things landed together because either one alone is theatre.
+
+**The precise fix was being uploaded.** `latest_locations` and
+`location_history` have carried `raw_lat`/`raw_lng` since `001`, and no RPC,
+view, policy or trigger in the schema ever read them. The comment on
+`get_circle_member_route_tail` says "Raw coordinates stay server-side" — the
+design intent was that they stay on the *device*. In practice a user could set
+sharing precision to area-only or hidden and the exact coordinate still went up
+and sat there for thirty days. What the screen promised and what the database
+held were different things.
+
+`018_drop_raw_coordinates.sql` drops the four columns. The Dart and Kotlin
+upload paths stopped sending them first — that order matters, because reversing
+it makes older clients fail their inserts, and a failed insert is a location
+upload that silently stops. `tools/check_precise_coordinates.py` fails CI if
+either column or `rawCoordinate` reappears in an upload-row builder; it was
+proved by reintroducing the column and watching the check fail.
+
+**Private places.** `PrivatePlace` marks a home, school, or clinic. Inside one,
+the shared coordinate snaps to the place's centre.
+
+- **Snapping, not rounding.** Rounding builds a grid: different points inside
+  one house land on a handful of distinct values, and the original position is
+  recoverable from their distribution. Snapping makes every point in the radius
+  produce the identical value, which cannot be inverted. It is also idempotent,
+  which is what lets the masking run twice safely.
+- **Masking happens in native, before the coordinate exists in a payload.**
+  The upload queue is native and never passes through Dart, so Dart-only
+  masking would leave the actual upload untouched. `GyeoteLocationCore
+  .sharedCoordinate` applies it, and *before* the precision reduction — the
+  other order lets a rounded point drift outside the radius and escape masking.
+  `LocationBridge` applies it again on the way in, as the only line of defence
+  on a platform without the native path.
+- **The list never leaves the device.** There is no table for it. A list of the
+  places someone wants hidden is a more concentrated disclosure than any single
+  coordinate it was meant to hide. It lives in `SharedPreferences`, and the cost
+  — re-adding them on a new device — is worth paying.
+- **Names never cross the channel.** `toChannel()` sends latitude, longitude,
+  and radius. Native does not need a name to mask a coordinate, and "clinic" or
+  "shelter" is exactly the kind of string that ends up in a crash report.
+- **Registration uses the raw fix, not the shared one.** Centring on an
+  already-masked coordinate would offset the radius so the real place could sit
+  outside it.
+
+The 안심 screen has the card; adding uses the current position rather than a map
+picker, because whoever sets this up is usually standing in the place.

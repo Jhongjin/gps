@@ -1563,4 +1563,58 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get etaEstimateNote => 'Estimated from straight-line distance';
+
+  @override
+  String get privatePlacesTitle => 'Private places';
+
+  @override
+  String get privatePlacesBody =>
+      'Inside a place you add here, only its centre point is shared instead of your exact position. The list stays on this device and is never sent to the server.';
+
+  @override
+  String get privatePlacesEmpty => 'Nothing added yet';
+
+  @override
+  String get privatePlacesAddHere => 'Add where I am now';
+
+  @override
+  String get privatePlacesAdding => 'Checking location';
+
+  @override
+  String get privatePlacesNameLabel => 'What should we call this place?';
+
+  @override
+  String get privatePlacesNameHint => 'Home';
+
+  @override
+  String get privatePlacesRadius => 'Area to hide';
+
+  @override
+  String get privatePlacesSave => 'Add';
+
+  @override
+  String get privatePlacesRemove => 'Remove';
+
+  @override
+  String get privatePlacesSaved =>
+      'Your exact position is no longer shared inside this place.';
+
+  @override
+  String get privatePlacesRemoved => 'Place removed.';
+
+  @override
+  String get privatePlacesNoFix => 'Could not read your current location.';
+
+  @override
+  String privatePlacesFull(int max) {
+    return 'You can add up to $max places.';
+  }
+
+  @override
+  String privatePlacesRadiusValue(int meters) {
+    return '$meters m radius';
+  }
+
+  @override
+  String get privatePlacesUnnamed => 'Unnamed place';
 }

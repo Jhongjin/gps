@@ -56,6 +56,14 @@ class MainActivity : FlutterActivity() {
                         GyeoteLocationPayloads.emitPermissionChanged(this, locationManager)
                         result.success(null)
                     }
+                    // 민감 장소만 갈아 끼운다. 전체 정책을 다시 밀면 안심 화면이
+                    // 모드나 일시정지 같은, 자기가 모르는 값을 덮어쓰게 된다.
+                    "setPrivatePlaces" -> {
+                        val places = (call.arguments as? Map<*, *>)?.get("privatePlaces")
+                        GyeoteLocationState.sharingPolicy =
+                            GyeoteLocationState.sharingPolicy + ("privatePlaces" to places)
+                        result.success(null)
+                    }
                     "configureUpload" -> {
                         GyeoteLocationState.uploadConfig = call.arguments as? Map<String, Any?>
                         GyeoteLocationUploadQueue.resetBackoff()

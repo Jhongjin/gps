@@ -12,6 +12,8 @@ import '../../core/location/home_widget_snapshot.dart';
 import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
 import '../../core/location/place_alert_geofence_sync.dart';
+import '../../core/privacy/private_place.dart';
+import '../../core/privacy/private_place_store.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../core/i18n/region_settings.dart';
 import '../../theme/gyeote_theme.dart';
@@ -67,6 +69,9 @@ class _MapScreenState extends State<MapScreen> {
   StreamSubscription<AuthState>? _authSubscription;
   List<MapMemberTrack> _serverTracks = const [];
   List<MapRoutePoint> _deviceRoute = const [];
+
+  /// 기기에만 사는 민감 장소. 네이티브에 내려보낼 정책에 함께 실린다.
+  List<PrivatePlace> _privatePlaces = const [];
   MapMemberTrack? _deviceTrack;
   String? _circleName;
   String? _loadError;
@@ -135,6 +140,22 @@ class _MapScreenState extends State<MapScreen> {
     _connectDeviceLocation();
     _connectAuthRefresh();
     _configureNativeUpload();
+    _loadPrivatePlaces();
+  }
+
+  /// 민감 장소는 기기 저장소에만 있다. 화면이 뜰 때 한 번 읽어서 세션 정책에
+  /// 싣고, 안심 화면에서 바뀌면 그쪽이 네이티브에 직접 밀어 넣는다.
+  Future<void> _loadPrivatePlaces() async {
+    if (!_supportsNativeLocation) return;
+    try {
+      final places = await const PrivatePlaceStore().load();
+      if (!mounted) return;
+      setState(() => _privatePlaces = places);
+      await widget.locationBridge.setPrivatePlaces(places);
+    } catch (_) {
+      // 읽기 실패는 목록 없음으로 떨어진다. 가림이 없다는 사실은 안심 화면이
+      // 목록이 비어 있는 것으로 그대로 보여 준다.
+    }
   }
 
   @override
@@ -928,6 +949,9 @@ class _MapScreenState extends State<MapScreen> {
         enabled: true,
         mode: SharingMode.balanced,
         expiresAt: DateTime.now().add(duration),
+        // 세션이 안심 화면보다 먼저 시작될 수 있으므로 여기서도 실어 보낸다.
+        // 빠뜨리면 동행 모드 동안에만 가림이 풀리는데, 그 실패는 조용하다.
+        privatePlaces: _privatePlaces,
       ),
     );
   }

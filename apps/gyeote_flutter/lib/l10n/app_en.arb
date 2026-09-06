@@ -459,5 +459,21 @@
   "etaDistanceTo": "{distance} to {place}",
   "etaNearby": "Near {place}",
   "etaMineMinutes": "You: about {minutes} min away",
-  "etaEstimateNote": "Estimated from straight-line distance"
+  "etaEstimateNote": "Estimated from straight-line distance",
+  "privatePlacesTitle": "Private places",
+  "privatePlacesBody": "Inside a place you add here, only its centre point is shared instead of your exact position. The list stays on this device and is never sent to the server.",
+  "privatePlacesEmpty": "Nothing added yet",
+  "privatePlacesAddHere": "Add where I am now",
+  "privatePlacesAdding": "Checking location",
+  "privatePlacesNameLabel": "What should we call this place?",
+  "privatePlacesNameHint": "Home",
+  "privatePlacesRadius": "Area to hide",
+  "privatePlacesSave": "Add",
+  "privatePlacesRemove": "Remove",
+  "privatePlacesSaved": "Your exact position is no longer shared inside this place.",
+  "privatePlacesRemoved": "Place removed.",
+  "privatePlacesNoFix": "Could not read your current location.",
+  "privatePlacesFull": "You can add up to {max} places.",
+  "privatePlacesRadiusValue": "{meters} m radius",
+  "privatePlacesUnnamed": "Unnamed place"
 }

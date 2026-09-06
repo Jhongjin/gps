@@ -692,8 +692,10 @@ Map<String, Object?> _baseLocationRow(
     'profile_id': _currentUserId(client),
     'device_id': upload.deviceId,
     'source': _locationSourceToJson(sample.source),
-    'raw_lat': sample.rawCoordinate.latitude,
-    'raw_lng': sample.rawCoordinate.longitude,
+    // 원시 좌표는 올리지 않는다. `LocationSample.rawCoordinate` 는 기기 안에서
+    // 민감 장소 판정에만 쓰이고 거기서 끝난다. 018 이전에는 이 두 칸이 서버로
+    // 갔는데, 스키마의 어떤 RPC 도 그 값을 읽지 않았다 — 아무도 쓰지 않는
+    // 정확한 좌표가 30일씩 쌓이고 있었다.
     'shared_lat':
         hideSharedCoordinate ? null : sample.sharedCoordinate.latitude,
     'shared_lng':

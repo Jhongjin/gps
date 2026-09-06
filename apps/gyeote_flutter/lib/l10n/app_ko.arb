@@ -869,5 +869,38 @@
       }
     }
   },
-  "etaEstimateNote": "직선거리 기준 추정입니다"
+  "etaEstimateNote": "직선거리 기준 추정입니다",
+  "privatePlacesTitle": "민감 장소",
+  "@privatePlacesTitle": {
+    "description": "정확한 위치 대신 넓은 반경만 공유할 장소"
+  },
+  "privatePlacesBody": "여기 등록한 곳 안에 있으면 정확한 좌표 대신 이 장소의 가운데 지점만 공유됩니다. 목록은 이 기기에만 저장되고 서버로 보내지 않습니다.",
+  "privatePlacesEmpty": "등록된 곳이 없습니다",
+  "privatePlacesAddHere": "지금 있는 곳 등록",
+  "privatePlacesAdding": "위치 확인 중",
+  "privatePlacesNameLabel": "이 장소를 뭐라고 부를까요",
+  "privatePlacesNameHint": "집",
+  "privatePlacesRadius": "가릴 범위",
+  "privatePlacesSave": "등록",
+  "privatePlacesRemove": "지우기",
+  "privatePlacesSaved": "이제 이 장소 안에서는 정확한 위치가 공유되지 않습니다.",
+  "privatePlacesRemoved": "장소를 지웠습니다.",
+  "privatePlacesNoFix": "지금 위치를 확인하지 못했습니다.",
+  "privatePlacesFull": "장소는 {max}곳까지 등록할 수 있습니다.",
+  "@privatePlacesFull": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "privatePlacesRadiusValue": "반경 {meters}m",
+  "@privatePlacesRadiusValue": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "privatePlacesUnnamed": "이름 없는 장소"
 }

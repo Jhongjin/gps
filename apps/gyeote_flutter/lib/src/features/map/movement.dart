@@ -1,6 +1,6 @@
-import 'dart:math' as math;
-
 import 'package:latlong2/latlong.dart';
+
+import '../../core/geo/geo_math.dart';
 
 /// 표본 좌표에서 **이동 상태와 도착 예상**을 뽑는다.
 ///
@@ -12,9 +12,6 @@ import 'package:latlong2/latlong.dart';
 /// 일이고, 이 앱에서 그건 기능 하나와 바꿀 만한 것이 아니다. 대신 직선거리에
 /// 우회 계수를 곱한다. 그래서 결과는 "정확한 도착 시각"이 아니라 "대략 몇 분"
 /// 이고, 화면도 그렇게만 말해야 한다.
-
-/// 지구 반지름(m). 도시 규모 거리에서 구면 근사로 충분하다.
-const double _earthRadiusM = 6371008.8;
 
 /// 직선거리를 실제 이동 거리로 바꾸는 계수.
 ///
@@ -104,34 +101,24 @@ class EtaEstimate {
 }
 
 /// 두 지점 사이 대권 거리(m).
-double distanceMeters(LatLng a, LatLng b) {
-  final lat1 = _toRadians(a.latitude);
-  final lat2 = _toRadians(b.latitude);
-  final dLat = lat2 - lat1;
-  final dLng = _toRadians(b.longitude - a.longitude);
-
-  final h = math.sin(dLat / 2) * math.sin(dLat / 2) +
-      math.cos(lat1) * math.cos(lat2) * math.sin(dLng / 2) * math.sin(dLng / 2);
-  return 2 * _earthRadiusM * math.asin(math.min(1, math.sqrt(h)));
-}
+double distanceMeters(LatLng a, LatLng b) => distanceMetersBetween(
+      a.latitude,
+      a.longitude,
+      b.latitude,
+      b.longitude,
+    );
 
 /// [from] 에서 [to] 를 향하는 방위각. 진북 0, 시계방향 0~360.
-double bearingDegrees(LatLng from, LatLng to) {
-  final lat1 = _toRadians(from.latitude);
-  final lat2 = _toRadians(to.latitude);
-  final dLng = _toRadians(to.longitude - from.longitude);
-
-  final y = math.sin(dLng) * math.cos(lat2);
-  final x = math.cos(lat1) * math.sin(lat2) -
-      math.sin(lat1) * math.cos(lat2) * math.cos(dLng);
-  return (_toDegrees(math.atan2(y, x)) + 360) % 360;
-}
+double bearingDegrees(LatLng from, LatLng to) => bearingDegreesBetween(
+      from.latitude,
+      from.longitude,
+      to.latitude,
+      to.longitude,
+    );
 
 /// 두 방위각 사이의 최소 각도차(0~180).
-double bearingDeltaDegrees(double a, double b) {
-  final diff = (a - b).abs() % 360;
-  return diff > 180 ? 360 - diff : diff;
-}
+double bearingDeltaDegrees(double a, double b) =>
+    bearingDeltaDegreesBetween(a, b);
 
 /// 시간이 찍힌 표본 하나. [MapRoutePoint] 를 그대로 받지 않는 이유는 이 파일이
 /// 지도 모델에 의존하지 않게 두기 위해서다.
@@ -264,7 +251,3 @@ MovementState _stateFor(double speedMps) {
   if (speedMps < _ridingBelowMps) return MovementState.riding;
   return MovementState.driving;
 }
-
-double _toRadians(double degrees) => degrees * math.pi / 180;
-
-double _toDegrees(double radians) => radians * 180 / math.pi;

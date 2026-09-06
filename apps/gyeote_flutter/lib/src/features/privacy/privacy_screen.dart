@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
+import '../../core/privacy/private_place.dart';
+import '../../core/privacy/private_place_store.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../theme/gyeote_theme.dart';
 
@@ -48,6 +50,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   _BatteryMode _batteryMode = _BatteryMode.balanced;
   PermissionSnapshot? _permissionSnapshot;
   String? _permissionStatusMessage;
+  List<PrivatePlace> _privatePlaces = const [];
+  bool _isAddingPrivatePlace = false;
 
   bool get _hasBackend =>
       widget.circleRepository != null && widget.privacyRepository != null;
@@ -63,6 +67,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     super.initState();
     _loadAdPreferences();
     _loadPermissionSnapshot();
+    _loadPrivatePlaces();
   }
 
   @override
@@ -278,6 +283,89 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     }
   }
 
+  Future<void> _loadPrivatePlaces() async {
+    final places = await const PrivatePlaceStore().load();
+    if (!mounted) return;
+    setState(() => _privatePlaces = places);
+  }
+
+  /// 지금 있는 곳을 민감 장소로 등록한다.
+  ///
+  /// 지도에서 점을 찍게 하지 않는 이유는, 이걸 설정하는 사람은 대개 그 장소에
+  /// 서 있기 때문이다. 지도 피커를 붙이면 단계가 늘고, 늘어난 단계만큼 안 쓰게
+  /// 된다.
+  Future<void> _addPrivatePlaceHere() async {
+    final bridge = widget.locationBridge;
+    if (bridge == null) return;
+
+    if (_privatePlaces.length >= PrivatePlaceStore.maxPlaces) {
+      _setStatus(_l10n.privatePlacesFull(PrivatePlaceStore.maxPlaces),
+          isError: true);
+      return;
+    }
+
+    setState(() => _isAddingPrivatePlace = true);
+    try {
+      final sample = await bridge.getLastKnownLocation();
+      if (!mounted) return;
+      if (sample == null) {
+        _setStatus(_l10n.privatePlacesNoFix, isError: true);
+        return;
+      }
+
+      // 등록에는 **원시 좌표**를 쓴다. 이미 가려진 좌표로 중심을 잡으면 반경이
+      // 실제 위치에서 밀려나 정작 집이 반경 밖에 남는다.
+      final draft = await _askPrivatePlaceDetails();
+      if (!mounted || draft == null) return;
+
+      final place = PrivatePlace(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        name: draft.name,
+        latitude: sample.rawCoordinate.latitude,
+        longitude: sample.rawCoordinate.longitude,
+        radiusM: draft.radiusM,
+      );
+
+      await _savePrivatePlaces([..._privatePlaces, place]);
+      if (mounted) _setStatus(_l10n.privatePlacesSaved, isError: false);
+    } catch (_) {
+      if (mounted) _setStatus(_l10n.privatePlacesNoFix, isError: true);
+    } finally {
+      if (mounted) setState(() => _isAddingPrivatePlace = false);
+    }
+  }
+
+  Future<void> _removePrivatePlace(String id) async {
+    await _savePrivatePlaces(
+      _privatePlaces.where((place) => place.id != id).toList(),
+    );
+    if (mounted) _setStatus(_l10n.privatePlacesRemoved, isError: false);
+  }
+
+  Future<void> _savePrivatePlaces(List<PrivatePlace> places) async {
+    await const PrivatePlaceStore().save(places);
+    // 저장과 적용이 갈리면 화면은 등록됐다고 하는데 좌표는 계속 정확하게
+    // 나간다. 그래서 저장 직후에 곧바로 밀어 넣는다.
+    await widget.locationBridge?.setPrivatePlaces(places);
+    if (mounted) setState(() => _privatePlaces = places);
+  }
+
+  Future<({String name, int radiusM})?> _askPrivatePlaceDetails() {
+    return showModalBottomSheet<({String name, int radiusM})>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => const _PrivatePlaceComposer(),
+    );
+  }
+
+  void _setStatus(String message, {required bool isError}) {
+    setState(() {
+      _statusMessage = message;
+      _statusIsError = isError;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
@@ -350,6 +438,14 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           isLoading: _isLoadingPermissions,
           message: _permissionStatusMessage,
           onRefresh: _loadPermissionSnapshot,
+        ),
+        const SizedBox(height: 12),
+        _PrivatePlacesCard(
+          places: _privatePlaces,
+          isAdding: _isAddingPrivatePlace,
+          canAdd: widget.locationBridge != null,
+          onAdd: _addPrivatePlaceHere,
+          onRemove: _removePrivatePlace,
         ),
         const SizedBox(height: 12),
         const _ViewerLogCard(),
@@ -850,6 +946,186 @@ class _Badge extends StatelessWidget {
             color: palette.brand,
             fontSize: 12,
             fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+/// 민감 장소 카드.
+///
+/// 광고는 여기 들어가지 않는다. 프라이버시 설정 저장 흐름은 스킬 §5 의
+/// 광고 금지 화면이다.
+class _PrivatePlacesCard extends StatelessWidget {
+  const _PrivatePlacesCard({
+    required this.places,
+    required this.isAdding,
+    required this.canAdd,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  final List<PrivatePlace> places;
+  final bool isAdding;
+  final bool canAdd;
+  final Future<void> Function() onAdd;
+  final Future<void> Function(String id) onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
+    return _PrivacyCard(
+      title: l10n.privatePlacesTitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.privatePlacesBody,
+            style: TextStyle(fontSize: 12, color: palette.muted),
+          ),
+          const SizedBox(height: 10),
+          if (places.isEmpty)
+            Text(
+              l10n.privatePlacesEmpty,
+              style: TextStyle(fontSize: 12, color: palette.inkMuted),
+            )
+          else
+            for (final place in places)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    Icon(Icons.shield_outlined, size: 16, color: palette.brand),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            place.name.isEmpty
+                                ? l10n.privatePlacesUnnamed
+                                : place.name,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: palette.ink,
+                            ),
+                          ),
+                          Text(
+                            l10n.privatePlacesRadiusValue(place.radiusM),
+                            style:
+                                TextStyle(fontSize: 11, color: palette.muted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => onRemove(place.id),
+                      child: Text(l10n.privatePlacesRemove),
+                    ),
+                  ],
+                ),
+              ),
+          const SizedBox(height: 4),
+          if (canAdd)
+            FilledButton.tonal(
+              onPressed: isAdding ? null : onAdd,
+              child: Text(
+                isAdding
+                    ? l10n.privatePlacesAdding
+                    : l10n.privatePlacesAddHere,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 이름과 가릴 범위를 받는 시트.
+class _PrivatePlaceComposer extends StatefulWidget {
+  const _PrivatePlaceComposer();
+
+  @override
+  State<_PrivatePlaceComposer> createState() => _PrivatePlaceComposerState();
+}
+
+class _PrivatePlaceComposerState extends State<_PrivatePlaceComposer> {
+  final TextEditingController _name = TextEditingController();
+  int _radiusM = PrivatePlace.radiusPresetsM[1];
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          0,
+          20,
+          24 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.privatePlacesTitle,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: palette.ink,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _name,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: l10n.privatePlacesNameLabel,
+                hintText: l10n.privatePlacesNameHint,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.privatePlacesRadius,
+              style: TextStyle(fontSize: 13, color: palette.inkMuted),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final preset in PrivatePlace.radiusPresetsM)
+                  ChoiceChip(
+                    label: Text(l10n.privatePlacesRadiusValue(preset)),
+                    selected: _radiusM == preset,
+                    onSelected: (_) => setState(() => _radiusM = preset),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () => Navigator.of(context).pop(
+                  (name: _name.text.trim(), radiusM: _radiusM),
+                ),
+                child: Text(l10n.privatePlacesSave),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

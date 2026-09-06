@@ -226,7 +226,6 @@ object GyeoteLocationUploadQueue {
     }
 
     private fun rowFromPayload(config: Map<String, Any?>, payload: JSONObject, includeHistoryFields: Boolean): JSONObject {
-        val rawCoordinate = payload.optJSONObject("rawCoordinate")
         val sharedCoordinate = payload.optJSONObject("sharedCoordinate")
         val sharingPrecision = sharingPrecision()
         val hideSharedCoordinate = sharingPrecision == "hidden"
@@ -235,8 +234,8 @@ object GyeoteLocationUploadQueue {
         row.put("profile_id", config["profileId"])
         row.put("device_id", config["deviceId"])
         row.put("source", payload.optString("source", "unknown"))
-        row.putNullable("raw_lat", rawCoordinate?.optDoubleOrNull("latitude"))
-        row.putNullable("raw_lng", rawCoordinate?.optDoubleOrNull("longitude"))
+        // 원시 좌표는 올리지 않는다. 페이로드에는 남아 있지만 그건 기기 안에서
+        // 민감 장소를 판정하는 용도이고, 서버에는 가려진 좌표만 간다.
         row.putNullable("shared_lat", if (hideSharedCoordinate) null else sharedCoordinate?.optDoubleOrNull("latitude"))
         row.putNullable("shared_lng", if (hideSharedCoordinate) null else sharedCoordinate?.optDoubleOrNull("longitude"))
         row.putNullable("accuracy_m", payload.optDoubleOrNull("accuracyM"))

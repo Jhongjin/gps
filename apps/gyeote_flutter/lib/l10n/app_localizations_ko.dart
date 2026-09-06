@@ -1496,4 +1496,57 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get etaEstimateNote => '직선거리 기준 추정입니다';
+
+  @override
+  String get privatePlacesTitle => '민감 장소';
+
+  @override
+  String get privatePlacesBody =>
+      '여기 등록한 곳 안에 있으면 정확한 좌표 대신 이 장소의 가운데 지점만 공유됩니다. 목록은 이 기기에만 저장되고 서버로 보내지 않습니다.';
+
+  @override
+  String get privatePlacesEmpty => '등록된 곳이 없습니다';
+
+  @override
+  String get privatePlacesAddHere => '지금 있는 곳 등록';
+
+  @override
+  String get privatePlacesAdding => '위치 확인 중';
+
+  @override
+  String get privatePlacesNameLabel => '이 장소를 뭐라고 부를까요';
+
+  @override
+  String get privatePlacesNameHint => '집';
+
+  @override
+  String get privatePlacesRadius => '가릴 범위';
+
+  @override
+  String get privatePlacesSave => '등록';
+
+  @override
+  String get privatePlacesRemove => '지우기';
+
+  @override
+  String get privatePlacesSaved => '이제 이 장소 안에서는 정확한 위치가 공유되지 않습니다.';
+
+  @override
+  String get privatePlacesRemoved => '장소를 지웠습니다.';
+
+  @override
+  String get privatePlacesNoFix => '지금 위치를 확인하지 못했습니다.';
+
+  @override
+  String privatePlacesFull(int max) {
+    return '장소는 $max곳까지 등록할 수 있습니다.';
+  }
+
+  @override
+  String privatePlacesRadiusValue(int meters) {
+    return '반경 ${meters}m';
+  }
+
+  @override
+  String get privatePlacesUnnamed => '이름 없는 장소';
 }

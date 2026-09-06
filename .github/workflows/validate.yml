@@ -70,6 +70,11 @@ jobs:
       - name: Check Supabase RPC contract
         run: python tools/check_rpc_contract.py
 
+      # 정확한 좌표가 서버로 나가는 결함은 조용하다. 아무것도 깨지지 않고,
+      # 테스트도 통과하고, 몇 달 뒤에나 드러난다.
+      - name: Check precise coordinates never leave the device
+        run: python tools/check_precise_coordinates.py
+
   supabase:
     name: Supabase migrations
     runs-on: ubuntu-latest

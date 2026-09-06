@@ -2856,6 +2856,102 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'직선거리 기준 추정입니다'**
   String get etaEstimateNote;
+
+  /// 정확한 위치 대신 넓은 반경만 공유할 장소
+  ///
+  /// In ko, this message translates to:
+  /// **'민감 장소'**
+  String get privatePlacesTitle;
+
+  /// No description provided for @privatePlacesBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'여기 등록한 곳 안에 있으면 정확한 좌표 대신 이 장소의 가운데 지점만 공유됩니다. 목록은 이 기기에만 저장되고 서버로 보내지 않습니다.'**
+  String get privatePlacesBody;
+
+  /// No description provided for @privatePlacesEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록된 곳이 없습니다'**
+  String get privatePlacesEmpty;
+
+  /// No description provided for @privatePlacesAddHere.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 있는 곳 등록'**
+  String get privatePlacesAddHere;
+
+  /// No description provided for @privatePlacesAdding.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 확인 중'**
+  String get privatePlacesAdding;
+
+  /// No description provided for @privatePlacesNameLabel.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 장소를 뭐라고 부를까요'**
+  String get privatePlacesNameLabel;
+
+  /// No description provided for @privatePlacesNameHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'집'**
+  String get privatePlacesNameHint;
+
+  /// No description provided for @privatePlacesRadius.
+  ///
+  /// In ko, this message translates to:
+  /// **'가릴 범위'**
+  String get privatePlacesRadius;
+
+  /// No description provided for @privatePlacesSave.
+  ///
+  /// In ko, this message translates to:
+  /// **'등록'**
+  String get privatePlacesSave;
+
+  /// No description provided for @privatePlacesRemove.
+  ///
+  /// In ko, this message translates to:
+  /// **'지우기'**
+  String get privatePlacesRemove;
+
+  /// No description provided for @privatePlacesSaved.
+  ///
+  /// In ko, this message translates to:
+  /// **'이제 이 장소 안에서는 정확한 위치가 공유되지 않습니다.'**
+  String get privatePlacesSaved;
+
+  /// No description provided for @privatePlacesRemoved.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소를 지웠습니다.'**
+  String get privatePlacesRemoved;
+
+  /// No description provided for @privatePlacesNoFix.
+  ///
+  /// In ko, this message translates to:
+  /// **'지금 위치를 확인하지 못했습니다.'**
+  String get privatePlacesNoFix;
+
+  /// No description provided for @privatePlacesFull.
+  ///
+  /// In ko, this message translates to:
+  /// **'장소는 {max}곳까지 등록할 수 있습니다.'**
+  String privatePlacesFull(int max);
+
+  /// No description provided for @privatePlacesRadiusValue.
+  ///
+  /// In ko, this message translates to:
+  /// **'반경 {meters}m'**
+  String privatePlacesRadiusValue(int meters);
+
+  /// No description provided for @privatePlacesUnnamed.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름 없는 장소'**
+  String get privatePlacesUnnamed;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {
