@@ -139,32 +139,68 @@ system minimum purely so that age keeps aging without the app.
 
 Kotlin unit tests run in CI via `:app:testDebugUnitTest`.
 
-## Verified (2026-09-05)
+## Verified (2026-09-06)
 
 Flutter SDK found at `D:/Codex/toolchains/flutter`.
 
 - `flutter analyze` — No issues found
-- `flutter test` — 15/15 passing (was 4; added locale, map shell, member sheet,
-  SOS-safety, and region-settings tests)
+- `flutter test` — 86/86 passing
 - `python tools/check_hardcoded_strings.py` — 0 hardcoded literals
 - `python tools/check_rpc_contract.py` — 17 RPCs, 63 arguments, all matching
-- `gradlew :app:testDebugUnitTest` — 8/8 Kotlin tests
-- `gradlew :app:processDebugResources` — manifest, layouts, and widget metadata
-
-A note for whoever builds next here: `flutter build apk` fails in this
-workspace with `ProcessException: access denied` from the native-assets hook
-runner spawning `cmd.exe`. It is an environment restriction, not a code fault.
-Gradle tasks run fine with `-x :app:compileFlutterBuildDebug`, which is how the
-Kotlin and resource verification above was done. The full APK link step has not
-been run here.
+- `gradlew :app:testDebugUnitTest` — 14/14 Kotlin tests (8 snapshot, 6
+  Robolectric render). See `docs/ci-validation.md` for the JDK 25 gotchas.
+- `flutter build apk` — debug and release both link. The release APK was opened
+  and checked: R8 and resource shrinking keep the widget provider, its intent
+  filters, layout, drawables and strings.
 - `flutter build web --release` — succeeds, and the shell was checked in a browser
 
-Known preview-only artifact: a couple of Hangul glyphs render as tofu in the web
-build. CanvasKit fetches Noto Sans KR *slices* from `fonts.gstatic.com` at
-runtime and some slices arrive incomplete. Android/iOS use the system Korean
-font and are unaffected. Related: no font files are bundled at all, so the
-theme no longer names `Geist`/`Pretendard` — bundling them (plus Noto subsets
-for ja/hi/ar) is still open.
+**Correction to an earlier note here.** This file used to say `flutter build
+apk` fails in this workspace with `ProcessException: access denied` from the
+native-assets hook runner, and that `flutter config --no-enable-native-assets`
+was the fix. Neither holds. The denial comes from the agent tool sandbox
+blocking process spawns, not from Flutter or from this project — the same
+commands run normally outside it, and `flutter config --list` shows
+`enable-native-assets: (Not set)`, so no global SDK setting was left changed.
+
+Fonts are bundled now: `Pretendard-Regular.otf` and `-Bold.otf` under
+`assets/fonts` (SIL OFL 1.1), and the theme names `Pretendard` again. That also
+resolved the tofu glyphs in the web build — the earlier CanvasKit/Noto-slice
+diagnosis was only half of it; the real cause was that no font shipped at all.
+Noto subsets for `ja`/`hi`/`ar` are still open.
+
+## Movement and ETA (2026-09-06)
+
+The map's route tail carried coordinates only, so nothing downstream could tell
+how fast anyone was going. The server had been sending `recordedAt` on every
+`MemberRoutePoint` all along and the mapping layer dropped it — the same shape
+as the discarded `batteryPercent`: a fact already in hand, thrown away on the
+way to the screen. `MapMemberTrack.routeTail` is `List<MapRoutePoint>` now, and
+`routeLine` is what the polyline takes.
+
+`lib/src/features/map/movement.dart` derives speed, heading, and time-to-arrive
+from those samples. It holds no strings — it produces facts, and the screen
+words them, for the same reason `GyeoteTone` exists.
+
+What it refuses to do matters more than what it computes:
+
+- **No routing service.** A directions API means sending a member's coordinates
+  to a third party, which is not a trade this app makes for one feature. The
+  estimate is straight-line distance times a 1.35 detour factor, and the meetup
+  card says so on screen.
+- **Stationary GPS jitter is not walking.** Path length alone reads a phone
+  sitting on a table as a slow walk. Net displacement under 30 m is reported as
+  stopped.
+- **"Unknown" and "stopped" are different values.** With fewer than two samples
+  in the last ten minutes the line is not drawn at all.
+- **Minutes appear only while approaching.** Moving away or sideways shows
+  distance or a direction instead, because a remaining-time figure computed
+  against a path someone is not on is worse than no figure.
+- **Nothing is drawn for a stale position.** Writing "walking" under a
+  twenty-minute-old fix invents a present that does not exist.
+
+Surfaces: the member sheet gets a movement line with the soonest meetup as its
+destination, and the meetup card shows the viewer's own ETA. `meetupNoneBody`
+had been promising this since the meetup feature shipped.
 
 
 ## Latest Preview

@@ -5,6 +5,31 @@ import '../../../l10n/app_localizations.dart';
 import '../../core/i18n/region_settings.dart';
 import '../../core/location/location_models.dart';
 import '../../theme/gyeote_theme.dart';
+import 'movement.dart';
+
+/// 경로 꼬리의 표본 하나.
+///
+/// 좌표만 담던 것을 시각과 함께 담는다. 서버는 처음부터 [MemberRoutePoint] 로
+/// 시각을 함께 주고 있었는데 화면으로 오는 길에 버려지고 있었다. 시각이 없으면
+/// 선을 그릴 수는 있어도 **속도와 방향을 알 수 없어** 도착 예상이 불가능하다.
+class MapRoutePoint {
+  const MapRoutePoint({required this.point, required this.recordedAt});
+
+  final LatLng point;
+  final DateTime recordedAt;
+
+  MovementSample toSample() =>
+      MovementSample(point: point, recordedAt: recordedAt);
+
+  @override
+  bool operator ==(Object other) =>
+      other is MapRoutePoint &&
+      other.point == point &&
+      other.recordedAt == recordedAt;
+
+  @override
+  int get hashCode => Object.hash(point, recordedAt);
+}
 
 class MapMemberTrack {
   const MapMemberTrack({
@@ -33,7 +58,7 @@ class MapMemberTrack {
   final GyeoteTone tone;
   final DateTime recordedAt;
   final SharingMode sharingMode;
-  final List<LatLng> routeTail;
+  final List<MapRoutePoint> routeTail;
   final bool isCurrentUser;
   final bool isStale;
   final bool hasLowBattery;
@@ -41,6 +66,15 @@ class MapMemberTrack {
   /// 마커 링의 채워진 정도로 그린다. 없으면 링을 꽉 채운다.
   final int? batteryPercent;
   final double? accuracyM;
+
+  /// 폴리라인에 넘길 좌표만.
+  List<LatLng> get routeLine =>
+      routeTail.map((sample) => sample.point).toList(growable: false);
+
+  /// 최근 표본에서 뽑은 이동 상태. 표본이 모자라면 [MovementState.unknown].
+  MovementEstimate get movement => estimateMovement(
+        routeTail.map((sample) => sample.toSample()).toList(growable: false),
+      );
 
   /// 30분 넘게 갱신이 없으면 "마지막 위치"로만 다룬다.
   bool get isVeryStale =>
@@ -91,7 +125,7 @@ class MapMemberTrack {
     GyeoteTone? tone,
     DateTime? recordedAt,
     SharingMode? sharingMode,
-    List<LatLng>? routeTail,
+    List<MapRoutePoint>? routeTail,
     bool? isCurrentUser,
     bool? isStale,
     bool? hasLowBattery,
@@ -129,6 +163,8 @@ List<MapMemberTrack> mapTracksFromSnapshots(
 
 List<MapMemberTrack> demoMapTracks(AppL10n l10n) {
   final now = DateTime.now();
+  // 데모 경로에도 시각을 준다. 시각이 없으면 데모에서 이동 상태와 도착 예상이
+  // 통째로 비어 보이고, 실제로는 되는 기능을 안 되는 것처럼 보여 준다.
   const routeToHome = [
     LatLng(37.50325, 127.04888),
     LatLng(37.50418, 127.04756),
@@ -136,18 +172,25 @@ List<MapMemberTrack> demoMapTracks(AppL10n l10n) {
     LatLng(37.50654, 127.04503),
     LatLng(37.50768, 127.04382),
   ];
+  final walkingHome = [
+    for (final (index, point) in routeToHome.indexed)
+      MapRoutePoint(
+        point: point,
+        recordedAt: now.subtract(Duration(minutes: 9 - index * 2)),
+      ),
+  ];
 
   return [
     MapMemberTrack(
       id: 'demo-jun',
       name: l10n.demoNameChild,
-      point: routeToHome.first,
+      point: walkingHome.last.point,
       tone: GyeoteTone.move,
       recordedAt: now.subtract(const Duration(minutes: 1)),
       sharingMode: SharingMode.balanced,
       batteryPercent: 46,
       accuracyM: 85,
-      routeTail: routeToHome,
+      routeTail: walkingHome,
     ),
     MapMemberTrack(
       id: 'demo-hana',
@@ -174,7 +217,9 @@ List<MapMemberTrack> demoMapTracks(AppL10n l10n) {
     MapMemberTrack(
       id: 'demo-me',
       name: l10n.mapMeShort,
-      point: routeToHome.last,
+      // 준의 경로 끝점과 겹치지 않게 둔다. 두 마커가 같은 자리에 있으면
+      // 마중 나가는 그림이 아니라 렌더링 버그로 읽힌다.
+      point: const LatLng(37.51023, 127.04101),
       tone: GyeoteTone.brand,
       recordedAt: now,
       sharingMode: SharingMode.precise,

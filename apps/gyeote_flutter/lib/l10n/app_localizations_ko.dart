@@ -1456,4 +1456,44 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get meetupDestination => '집결 장소';
+
+  @override
+  String get movementStopped => '머물러 있음';
+
+  @override
+  String get movementWalking => '걷는 중';
+
+  @override
+  String get movementRiding => '이동 중';
+
+  @override
+  String get movementDriving => '빠르게 이동 중';
+
+  @override
+  String etaMinutesTo(String place, int minutes) {
+    return '$place까지 약 $minutes분';
+  }
+
+  @override
+  String etaLeaving(String place) {
+    return '$place에서 멀어지는 중';
+  }
+
+  @override
+  String etaDistanceTo(String place, String distance) {
+    return '$place까지 $distance';
+  }
+
+  @override
+  String etaNearby(String place) {
+    return '$place 근처';
+  }
+
+  @override
+  String etaMineMinutes(int minutes) {
+    return '내 도착 예상 약 $minutes분';
+  }
+
+  @override
+  String get etaEstimateNote => '직선거리 기준 추정입니다';
 }

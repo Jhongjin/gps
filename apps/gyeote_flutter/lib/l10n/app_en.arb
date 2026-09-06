@@ -449,5 +449,15 @@
   "meetupStartsIn": "in {time}",
   "meetupStartedAgo": "{time} ago",
   "meetupAutoEnds": "Disappears on its own {minutes} min after the meeting time",
-  "meetupDestination": "Meeting place"
+  "meetupDestination": "Meeting place",
+  "movementStopped": "Not moving",
+  "movementWalking": "Walking",
+  "movementRiding": "On the move",
+  "movementDriving": "Moving fast",
+  "etaMinutesTo": "About {minutes} min to {place}",
+  "etaLeaving": "Moving away from {place}",
+  "etaDistanceTo": "{distance} to {place}",
+  "etaNearby": "Near {place}",
+  "etaMineMinutes": "You: about {minutes} min away",
+  "etaEstimateNote": "Estimated from straight-line distance"
 }

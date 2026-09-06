@@ -1523,4 +1523,44 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get meetupDestination => 'Meeting place';
+
+  @override
+  String get movementStopped => 'Not moving';
+
+  @override
+  String get movementWalking => 'Walking';
+
+  @override
+  String get movementRiding => 'On the move';
+
+  @override
+  String get movementDriving => 'Moving fast';
+
+  @override
+  String etaMinutesTo(String place, int minutes) {
+    return 'About $minutes min to $place';
+  }
+
+  @override
+  String etaLeaving(String place) {
+    return 'Moving away from $place';
+  }
+
+  @override
+  String etaDistanceTo(String place, String distance) {
+    return '$distance to $place';
+  }
+
+  @override
+  String etaNearby(String place) {
+    return 'Near $place';
+  }
+
+  @override
+  String etaMineMinutes(int minutes) {
+    return 'You: about $minutes min away';
+  }
+
+  @override
+  String get etaEstimateNote => 'Estimated from straight-line distance';
 }

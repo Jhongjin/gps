@@ -2796,6 +2796,66 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'집결 장소'**
   String get meetupDestination;
+
+  /// 이동 상태. 표본이 없을 때는 아무것도 그리지 않는다 — '모름'과 '멈춤'은 다르다
+  ///
+  /// In ko, this message translates to:
+  /// **'머물러 있음'**
+  String get movementStopped;
+
+  /// No description provided for @movementWalking.
+  ///
+  /// In ko, this message translates to:
+  /// **'걷는 중'**
+  String get movementWalking;
+
+  /// No description provided for @movementRiding.
+  ///
+  /// In ko, this message translates to:
+  /// **'이동 중'**
+  String get movementRiding;
+
+  /// No description provided for @movementDriving.
+  ///
+  /// In ko, this message translates to:
+  /// **'빠르게 이동 중'**
+  String get movementDriving;
+
+  /// 직선거리에 우회 계수를 곱한 추정이라 '약'을 뺄 수 없다
+  ///
+  /// In ko, this message translates to:
+  /// **'{place}까지 약 {minutes}분'**
+  String etaMinutesTo(String place, int minutes);
+
+  /// No description provided for @etaLeaving.
+  ///
+  /// In ko, this message translates to:
+  /// **'{place}에서 멀어지는 중'**
+  String etaLeaving(String place);
+
+  /// No description provided for @etaDistanceTo.
+  ///
+  /// In ko, this message translates to:
+  /// **'{place}까지 {distance}'**
+  String etaDistanceTo(String place, String distance);
+
+  /// No description provided for @etaNearby.
+  ///
+  /// In ko, this message translates to:
+  /// **'{place} 근처'**
+  String etaNearby(String place);
+
+  /// No description provided for @etaMineMinutes.
+  ///
+  /// In ko, this message translates to:
+  /// **'내 도착 예상 약 {minutes}분'**
+  String etaMineMinutes(int minutes);
+
+  /// No description provided for @etaEstimateNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'직선거리 기준 추정입니다'**
+  String get etaEstimateNote;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

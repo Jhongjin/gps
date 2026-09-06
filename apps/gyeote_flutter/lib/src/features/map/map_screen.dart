@@ -23,6 +23,7 @@ import 'widgets/meetup_composer.dart';
 import 'widgets/night_tiles.dart';
 import 'widgets/quick_reply_bar.dart';
 import 'widgets/member_sheet.dart';
+import 'widgets/movement_line.dart';
 import 'widgets/sos_control.dart';
 import 'map_models.dart';
 
@@ -65,7 +66,7 @@ class _MapScreenState extends State<MapScreen> {
   StreamSubscription<Map<Object?, Object?>>? _deviceLocationSubscription;
   StreamSubscription<AuthState>? _authSubscription;
   List<MapMemberTrack> _serverTracks = const [];
-  List<LatLng> _deviceRoute = const [];
+  List<MapRoutePoint> _deviceRoute = const [];
   MapMemberTrack? _deviceTrack;
   String? _circleName;
   String? _loadError;
@@ -436,11 +437,16 @@ class _MapScreenState extends State<MapScreen> {
                   limit: 60,
                   since: const Duration(minutes: 45),
                 );
+          // 시각을 함께 넘긴다. 서버가 주는 recordedAt 을 여기서 버리면
+          // 속도도 방향도 계산할 수 없어 도착 예상이 통째로 불가능해진다.
           final routeTail = routePoints
               .map(
-                (point) => LatLng(
-                  point.sharedCoordinate.latitude,
-                  point.sharedCoordinate.longitude,
+                (point) => MapRoutePoint(
+                  point: LatLng(
+                    point.sharedCoordinate.latitude,
+                    point.sharedCoordinate.longitude,
+                  ),
+                  recordedAt: point.recordedAt,
                 ),
               )
               .toList(growable: false);
@@ -787,11 +793,26 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  /// 도착 예상을 붙일 목적지. 가장 이른 약속 하나만 쓴다 — 목적지가 여럿이면
+  /// 어느 쪽 숫자인지 읽는 사람이 알 수 없다.
+  MapDestination? get _primaryDestination {
+    if (_meetups.isEmpty) return null;
+    final soonest = _meetups.reduce(
+      (a, b) => a.meetAt.isBefore(b.meetAt) ? a : b,
+    );
+    final name = soonest.placeName?.trim();
+    return MapDestination(
+      point: LatLng(soonest.placeLat, soonest.placeLng),
+      name: name == null || name.isEmpty ? _l10n.meetupDestination : name,
+    );
+  }
+
   void _openMemberSheet(MapMemberTrack member) {
     setState(() => _selectedMemberId = member.id);
     showMemberSheet(
       context,
       member: member,
+      destination: _primaryDestination,
       onOpenViewerLog: () {
         Navigator.of(context).pop();
         widget.onOpenCircle?.call();
@@ -1121,6 +1142,8 @@ class _MapScreenState extends State<MapScreen> {
 
     final otherMembers =
         tracks.where((member) => !member.isCurrentUser).toList();
+    final meTrack =
+        tracks.where((member) => member.isCurrentUser).firstOrNull;
     final sheetPeek = MediaQuery.sizeOf(context).height * 0.30;
 
     // 지도가 화면 그 자체다. 예전처럼 스크롤 문서 안의 카드가 아니다.
@@ -1237,6 +1260,7 @@ class _MapScreenState extends State<MapScreen> {
                   const SizedBox(height: 4),
                   _MeetupSection(
                     meetups: _meetups,
+                    me: meTrack,
                     currentUserId: _currentProfileId,
                     isBusy: _isMeetupBusy,
                     canCreate: !hasNoCircle && widget.meetupRepository != null,
@@ -1339,11 +1363,14 @@ class _MapScreenState extends State<MapScreen> {
       return null;
     }
 
-    final route = [..._deviceRoute, point];
-    final trimmedRoute =
-        route.length > 30 ? route.sublist(route.length - 30) : route;
     final recordedAt =
         DateTime.tryParse('${event['recordedAt'] ?? ''}') ?? DateTime.now();
+    final route = [
+      ..._deviceRoute,
+      MapRoutePoint(point: point, recordedAt: recordedAt),
+    ];
+    final trimmedRoute =
+        route.length > 30 ? route.sublist(route.length - 30) : route;
     final age = DateTime.now().difference(recordedAt);
     final isStale = age > const Duration(minutes: 5);
     final accuracy =
@@ -1581,7 +1608,7 @@ class _MapSurface extends StatelessWidget {
                   polylines: [
                     for (final member in routeMembers)
                       Polyline(
-                        points: member.routeTail,
+                        points: member.routeLine,
                         color: member.tone.resolve(palette),
                         strokeWidth: member.isCurrentUser ? 6 : 5,
                         borderColor: Colors.white,
@@ -2536,6 +2563,7 @@ class _SheetStatusLine extends StatelessWidget {
 class _MeetupSection extends StatelessWidget {
   const _MeetupSection({
     required this.meetups,
+    required this.me,
     required this.currentUserId,
     required this.isBusy,
     required this.canCreate,
@@ -2545,6 +2573,7 @@ class _MeetupSection extends StatelessWidget {
   });
 
   final List<Meetup> meetups;
+  final MapMemberTrack? me;
   final String? currentUserId;
   final bool isBusy;
   final bool canCreate;
@@ -2588,6 +2617,7 @@ class _MeetupSection extends StatelessWidget {
           for (final meetup in meetups) ...[
             MeetupCard(
               meetup: meetup,
+              me: me,
               isCreator: meetup.createdBy == currentUserId,
               isBusy: isBusy,
               onRespond: (response) => onRespond(meetup, response),

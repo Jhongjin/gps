@@ -5,6 +5,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../theme/gyeote_theme.dart';
 import '../map_models.dart';
 import 'map_chrome.dart';
+import 'movement_line.dart';
 
 /// 멤버 상세 시트.
 ///
@@ -17,6 +18,7 @@ Future<void> showMemberSheet(
   BuildContext context, {
   required MapMemberTrack member,
   required VoidCallback onOpenViewerLog,
+  MapDestination? destination,
 }) {
   return showModalBottomSheet<void>(
     context: context,
@@ -25,15 +27,23 @@ Future<void> showMemberSheet(
     builder: (context) => _MemberSheet(
       member: member,
       onOpenViewerLog: onOpenViewerLog,
+      destination: destination,
     ),
   );
 }
 
 class _MemberSheet extends StatelessWidget {
-  const _MemberSheet({required this.member, required this.onOpenViewerLog});
+  const _MemberSheet({
+    required this.member,
+    required this.onOpenViewerLog,
+    this.destination,
+  });
 
   final MapMemberTrack member;
   final VoidCallback onOpenViewerLog;
+
+  /// 약속이 잡혀 있으면 그 장소까지 남은 시간을 함께 그린다.
+  final MapDestination? destination;
 
   @override
   Widget build(BuildContext context) {
@@ -72,6 +82,11 @@ class _MemberSheet extends StatelessWidget {
                 ),
               ],
             ),
+            if (hasMovementLine(context, member: member,
+                destination: destination)) ...[
+              const SizedBox(height: 10),
+              MovementLine(member: member, destination: destination),
+            ],
             const SizedBox(height: 16),
             _StatRow(member: member),
             const SizedBox(height: 12),

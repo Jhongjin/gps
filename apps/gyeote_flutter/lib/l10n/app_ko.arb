@@ -814,5 +814,60 @@
       }
     }
   },
-  "meetupDestination": "집결 장소"
+  "meetupDestination": "집결 장소",
+  "movementStopped": "머물러 있음",
+  "@movementStopped": {
+    "description": "이동 상태. 표본이 없을 때는 아무것도 그리지 않는다 — '모름'과 '멈춤'은 다르다"
+  },
+  "movementWalking": "걷는 중",
+  "movementRiding": "이동 중",
+  "movementDriving": "빠르게 이동 중",
+  "etaMinutesTo": "{place}까지 약 {minutes}분",
+  "@etaMinutesTo": {
+    "description": "직선거리에 우회 계수를 곱한 추정이라 '약'을 뺄 수 없다",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "etaLeaving": "{place}에서 멀어지는 중",
+  "@etaLeaving": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "etaDistanceTo": "{place}까지 {distance}",
+  "@etaDistanceTo": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "etaNearby": "{place} 근처",
+  "@etaNearby": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "etaMineMinutes": "내 도착 예상 약 {minutes}분",
+  "@etaMineMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "etaEstimateNote": "직선거리 기준 추정입니다"
 }

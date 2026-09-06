@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/backend/backend_contract.dart';
 import '../../../theme/gyeote_theme.dart';
+import '../map_models.dart';
+import '../movement.dart';
 
 /// 시트 안의 약속 카드.
 ///
@@ -17,6 +20,7 @@ class MeetupCard extends StatelessWidget {
     required this.onEnd,
     required this.isCreator,
     this.isBusy = false,
+    this.me,
   });
 
   final Meetup meetup;
@@ -24,6 +28,10 @@ class MeetupCard extends StatelessWidget {
   final VoidCallback onEnd;
   final bool isCreator;
   final bool isBusy;
+
+  /// 내 위치. 있으면 내 도착 예상을 적는다. 다른 사람 것은 여기 적지 않는다 —
+  /// 카드 한 장에 서너 명의 남은 시간을 늘어놓으면 그건 관제 화면이 된다.
+  final MapMemberTrack? me;
 
   @override
   Widget build(BuildContext context) {
@@ -73,6 +81,31 @@ class MeetupCard extends StatelessWidget {
             l10n.meetupGoingCount(meetup.goingCount, meetup.attendeeCount),
             style: TextStyle(fontSize: 12, color: palette.inkMuted),
           ),
+          if (_myEtaMinutes() case final minutes?) ...[
+            const SizedBox(height: 2),
+            Row(
+              children: [
+                Icon(Icons.schedule, size: 13, color: palette.brand),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    l10n.etaMineMinutes(minutes),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: palette.ink,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Text(
+              // 라우팅이 아니라 직선거리 추정이다. 그 사실을 숨기면 사용자는
+              // 이 숫자를 내비게이션처럼 믿게 된다.
+              l10n.etaEstimateNote,
+              style: TextStyle(fontSize: 10, color: palette.muted),
+            ),
+          ],
           const SizedBox(height: 2),
           Text(
             // 스스로 끝난다는 사실이 이 기능의 전부다. 눈에 보이게 적는다.
@@ -107,6 +140,18 @@ class MeetupCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// 내 도착까지 남은 분. 추정할 수 없으면 null 이고, 그러면 줄 자체가 없다.
+  int? _myEtaMinutes() {
+    final track = me;
+    if (track == null || track.isStale || track.isVeryStale) return null;
+
+    return estimateEta(
+      from: track.point,
+      to: LatLng(meetup.placeLat, meetup.placeLng),
+      movement: track.movement,
+    )?.roundedMinutes;
   }
 }
 
