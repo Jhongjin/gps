@@ -418,7 +418,35 @@ It also stored `timeZone: 'Asia/Seoul'` for every device on earth. That value
 is gone: there is no source for an IANA zone name in the app yet, and a wrong
 value is worse than a missing one.
 
-While doing this: **nothing enforces quiet hours.** No Kotlin path and no SQL
-function reads the field. It is stored, displayed, and cycled, and has no
-effect on any notification. That is the next thing to either build or stop
-advertising.
+While doing this: **nothing enforced quiet hours.** No Kotlin path and no SQL
+function read the field. It was stored, displayed, and cycled, and had no
+effect on any notification. Fixed in the next section.
+
+## Quiet hours are enforced now, natively (2026-09-07)
+
+Geofence transitions are handled by `GeofenceBroadcastReceiver`, which runs
+with the app dead, so the quiet window has to reach native storage rather than
+Dart memory. `GeofenceSpec` carries `quietStart`/`quietEnd`; `registerGeofences`
+persists them per request id in `SharedPreferences`; the receiver asks
+`GyeoteQuietHours.isQuietNow` before posting.
+
+Inside the window the alert is **not dropped** — it goes to a second channel,
+`gyeote_place_alerts_quiet`, at `IMPORTANCE_LOW`. A safety app cannot discard
+"your child arrived" because the parent was asleep; it can decline to wake them.
+Two channels rather than one because Android freezes a channel's importance
+after creation, and a separate channel is also something the user can tune in
+system settings.
+
+The overnight case is the one that matters: 22:00–07:00 is the common preset,
+and a naive `start <= now < end` never fires for it. `Window.contains` handles
+the wrap, and the Robolectric test pins 23:00, 03:00, 22:00 inside and 07:00,
+12:00 outside. Malformed times produce no window at all rather than a wrong one.
+If several overlapping geofences fire together and any one is quiet, the
+notification is quiet — the other way round makes the setting untrustworthy.
+
+Along the way the native notification strings (place-alert title and bodies,
+foreground-service statuses, the upload-auth error) were Korean literals in
+Kotlin. They are in `res/values/strings.xml` (en) and `values-ko` now, and
+`tools/check_hardcoded_strings.py` scans Kotlin under `android/app/src/main`
+as well as Dart, so the widget and the notifications cannot silently re-pin
+themselves to one language.

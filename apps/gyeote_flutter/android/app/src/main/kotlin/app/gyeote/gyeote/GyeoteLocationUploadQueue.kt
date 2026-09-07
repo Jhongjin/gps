@@ -194,7 +194,7 @@ object GyeoteLocationUploadQueue {
                 context,
                 locationManager,
                 "upload_auth_failed",
-                "위치 업로드 인증이 만료됐어요. 앱을 열어 다시 연결해 주세요.",
+                context.getString(R.string.upload_auth_expired),
                 details,
             )
         } else {

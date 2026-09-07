@@ -16,4 +16,18 @@
     <string name="widget_updated_minutes">%1$d min ago</string>
     <string name="widget_updated_hours">%1$d hr ago</string>
     <string name="widget_sharing_with_age">%1$s · %2$s</string>
+    <!-- 알림. Flutter 밖(리시버·포그라운드 서비스)에서 그려지므로 여기 둔다. -->
+    <string name="place_alert_channel">Place alerts</string>
+    <string name="place_alert_channel_description">Arrivals at and departures from saved places.</string>
+    <string name="place_alert_quiet_channel">Place alerts (quiet hours)</string>
+    <string name="place_alert_quiet_channel_description">The same alerts, delivered silently during the quiet hours you set.</string>
+    <string name="place_alert_arrived">Arrived at a saved place.</string>
+    <string name="place_alert_departed">Left a saved place.</string>
+    <string name="place_alert_changed">A saved place boundary changed.</string>
+    <string name="sharing_channel">Gyeote location sharing</string>
+    <string name="sharing_channel_description">Shows sharing status during companion mode and emergency sharing.</string>
+    <string name="sharing_status_sos">Checking your emergency location.</string>
+    <string name="sharing_status_policy">Sharing settings updated.</string>
+    <string name="sharing_status_companion">Sharing your location in companion mode.</string>
+    <string name="upload_auth_expired">Location upload sign-in expired. Open Gyeote to reconnect.</string>
 </resources>

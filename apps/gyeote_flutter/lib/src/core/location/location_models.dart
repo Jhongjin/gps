@@ -136,6 +136,8 @@ class GeofenceSpec {
     required this.radiusM,
     required this.notifyOnArrival,
     required this.notifyOnDeparture,
+    this.quietStart,
+    this.quietEnd,
   });
 
   final String id;
@@ -143,6 +145,12 @@ class GeofenceSpec {
   final double radiusM;
   final bool notifyOnArrival;
   final bool notifyOnDeparture;
+
+  /// "HH:mm" 기기 현지 시각. 둘 다 있어야 창이 된다. 지오펜스 전환은 앱이 죽어
+  /// 있어도 네이티브 리시버가 처리하므로, 조용한 시간은 여기까지 내려가야
+  /// 실제로 조용해진다.
+  final String? quietStart;
+  final String? quietEnd;
 }
 
 class NativeUploadConfig {

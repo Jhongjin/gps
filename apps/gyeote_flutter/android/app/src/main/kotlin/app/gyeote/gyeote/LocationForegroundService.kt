@@ -66,7 +66,7 @@ class LocationForegroundService : Service() {
             }
             ACTION_SOS -> {
                 sosOnlyRequest = true
-                startForegroundSafely("긴급 위치를 확인하고 있어요.")
+                startForegroundSafely(getString(R.string.sharing_status_sos))
                 requestSosFix()
             }
             ACTION_POLICY_CHANGED -> {
@@ -74,11 +74,11 @@ class LocationForegroundService : Service() {
                     stopLocationUpdates()
                     stopSelf()
                 } else if (GyeoteLocationState.serviceActive) {
-                    startForegroundSafely("위치 공유 설정이 업데이트됐어요.")
+                    startForegroundSafely(getString(R.string.sharing_status_policy))
                 }
             }
             else -> {
-                startForegroundSafely("동행 모드 위치를 공유 중이에요.")
+                startForegroundSafely(getString(R.string.sharing_status_companion))
                 startLocationUpdates()
             }
         }
@@ -222,7 +222,7 @@ class LocationForegroundService : Service() {
 
         return builder
             .setSmallIcon(applicationInfo.icon)
-            .setContentTitle("곁에 위치 공유")
+            .setContentTitle(getString(R.string.sharing_channel))
             .setContentText(message)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
@@ -239,10 +239,10 @@ class LocationForegroundService : Service() {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel(
             CHANNEL_ID,
-            "곁에 위치 공유",
+            getString(R.string.sharing_channel),
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
-            description = "동행 모드와 긴급 공유 중 위치 공유 상태를 표시합니다."
+            description = getString(R.string.sharing_channel_description)
             setShowBadge(false)
         }
         manager.createNotificationChannel(channel)

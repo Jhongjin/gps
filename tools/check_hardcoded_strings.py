@@ -21,13 +21,21 @@ import sys
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LIB_ROOT = os.path.join(REPO_ROOT, "apps", "gyeote_flutter", "lib")
+# 네이티브도 사용자에게 글자를 보여 준다 — 알림, 포그라운드 서비스, 위젯.
+# 그쪽 문자열은 res/values*/strings.xml 로 간다. 코틀린 리터럴에 한국어가
+# 박히면 위젯 하나가 통째로 한 언어에 묶인다.
+KOTLIN_ROOT = os.path.join(
+    REPO_ROOT, "apps", "gyeote_flutter", "android", "app", "src", "main", "kotlin"
+)
 BASELINE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hardcoded-strings-baseline.json")
 
 # 생성물과 ARB 원본은 검사 대상이 아니다.
 SKIP_DIRS = {os.path.join("lib", "l10n")}
 
 HANGUL_LITERAL = re.compile(r"'[^']*[가-힣][^']*'")
+KOTLIN_HANGUL_LITERAL = re.compile(r'"[^"\n]*[가-힣][^"\n]*"')
 LINE_COMMENT = re.compile(r"//.*$")
+BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.DOTALL)
 
 
 def count_file(path: str) -> int:
@@ -36,6 +44,15 @@ def count_file(path: str) -> int:
         for line in handle:
             # 주석은 한국어로 써도 된다. 사용자에게 보이지 않는다.
             total += len(HANGUL_LITERAL.findall(LINE_COMMENT.sub("", line)))
+    return total
+
+
+def count_kotlin_file(path: str) -> int:
+    with open(path, encoding="utf-8") as handle:
+        source = BLOCK_COMMENT.sub("", handle.read())
+    total = 0
+    for line in source.splitlines():
+        total += len(KOTLIN_HANGUL_LITERAL.findall(LINE_COMMENT.sub("", line)))
     return total
 
 
@@ -50,6 +67,15 @@ def scan() -> dict[str, int]:
                 continue
             full = os.path.join(root, name)
             n = count_file(full)
+            if n:
+                rel = os.path.relpath(full, REPO_ROOT).replace(os.sep, "/")
+                counts[rel] = n
+    for root, _dirs, files in os.walk(KOTLIN_ROOT):
+        for name in files:
+            if not name.endswith(".kt"):
+                continue
+            full = os.path.join(root, name)
+            n = count_kotlin_file(full)
             if n:
                 rel = os.path.relpath(full, REPO_ROOT).replace(os.sep, "/")
                 counts[rel] = n

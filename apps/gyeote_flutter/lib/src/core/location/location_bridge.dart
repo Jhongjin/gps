@@ -188,6 +188,8 @@ class LocationBridge {
         'radiusM': geofence.radiusM,
         'notifyOnArrival': geofence.notifyOnArrival,
         'notifyOnDeparture': geofence.notifyOnDeparture,
+        'quietStart': geofence.quietStart,
+        'quietEnd': geofence.quietEnd,
       };
 
   PermissionSnapshot _permissionSnapshotFromJson(Map<Object?, Object?> json) {

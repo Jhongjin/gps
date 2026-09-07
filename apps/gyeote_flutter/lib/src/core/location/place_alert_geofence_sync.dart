@@ -35,6 +35,8 @@ Future<int?> syncPlaceAlertGeofences({
           radiusM: alert.radiusM.toDouble(),
           notifyOnArrival: alert.notifyOnArrival,
           notifyOnDeparture: alert.notifyOnDeparture,
+          quietStart: alert.quietHours.enabled ? alert.quietHours.start : null,
+          quietEnd: alert.quietHours.enabled ? alert.quietHours.end : null,
         ),
       )
       .toList(growable: false);

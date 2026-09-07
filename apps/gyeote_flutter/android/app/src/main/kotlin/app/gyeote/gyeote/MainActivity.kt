@@ -183,9 +183,10 @@ class MainActivity : FlutterActivity() {
     private fun registerGeofences(arguments: Any?, result: MethodChannel.Result) {
         val payload = arguments as? Map<*, *> ?: throw IllegalArgumentException("registerGeofences requires a map payload.")
         val rawGeofences = payload["geofences"] as? List<*> ?: emptyList<Any?>()
-        val geofences = rawGeofences
-            .mapNotNull { geofenceFromPayload(it as? Map<*, *>) }
-            .take(20)
+        val geofencePayloads = rawGeofences.filterIsInstance<Map<*, *>>().take(20)
+        val geofences = geofencePayloads.mapNotNull { geofenceFromPayload(it) }
+        // 리시버는 앱이 죽어 있어도 돈다. 창은 메모리가 아니라 저장소에 둔다.
+        GyeoteQuietHours.store(this, geofencePayloads)
 
         val client = LocationServices.getGeofencingClient(this)
         val pendingIntent = geofencePendingIntent()
