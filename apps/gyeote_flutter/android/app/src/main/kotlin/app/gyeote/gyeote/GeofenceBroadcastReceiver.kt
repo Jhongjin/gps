@@ -58,7 +58,9 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         )
     }
 
-    private fun showPlaceAlertNotification(context: Context, transition: Int, quiet: Boolean) {
+    /** 테스트가 어느 채널로 갔는지 볼 수 있도록 internal 로 연다. */
+    @androidx.annotation.VisibleForTesting
+    internal fun showPlaceAlertNotification(context: Context, transition: Int, quiet: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -141,7 +143,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         )
     }
 
-    private companion object {
+    internal companion object {
         const val CHANNEL_ID = "gyeote_place_alerts"
         const val QUIET_CHANNEL_ID = "gyeote_place_alerts_quiet"
         const val NOTIFICATION_ID = 5200
