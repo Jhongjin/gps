@@ -27,6 +27,11 @@ LIB_ROOT = os.path.join(REPO_ROOT, "apps", "gyeote_flutter", "lib")
 KOTLIN_ROOT = os.path.join(
     REPO_ROOT, "apps", "gyeote_flutter", "android", "app", "src", "main", "kotlin"
 )
+# iOS 는 Localizable.strings 를 등록할 Xcode 가 없어 표를 코드에 둔다
+# (`GyeoteNativeStrings`). 그 표의 `"ko":` 줄만 예외고, 나머지 한국어 리터럴은
+# 안드로이드와 같은 이유로 막는다.
+SWIFT_ROOT = os.path.join(REPO_ROOT, "apps", "gyeote_flutter", "ios", "Runner")
+SWIFT_TABLE_LINE = re.compile(r'"ko"\s*:')
 BASELINE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "hardcoded-strings-baseline.json")
 
 # 생성물과 ARB 원본은 검사 대상이 아니다.
@@ -52,6 +57,8 @@ def count_kotlin_file(path: str) -> int:
         source = BLOCK_COMMENT.sub("", handle.read())
     total = 0
     for line in source.splitlines():
+        if path.endswith(".swift") and SWIFT_TABLE_LINE.search(line):
+            continue
         total += len(KOTLIN_HANGUL_LITERAL.findall(LINE_COMMENT.sub("", line)))
     return total
 
@@ -70,9 +77,9 @@ def scan() -> dict[str, int]:
             if n:
                 rel = os.path.relpath(full, REPO_ROOT).replace(os.sep, "/")
                 counts[rel] = n
-    for root, _dirs, files in os.walk(KOTLIN_ROOT):
+    for root, _dirs, files in list(os.walk(KOTLIN_ROOT)) + list(os.walk(SWIFT_ROOT)):
         for name in files:
-            if not name.endswith(".kt"):
+            if not (name.endswith(".kt") or name.endswith(".swift")):
                 continue
             full = os.path.join(root, name)
             n = count_kotlin_file(full)

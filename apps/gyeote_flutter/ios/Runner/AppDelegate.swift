@@ -83,6 +83,12 @@ final class GyeoteLocationBridge: NSObject, FlutterPlugin, FlutterStreamHandler,
       }
       emitPermissionChanged()
       result(nil)
+    case "setPrivatePlaces":
+      // 민감 장소만 갈아 끼운다. 전체 정책을 다시 밀면 안심 화면이 모드나
+      // 일시정지처럼 자기가 모르는 값을 덮어쓰게 된다.
+      let places = (call.arguments as? [String: Any?])?["privatePlaces"] as Any?
+      sharingPolicy["privatePlaces"] = places
+      result(nil)
     case "configureUpload":
       uploadConfig = call.arguments as? [String: Any?]
       emitStatus(uploadConfig == nil ? "upload_not_configured" : "upload_configured")
@@ -146,12 +152,12 @@ final class GyeoteLocationBridge: NSObject, FlutterPlugin, FlutterStreamHandler,
 
   func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
     emitRegion("geofence.entered", region: region)
-    showPlaceAlertNotification(for: "geofence.entered")
+    showPlaceAlertNotification(for: "geofence.entered", regionId: region.identifier)
   }
 
   func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
     emitRegion("geofence.exited", region: region)
-    showPlaceAlertNotification(for: "geofence.exited")
+    showPlaceAlertNotification(for: "geofence.exited", regionId: region.identifier)
   }
 
   private func startLocationSession(_ config: [String: Any?]?) {
@@ -196,8 +202,15 @@ final class GyeoteLocationBridge: NSObject, FlutterPlugin, FlutterStreamHandler,
 
     guard let payload = arguments as? [String: Any],
           let geofences = payload["geofences"] as? [[String: Any]] else {
+      UserDefaults.standard.removeObject(forKey: Self.quietWindowsKey)
       return
     }
+
+    // 조용한 시간 창은 저장소에 둔다. 리전 콜백은 앱이 내려간 뒤에도 온다.
+    UserDefaults.standard.set(
+      GyeoteQuietHours.windows(from: Array(geofences.prefix(20))),
+      forKey: Self.quietWindowsKey
+    )
 
     for geofence in geofences.prefix(20) {
       guard let id = geofence["id"] as? String,
@@ -256,7 +269,18 @@ final class GyeoteLocationBridge: NSObject, FlutterPlugin, FlutterStreamHandler,
     ]
   }
 
+  /// 공유될 좌표. 민감 장소 가림이 정밀도 하향보다 **먼저** 온다 — 순서를
+  /// 바꾸면 반올림된 값이 반경 밖으로 밀려 가림을 빠져나간다.
   private func sharedCoordinate(_ location: CLLocation) -> [String: Double] {
+    let places = GyeotePrivatePlaces.fromPolicy(sharingPolicy)
+    if let covering = GyeotePrivatePlaces.covering(
+      places,
+      lat: location.coordinate.latitude,
+      lng: location.coordinate.longitude
+    ) {
+      return ["latitude": covering.lat, "longitude": covering.lng]
+    }
+
     switch sharingMode {
     case "area":
       return [
@@ -369,17 +393,29 @@ final class GyeoteLocationBridge: NSObject, FlutterPlugin, FlutterStreamHandler,
     UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in }
   }
 
-  private func showPlaceAlertNotification(for eventType: String) {
+  private func showPlaceAlertNotification(for eventType: String, regionId: String) {
     let center = UNUserNotificationCenter.current()
+    let windows = UserDefaults.standard.dictionary(forKey: Self.quietWindowsKey) as? [String: String] ?? [:]
+    // 창 안이면 소리 없이 간다. 버리지는 않는다 — "도착했다"를 자고 있었다는
+    // 이유로 없앨 수는 없다.
+    let quiet = GyeoteQuietHours.isQuiet(
+      windows: windows,
+      ids: [regionId],
+      minuteOfDay: GyeoteQuietHours.currentMinuteOfDay()
+    )
+
     center.getNotificationSettings { settings in
       guard settings.authorizationStatus == .authorized || settings.authorizationStatus == .provisional else {
         return
       }
 
       let content = UNMutableNotificationContent()
-      content.title = "곁에 장소 알림"
+      content.title = GyeoteNativeStrings.text("place_alert_channel")
       content.body = self.placeAlertNotificationText(for: eventType)
-      content.sound = .default
+      content.sound = quiet ? nil : .default
+      if #available(iOS 15.0, *) {
+        content.interruptionLevel = quiet ? .passive : .active
+      }
 
       let request = UNNotificationRequest(
         identifier: "gyeote.place-alert.\(UUID().uuidString)",
@@ -393,13 +429,15 @@ final class GyeoteLocationBridge: NSObject, FlutterPlugin, FlutterStreamHandler,
   private func placeAlertNotificationText(for eventType: String) -> String {
     switch eventType {
     case "geofence.entered":
-      return "저장한 장소 반경에 도착했습니다."
+      return GyeoteNativeStrings.text("place_alert_arrived")
     case "geofence.exited":
-      return "저장한 장소 반경을 벗어났습니다."
+      return GyeoteNativeStrings.text("place_alert_departed")
     default:
-      return "저장한 장소 반경 변화가 감지됐습니다."
+      return GyeoteNativeStrings.text("place_alert_changed")
     }
   }
+
+  private static let quietWindowsKey = "gyeote.geofence.quiet.v1"
 
   private var hasForegroundLocationPermission: Bool {
     let status = authorizationStatus
@@ -614,7 +652,7 @@ final class GyeoteIOSLocationUploadQueue {
       if failure.authRelated {
         emitError(
           "upload_auth_failed",
-          "위치 업로드 인증이 만료됐어요. 앱을 열어 다시 연결해 주세요.",
+          GyeoteNativeStrings.text("upload_auth_expired"),
           details
         )
       } else {
@@ -667,7 +705,9 @@ final class GyeoteIOSLocationUploadQueue {
     companionSessionId: String?,
     includeHistoryFields: Bool
   ) -> [String: Any] {
-    let rawCoordinate = payload["rawCoordinate"] as? [String: Any]
+    // 원시 좌표는 올리지 않는다. 페이로드에는 남아 있지만 그건 기기 안에서
+    // 민감 장소를 판정하는 용도다. 018 이 그 칸을 없앴으므로 여기 남아 있으면
+    // insert 자체가 거절되고, 그 결과는 iOS 위치 업로드 전면 중단이다.
     let sharedCoordinate = payload["sharedCoordinate"] as? [String: Any]
     let sharingPrecision = sharingPrecisionFromMode(sharingMode)
     let hideSharedCoordinate = sharingPrecision == "hidden"
@@ -677,8 +717,6 @@ final class GyeoteIOSLocationUploadQueue {
       "profile_id": configString(config, "profileId") ?? "",
       "device_id": configString(config, "deviceId") ?? "",
       "source": payload["source"] as? String ?? "unknown",
-      "raw_lat": number(rawCoordinate?["latitude"]) ?? NSNull(),
-      "raw_lng": number(rawCoordinate?["longitude"]) ?? NSNull(),
       "shared_lat": hideSharedCoordinate ? NSNull() : number(sharedCoordinate?["latitude"]) ?? NSNull(),
       "shared_lng": hideSharedCoordinate ? NSNull() : number(sharedCoordinate?["longitude"]) ?? NSNull(),
       "accuracy_m": number(payload["accuracyM"]) ?? NSNull(),
@@ -873,3 +911,172 @@ final class GyeoteIOSLocationUploadQueue {
     var httpStatus: Int?
   }
 }
+
+// MARK: - GyeotePortable (Foundation only)
+//
+// 이 구역은 Apple 프레임워크를 쓰지 않는다. 이유는 검증이다. 이 워크스페이스는
+// Windows 라 Xcode 가 없지만, Foundation 만 쓰는 코드는 Swift for Windows 로
+// 컴파일하고 돌려 볼 수 있다. `tools/check_ios_logic.py` 가 아래 구역을 잘라내
+// `tools/ios_logic_tests.swift` 와 함께 빌드한다. 새 파일로 빼지 않는 것은
+// pbxproj 등록이 필요해서다 — Xcode 없이 손으로 만지면 프로젝트가 깨진다.
+//
+// 이 구역에서 UIKit·CoreLocation·UserNotifications 를 import 하거나 참조하면
+// 검증이 불가능해진다. 그런 것은 위쪽 클래스에 둔다.
+
+/// 정확한 좌표를 내보내지 않을 장소. 안드로이드 `GyeotePrivatePlaces` 와 같은
+/// 규칙이다: 반올림이 아니라 **중심으로 스냅**한다. 이름은 받지 않는다.
+enum GyeotePrivatePlaces {
+  struct Place: Equatable {
+    let lat: Double
+    let lng: Double
+    let radiusM: Double
+  }
+
+  private static let earthRadiusM = 6371008.8
+
+  /// 형태가 어긋난 항목은 조용히 버린다. 여기서 죽으면 위치 수집이 멈춘다.
+  static func fromPolicy(_ policy: [String: Any?]) -> [Place] {
+    guard let raw = policy["privatePlaces"] as? [Any] else { return [] }
+    return raw.compactMap { entry in
+      guard let map = entry as? [String: Any],
+            let lat = doubleValue(map["lat"]),
+            let lng = doubleValue(map["lng"]),
+            let radius = doubleValue(map["radiusM"]),
+            radius > 0 else {
+        return nil
+      }
+      return Place(lat: lat, lng: lng, radiusM: radius)
+    }
+  }
+
+  /// 이 좌표를 감싸는 장소. 겹치면 중심이 가장 가까운 것.
+  static func covering(_ places: [Place], lat: Double, lng: Double) -> Place? {
+    var best: Place?
+    var bestDistance = Double.greatestFiniteMagnitude
+    for place in places {
+      let distance = distanceMeters(place.lat, place.lng, lat, lng)
+      if distance <= place.radiusM && distance < bestDistance {
+        best = place
+        bestDistance = distance
+      }
+    }
+    return best
+  }
+
+  static func mask(_ places: [Place], lat: Double, lng: Double) -> (lat: Double, lng: Double) {
+    guard let place = covering(places, lat: lat, lng: lng) else { return (lat, lng) }
+    return (place.lat, place.lng)
+  }
+
+  static func distanceMeters(_ lat1: Double, _ lng1: Double, _ lat2: Double, _ lng2: Double) -> Double {
+    let phi1 = lat1 * .pi / 180
+    let phi2 = lat2 * .pi / 180
+    let dPhi = phi2 - phi1
+    let dLambda = (lng2 - lng1) * .pi / 180
+    let h = sin(dPhi / 2) * sin(dPhi / 2) + cos(phi1) * cos(phi2) * sin(dLambda / 2) * sin(dLambda / 2)
+    return 2 * earthRadiusM * asin(min(1, sqrt(h)))
+  }
+
+  private static func doubleValue(_ value: Any?) -> Double? {
+    if let d = value as? Double { return d }
+    if let i = value as? Int { return Double(i) }
+    if let n = value as? NSNumber { return n.doubleValue }
+    return nil
+  }
+}
+
+/// 장소 알림의 조용한 시간. 안드로이드 `GyeoteQuietHours` 와 같은 규칙이다.
+/// 창 안이라고 알림을 버리지 않는다 — 소리만 없앤다.
+enum GyeoteQuietHours {
+  struct Window: Equatable {
+    let startMinute: Int
+    let endMinute: Int
+
+    /// 22:00–07:00 처럼 자정을 넘는 창은 "start 이후 **또는** end 이전"이다.
+    /// "그리고"로 쓰면 야간 창이 한 번도 켜지지 않는다.
+    func contains(_ minuteOfDay: Int) -> Bool {
+      if startMinute <= endMinute {
+        return minuteOfDay >= startMinute && minuteOfDay < endMinute
+      }
+      return minuteOfDay >= startMinute || minuteOfDay < endMinute
+    }
+  }
+
+  /// "HH:mm" → 하루 안의 분. 형태가 어긋나면 nil — 창을 만들지 않는다.
+  static func parseMinute(_ value: String?) -> Int? {
+    guard let value else { return nil }
+    let parts = value.split(separator: ":", omittingEmptySubsequences: false)
+    guard parts.count == 2,
+          let hour = Int(parts[0]),
+          let minute = Int(parts[1]),
+          (0...23).contains(hour),
+          (0...59).contains(minute) else {
+      return nil
+    }
+    return hour * 60 + minute
+  }
+
+  static func windowOf(_ start: String?, _ end: String?) -> Window? {
+    guard let s = parseMinute(start), let e = parseMinute(end), s != e else { return nil }
+    return Window(startMinute: s, endMinute: e)
+  }
+
+  /// 등록 페이로드에서 id → "start|end". 창이 없는 항목은 들어가지 않는다.
+  static func windows(from geofences: [[String: Any]]) -> [String: String] {
+    var result: [String: String] = [:]
+    for geofence in geofences {
+      guard let id = geofence["id"] as? String else { continue }
+      let start = geofence["quietStart"] as? String
+      let end = geofence["quietEnd"] as? String
+      if let start, let end, windowOf(start, end) != nil {
+        result[String(id.prefix(100))] = "\(start)|\(end)"
+      }
+    }
+    return result
+  }
+
+  /// 겹친 지오펜스 중 하나라도 조용하면 조용하다.
+  static func isQuiet(windows: [String: String], ids: [String], minuteOfDay: Int) -> Bool {
+    for id in ids {
+      guard let entry = windows[id] else { continue }
+      let parts = entry.split(separator: "|", omittingEmptySubsequences: false).map(String.init)
+      guard parts.count == 2, let window = windowOf(parts[0], parts[1]) else { continue }
+      if window.contains(minuteOfDay) { return true }
+    }
+    return false
+  }
+
+  static func currentMinuteOfDay(now: Date = Date(), calendar: Calendar = .current) -> Int {
+    let parts = calendar.dateComponents([.hour, .minute], from: now)
+    return (parts.hour ?? 0) * 60 + (parts.minute ?? 0)
+  }
+}
+
+/// 네이티브 알림 문구.
+///
+/// Localizable.strings 로 가는 것이 정석이지만 그 파일은 pbxproj 등록이 필요하고,
+/// 이 워크스페이스에는 Xcode 가 없다. 그래서 표를 코드에 둔다. 키는 안드로이드
+/// `res/values/strings.xml` 과 같게 유지한다 — 두 플랫폼의 문구가 갈리면
+/// 갈린 쪽이 틀린 것이다.
+enum GyeoteNativeStrings {
+  private static let table: [String: [String: String]] = [
+    "place_alert_channel": ["en": "Place alerts", "ko": "장소 알림"],
+    "place_alert_arrived": ["en": "Arrived at a saved place.", "ko": "저장한 장소 반경에 도착했습니다."],
+    "place_alert_departed": ["en": "Left a saved place.", "ko": "저장한 장소 반경을 벗어났습니다."],
+    "place_alert_changed": ["en": "A saved place boundary changed.", "ko": "저장한 장소 반경 변화가 감지됐습니다."],
+    "upload_auth_expired": [
+      "en": "Location upload sign-in expired. Open Gyeote to reconnect.",
+      "ko": "위치 업로드 인증이 만료됐어요. 앱을 열어 다시 연결해 주세요.",
+    ],
+  ]
+
+  static func text(_ key: String, languages: [String] = Locale.preferredLanguages) -> String {
+    guard let entry = table[key] else { return key }
+    for language in languages {
+      let code = String(language.prefix(2)).lowercased()
+      if let value = entry[code] { return value }
+    }
+    return entry["en"] ?? key
+  }
+}
+// MARK: - end GyeotePortable

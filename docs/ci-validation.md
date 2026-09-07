@@ -79,3 +79,40 @@ cd apps/gyeote_flutter/android
 - `resources.arsc` 에 `widget_circle_info`, `widget_background`,
   `widget_dot_*`, 위젯 문자열이 모두 남는다.
   `mapping/release/resources.txt` 에 제거된 widget 리소스가 없어야 한다.
+
+## iOS 순수 로직 검증 (2026-09-07 추가)
+
+이 워크스페이스는 Windows 라 iOS 앱을 빌드할 수 없다. 그래서 iOS 네이티브를
+"소스만 있고 검증 없음"으로 두면, 안드로이드에서만 가려지고 iOS 에서는 정확한
+좌표가 그대로 나가는 식의 플랫폼 간 결함이 조용히 생긴다. 실제로 그랬다 —
+`018` 이 원시 좌표 칸을 없앤 뒤에도 iOS `rowFromPayload` 는 `raw_lat`/`raw_lng`
+를 보내고 있어서, 마이그레이션이 적용되는 순간 iOS 업로드가 전부 거절될
+상태였다.
+
+`AppDelegate.swift` 끝의 `GyeotePortable` 구역은 Foundation 만 쓴다(민감 장소
+가림, 조용한 시간 창, 알림 문구). `tools/check_ios_logic.py` 가 그 구역을 잘라내
+`tools/ios_logic_tests.swift` 와 함께 컴파일하고 실행한다. **컴파일되는 것은
+배포되는 바로 그 코드다.** 새 파일로 빼지 않는 이유는 pbxproj 등록이 필요해서다
+— Xcode 없이 손으로 만지면 프로젝트가 깨진다. 같은 이유로 알림 문구도
+Localizable.strings 대신 코드 안의 표(`GyeoteNativeStrings`)에 둔다. 키는
+안드로이드 `res/values/strings.xml` 과 같다.
+
+```
+python tools/check_ios_logic.py
+```
+
+이 PC 에서 돌리려면:
+
+- `winget install Swift.Toolchain` (6.3.3)
+- `winget install Microsoft.VisualStudio.2022.BuildTools` + `VC.Tools.x86.x64`
+  + `Windows11SDK.22621` — Swift for Windows 는 `errno.h` 같은 UCRT 헤더를
+  여기서 가져온다. 없으면 `import Foundation` 부터 실패한다.
+
+스크립트는 툴체인 경로에서 런타임 DLL 경로와 `SDKROOT` 를 스스로 만든다. 설치기가
+사용자 환경변수에 넣어 두지만 이미 떠 있던 셸은 그걸 모른다.
+
+CI 는 `swift-actions/setup-swift` 로 Linux Swift 를 깔고 같은 스크립트를 돌린다.
+툴체인이 없으면 건너뛰지 않고 실패한다 — 검증 없음을 통과로 세지 않는다.
+
+검사가 실제로 잡는지 확인한 방법: 자정을 넘는 창의 `||` 를 `&&` 로 바꿔 보면
+야간 창 케이스 세 개가 실패한다.

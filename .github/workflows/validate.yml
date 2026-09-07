@@ -75,6 +75,17 @@ jobs:
       - name: Check precise coordinates never leave the device
         run: python tools/check_precise_coordinates.py
 
+      # iOS 는 이 저장소에서 빌드되지 않는다. 대신 AppDelegate.swift 의
+      # Foundation 전용 구역(가림·조용한 시간·문구)을 Linux Swift 로 컴파일해
+      # 돌린다. 툴체인이 없으면 건너뛰지 않고 실패한다 — 검증 없음을 통과로
+      # 세지 않는다.
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      - name: Check iOS portable logic
+        run: python tools/check_ios_logic.py
+
   supabase:
     name: Supabase migrations
     runs-on: ubuntu-latest

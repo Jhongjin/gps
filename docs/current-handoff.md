@@ -450,3 +450,37 @@ Kotlin. They are in `res/values/strings.xml` (en) and `values-ko` now, and
 `tools/check_hardcoded_strings.py` scans Kotlin under `android/app/src/main`
 as well as Dart, so the widget and the notifications cannot silently re-pin
 themselves to one language.
+
+## iOS caught up, and is now verifiable from this machine (2026-09-07)
+
+Every privacy change this week had landed on Android and Dart only. iOS was
+still uploading `raw_lat`/`raw_lng` — after `018` drops those columns, every
+iOS insert is rejected and location sharing on iOS stops silently. It also had
+no private-place masking, no quiet hours, and Korean-only notification strings.
+
+`AppDelegate.swift` now: masks the shared coordinate inside a private place
+before precision reduction (same ordering argument as Android); handles
+`setPrivatePlaces` by merging only the places; persists quiet windows in
+`UserDefaults` at `registerGeofences` and delivers place alerts inside a window
+without sound at `.passive` interruption level — not dropped; picks
+notification copy from an in-code en/ko table keyed like the Android
+resources; and sends no raw coordinate in the upload row.
+
+The part that matters for the future is *how it was verified*. The logic that
+carries the privacy guarantees lives in a Foundation-only `GyeotePortable`
+section at the end of the file. `tools/check_ios_logic.py` extracts exactly
+that section from the shipped source, compiles it with Swift and runs
+`tools/ios_logic_tests.swift` against it. On this Windows machine that needed
+the Swift toolchain plus VS Build Tools for the UCRT headers; both are
+installed now and the check passes. Flipping the overnight-window `||` to `&&`
+makes it fail, so it is measuring something. It runs in CI on Linux Swift.
+
+`tools/check_precise_coordinates.py` now inspects the Swift `rowFromPayload`
+body as well, and `tools/check_hardcoded_strings.py` scans Swift, with the
+`"ko":` rows of the string table as the one exemption.
+
+What this does **not** verify: anything touching CoreLocation, UIKit or
+UserNotifications — region monitoring, the notification request itself,
+`interruptionLevel`. Those still need a Mac. The boundary is explicit in the
+file: the portable section may not reference those frameworks, and the check
+fails if it does.

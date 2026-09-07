@@ -72,6 +72,23 @@ def main() -> int:
                 f"{rel}:{line} 업로드 경로가 rawCoordinate 를 읽는다"
             )
 
+    # iOS 는 페이로드 생성과 업로드 행 조립이 한 파일에 있다. rawCoordinate 는
+    # 페이로드(기기 안)에는 있어도 되고 rowFromPayload(서버행)에는 없어야 하므로
+    # 그 함수 본문만 본다.
+    swift = APP / "ios" / "Runner" / "AppDelegate.swift"
+    if swift.exists():
+        code = strip_comments(swift.read_text(encoding="utf-8"))
+        start = code.find("private func rowFromPayload(")
+        end = code.find("private func ", start + 1)
+        body = code[start:end] if start >= 0 and end > start else ""
+        rel = swift.relative_to(ROOT)
+        if start < 0:
+            problems.append(f"{rel} 에 rowFromPayload 가 없다 — 검사 대상이 바뀌었다")
+        for match in RAW_COLUMN.finditer(body):
+            problems.append(f"{rel} rowFromPayload 에 {match.group(0)} 이 있다")
+        if RAW_COORDINATE.search(body):
+            problems.append(f"{rel} rowFromPayload 가 rawCoordinate 를 읽는다")
+
     bridge = APP / "lib" / "src" / "core" / "location" / "location_bridge.dart"
     if bridge.exists():
         code = strip_comments(bridge.read_text(encoding="utf-8"))
