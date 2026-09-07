@@ -2316,7 +2316,7 @@ class _MemberTile extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: l10n.a11yMemberRow(member.name, member.status(l10n)),
+      label: l10n.a11yMemberRow(member.name, member.semanticsDetail(l10n)),
       // 아래 시각 요소는 위 라벨이 이미 읽어 준다. 두 번 읽지 않게 묶는다.
       excludeSemantics: true,
       child: InkWell(
@@ -2589,19 +2589,25 @@ class _SheetStatusLine extends StatelessWidget {
               ),
             ),
             if (attentionCount > 0)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: palette.warmSoft,
-                  borderRadius: BorderRadius.circular(GyeoteRadius.pill),
-                ),
-                child: Text(
-                  l10n.mapAttentionCount(attentionCount),
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w700,
-                    color: palette.warm,
+              Semantics(
+                // 보이는 글자는 "확인 필요 2"다. 숫자만 읽히면 무엇이 2인지
+                // 알 수 없으므로 문장으로 읽어 준다.
+                label: l10n.a11yAttentionBadge(attentionCount),
+                excludeSemantics: true,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: palette.warmSoft,
+                    borderRadius: BorderRadius.circular(GyeoteRadius.pill),
+                  ),
+                  child: Text(
+                    l10n.mapAttentionCount(attentionCount),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: palette.warm,
+                    ),
                   ),
                 ),
               ),
@@ -2667,12 +2673,16 @@ class _MeetupSection extends StatelessWidget {
               ),
           ],
         ),
-        if (meetups.isEmpty)
+        if (meetups.isEmpty) ...[
+          Text(
+            l10n.meetupNone,
+            style: TextStyle(fontSize: 13, color: palette.inkMuted),
+          ),
           Text(
             l10n.meetupNoneBody,
             style: TextStyle(fontSize: 12, color: palette.muted),
-          )
-        else
+          ),
+        ] else
           for (final meetup in meetups) ...[
             MeetupCard(
               meetup: meetup,

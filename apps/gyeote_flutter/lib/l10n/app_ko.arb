@@ -607,7 +607,6 @@
   "syncLabel": "동기화",
   "pauseLabel": "일시정지",
   "resumeLabel": "다시 켜기",
-  "pendingLabel": "대기 중",
   "targetsUnset": "대상 미지정",
   "rulesNone": "알림 조건 없음",
   "mutualConsent": "상호 동의",

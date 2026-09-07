@@ -193,7 +193,9 @@ class MemberMarker extends StatelessWidget {
 
     return Semantics(
       button: true,
-      label: '${member.name}. ${member.status(AppL10n.of(context))}',
+      label: member.semanticsLabel(AppL10n.of(context)),
+      // 아바타 링과 이름표는 위 라벨이 이미 읽어 준다.
+      excludeSemantics: true,
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
@@ -362,6 +364,7 @@ class MemberAvatarRail extends StatelessWidget {
                 label: member.isCurrentUser
                     ? AppL10n.of(context).mapMeShort
                     : member.name,
+                semanticsLabel: member.semanticsLabel(AppL10n.of(context)),
                 isSelected: member.id == selectedId,
                 onTap: () => onSelect(member),
                 avatar: MemberAvatar(
@@ -405,12 +408,16 @@ class _RailEntry extends StatelessWidget {
     required this.avatar,
     required this.isSelected,
     required this.onTap,
+    this.semanticsLabel,
   });
 
   final String label;
   final Widget avatar;
   final bool isSelected;
   final VoidCallback onTap;
+
+  /// 보이는 라벨은 이름 한 단어지만, 읽어 주는 라벨은 상태까지 담는다.
+  final String? semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -419,7 +426,8 @@ class _RailEntry extends StatelessWidget {
     return Semantics(
       button: true,
       selected: isSelected,
-      label: label,
+      label: semanticsLabel ?? label,
+      excludeSemantics: true,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(GyeoteRadius.card),

@@ -113,6 +113,25 @@ class MapMemberTrack {
     return parts.isEmpty ? l10n.metaJustUpdated : parts.join(' · ');
   }
 
+  /// 스크린리더가 읽을 한 줄.
+  ///
+  /// 마커 링은 배터리를 채움 정도로, 오래됨을 색으로 **그린다**. 눈으로는
+  /// 읽히지만 읽어 주는 것은 없었다 — 라벨은 이름과 상태만 담고 있었고, 그
+  /// 자리를 위해 만든 `a11yBatteryLevel`·`a11yStaleLocation` 은 ARB 에만 있고
+  /// 어디서도 쓰이지 않았다. 링이 아는 것을 라벨도 알아야 한다.
+  String semanticsLabel(AppL10n l10n) => '$name, ${semanticsDetail(l10n)}';
+
+  /// [semanticsLabel] 에서 이름을 뺀 부분. 이름을 따로 붙이는 문구
+  /// (`a11yMemberRow`) 가 쓴다.
+  String semanticsDetail(AppL10n l10n) {
+    final parts = <String>[
+      status(l10n),
+      if (isStale || isVeryStale) l10n.a11yStaleLocation,
+      if (batteryPercent case final percent?) l10n.a11yBatteryLevel(percent),
+    ];
+    return parts.join(', ');
+  }
+
   /// 왜 늦는지 설명하는 안내. 사용자를 탓하지 않는 톤을 유지한다.
   String? safetyNote(AppL10n l10n) {
     if (isVeryStale) return l10n.noteVeryStale;

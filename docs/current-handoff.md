@@ -375,10 +375,16 @@ Coordinates come back already reduced by sharing precision and already masked by
 private places, so playback inherits both. It shows what was stored; it does not
 reconstruct anything finer.
 
-## Known gaps
+## Screen-reader labels now say what the ring draws (2026-09-07)
 
-- `a11yBatteryLevel`, `a11yStaleLocation`, `a11yAttentionBadge` are defined in
-  ARB and referenced nowhere. The design skill §6 requires `Semantics` labels on
-  markers, sheet rows and status badges; the strings were written and never
-  applied.
-- `pendingLabel` and `meetupNone` are also unreferenced.
+The marker ring encodes battery as fill and staleness as colour. Sighted users
+read it; nothing read it aloud. `a11yBatteryLevel`, `a11yStaleLocation` and
+`a11yAttentionBadge` had been written for exactly this and sat unused in ARB.
+`MapMemberTrack.semanticsLabel` / `semanticsDetail` now carry name, status,
+staleness and battery, and every member surface — marker, avatar rail, sheet
+row — uses them; the attention badge reads as a sentence instead of a bare
+number. `test/semantics_test.dart` asserts the labels reach the semantics tree,
+because a string existing and a string being spoken are different things.
+
+`meetupNone` became the empty-state heading it was written for; `pendingLabel`
+had no consumer and was removed. No ARB key is unreferenced now.

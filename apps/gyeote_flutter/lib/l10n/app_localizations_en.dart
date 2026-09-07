@@ -1249,9 +1249,6 @@ class AppL10nEn extends AppL10n {
   String get resumeLabel => 'Turn back on';
 
   @override
-  String get pendingLabel => 'Pending';
-
-  @override
   String get targetsUnset => 'No targets';
 
   @override

@@ -373,7 +373,6 @@
   "syncLabel": "Sync",
   "pauseLabel": "Paused",
   "resumeLabel": "Turn back on",
-  "pendingLabel": "Pending",
   "targetsUnset": "No targets",
   "rulesNone": "No alert rules",
   "mutualConsent": "Mutual consent",

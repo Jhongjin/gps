@@ -2335,12 +2335,6 @@ abstract class AppL10n {
   /// **'다시 켜기'**
   String get resumeLabel;
 
-  /// No description provided for @pendingLabel.
-  ///
-  /// In ko, this message translates to:
-  /// **'대기 중'**
-  String get pendingLabel;
-
   /// No description provided for @targetsUnset.
   ///
   /// In ko, this message translates to:

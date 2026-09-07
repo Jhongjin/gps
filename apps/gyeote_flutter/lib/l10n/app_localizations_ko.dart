@@ -1188,9 +1188,6 @@ class AppL10nKo extends AppL10n {
   String get resumeLabel => '다시 켜기';
 
   @override
-  String get pendingLabel => '대기 중';
-
-  @override
   String get targetsUnset => '대상 미지정';
 
   @override
