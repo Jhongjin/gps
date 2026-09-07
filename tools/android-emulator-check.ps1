@@ -9,8 +9,9 @@
   시스템에 만들어지는가, 지오펜스 등록이 시스템 서비스에서 받아들여지는가.
 
   이 스크립트는 API 35 x86_64 AVD 를 만들어 headless 로 부팅하고, 디버그 APK 를
-  설치·실행한 뒤 adb 로 그 네 가지를 확인한다. 조작이 필요한 것(위젯을 홈에
-  올리기, 권한 다이얼로그)은 adb 로 대신한다.
+  설치·실행한 뒤 adb 로 확인한다. 마지막에는 계측 테스트로 시스템에 지오펜스를
+  등록해, Play Services 가 만든 **진짜** 전환이 리시버까지 와서 조용한 시간에
+  따라 채널이 갈리는지까지 본다.
 
   전제: 가속. `emulator -accel-check` 가 WHPX 사용 가능이라고 답해야 한다.
   Hyper-V 가 켜진 PC 라면 Windows Hypervisor Platform 기능이 그 답을 만든다.
@@ -124,6 +125,29 @@ try {
   Start-Sleep -Seconds 3
   $widgetCrash = & $adb logcat -d 2>$null | Select-String -Pattern "FATAL EXCEPTION" | Select-Object -First 1
   Check 'widget refresh broadcast handled without crash' (-not $widgetCrash) "$widgetCrash"
+
+  # 9. 진짜 지오펜스 전환. 계측 테스트가 시스템에 지오펜스를 등록하면 Play Services
+  #    가 초기 진입을 판정해 앱의 PendingIntent 로 보낸다. 흉내내는 것이 없다.
+  #    지오펜스는 위치가 흘러야 평가되므로 테스트가 fused 위치를 요청하고, 여기서는
+  #    그동안 GPS 공급자에 같은 좌표를 계속 넣어 준다.
+  & $adb shell settings put secure location_mode 3 | Out-Null
+  $geo = Start-Job -ScriptBlock {
+    param($adb)
+    $end = (Get-Date).AddMinutes(8)
+    while ((Get-Date) -lt $end) { & $adb emu geo fix 127.0000 37.5000 *> $null; Start-Sleep -Seconds 2 }
+  } -ArgumentList $adb
+  try {
+    Push-Location (Join-Path $app 'android')
+    try {
+      & .\gradlew.bat :app:connectedDebugAndroidTest --console=plain 2>&1 |
+        Select-String -Pattern "Finished|FAILED|BUILD" | Out-Host
+      $e2e = $LASTEXITCODE -eq 0
+    } finally { Pop-Location }
+  } finally {
+    Stop-Job $geo -ErrorAction SilentlyContinue | Out-Null
+    Remove-Job $geo -Force -ErrorAction SilentlyContinue | Out-Null
+  }
+  Check 'real geofence transition reaches receiver (quiet + default channel)' $e2e
 }
 finally {
   & $adb emu kill 2>$null | Out-Null

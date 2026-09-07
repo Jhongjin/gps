@@ -532,6 +532,18 @@ stopped short of: a quiet-hours transition posts to the low-importance channel
 and still posts, and `sharedCoordinate` applies the private-place snap before
 precision reduction on a real `Location`.
 
-Still not verified anywhere but a phone in hand: delivery of a real geofence
-transition (a Play Services event that cannot be faked), the thirty-minute
-widget tick, and the act of placing the widget.
+A real geofence transition is verified too, and "a Play Services event that
+cannot be faked" was the wrong framing: nothing needs faking. An
+instrumentation test registers a geofence with Play Services from inside the
+app package while the emulator sits inside the radius; Play Services evaluates
+the initial entry and delivers the event to the app's PendingIntent, the
+receiver posts, and the test reads the channel off the system's active
+notifications — quiet channel with a window, default channel without. Two
+things made it work: the geofence engine only evaluates when location flows,
+so the test requests fused updates while the script keeps feeding `geo fix`;
+and Gradle's reinstall drops runtime permissions, so the test grants its own
+through `UiAutomation`. Without permission, `addGeofences` succeeds and does
+nothing, which is how the first attempt waited two minutes in silence.
+
+Still only a phone can show the thirty-minute widget tick and the widget being
+placed on a home screen.

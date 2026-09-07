@@ -23,6 +23,8 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // 에뮬레이터에서 진짜 지오펜스 전환을 받는 계측 테스트용.
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -75,4 +77,6 @@ dependencies {
     // 시작한 버전이다. 여유를 두고 명시적으로 올린다.
     testImplementation("org.ow2.asm:asm:9.10.1")
     testImplementation("org.ow2.asm:asm-commons:9.10.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
 }

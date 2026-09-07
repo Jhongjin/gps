@@ -177,9 +177,23 @@ AppWidget 서비스에 등록됨**, 알림 관리자에 패키지 등록, WIDGET
 "부팅 실패"로만 보여 줬다. 지금은 `avdmanager list avd` 의 Path 를 읽어
 `ANDROID_AVD_HOME` 을 맞춘다.
 
-이걸로도 못 보는 것: 실제 지오펜스 전환의 도착(Play Services 가 만드는 이벤트라
-가짜로 넣을 수 없다), 30분 주기 위젯 갱신, 사용자가 위젯을 홈에 올리는 순간.
-그 셋은 실기기에서 손으로 본다.
+마지막 단계는 계측 테스트(`android/app/src/androidTest/.../GeofenceEndToEndTest.kt`)
+다. 앱 패키지 안에서 Play Services 에 지오펜스를 등록하면(`INITIAL_TRIGGER_ENTER`,
+기기는 이미 반경 안) Play Services 가 전환 이벤트를 만들어 앱의 PendingIntent 로
+보내고, 리시버가 알림을 올린다. 조용한 창이 있으면 `gyeote_place_alerts_quiet`,
+없으면 `gyeote_place_alerts` 로 가는 것을 시스템의 활성 알림에서 읽는다. 흉내내는
+것이 없다 — 이전 판의 "Play Services 이벤트는 가짜로 넣을 수 없다"는 말은 틀렸다.
+넣을 필요가 없고, 진짜를 받으면 된다.
+
+두 가지가 필요했다. 지오펜스는 위치가 **흘러야** 평가되는데 `geo fix` 는 GPS
+공급자에 값을 넣을 뿐이라 아무도 요청하지 않으면 fused 는 fix 를 만들지 않는다
+(첫 실행은 그렇게 2분을 조용히 기다렸다). 테스트가 fused 위치를 요청하고 스크립트가
+`geo fix` 를 계속 넣는다. 그리고 Gradle 이 테스트마다 앱을 다시 설치하면서 런타임
+권한이 사라지므로, 계측이 `UiAutomation.grantRuntimePermission` 으로 스스로 준다
+— 권한 없이 `addGeofences` 는 예외 없이 아무 일도 하지 않는다.
+
+이걸로도 못 보는 것: 30분 주기 위젯 갱신과 사용자가 위젯을 홈에 올리는 순간.
+그 둘은 실기기에서 손으로 본다.
 
 준비물(sdkmanager): `cmdline-tools;latest`, `platform-tools`, `emulator`,
 `system-images;android-35;google_apis;x86_64`(약 1.2GB).
