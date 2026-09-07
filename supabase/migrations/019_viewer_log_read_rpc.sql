@@ -18,7 +18,9 @@ returns table (
   viewer_profile_id uuid,
   viewer_name text,
   circle_id uuid,
-  precision public.sharing_precision,
+  -- `precision` 은 반환 테이블 칼럼 이름으로 쓸 수 없다(타입 키워드). 표에는
+  -- 그 이름으로 있지만 여기서는 별칭을 준다.
+  viewed_precision public.sharing_precision,
   viewed_at timestamptz
 )
 language sql

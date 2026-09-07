@@ -86,6 +86,12 @@ jobs:
       - name: Check iOS portable logic
         run: python tools/check_ios_logic.py
 
+      # 마이그레이션 체인을 빈 클러스터에 순서대로 적용하고 부정 테스트까지
+      # 돌린다. supabase job 의 db reset 은 적용만 확인하고 부정 테스트는 돌리지
+      # 않는다. ubuntu 러너에는 PostgreSQL 바이너리가 이미 있다.
+      - name: Apply migration chain and run SQL negative tests
+        run: python tools/check_migrations_local.py
+
   supabase:
     name: Supabase migrations
     runs-on: ubuntu-latest

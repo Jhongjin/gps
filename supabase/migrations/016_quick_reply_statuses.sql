@@ -34,6 +34,13 @@ alter table public.check_in_events
 comment on table public.check_in_events is
   'Short circle-visible reassurance events and quick replies. Does not store raw or shared coordinates.';
 
+-- 아래 함수 본문은 **010** 을 바탕으로 한다. 처음에는 009 를 베꼈는데, 그러면
+-- 010 이 넣은 두 가지가 사라진다: 세션 종료 전 호출자가 그 세션의 당사자인지
+-- 확인하는 검사(companion_session_subject_required)와, 반환 칼럼 `id` 와 겹쳐
+-- PL/pgSQL 이 "column reference is ambiguous" 로 죽던 UPDATE 의 칼럼 한정.
+-- 둘 다 tools/check_migrations_local.py 가 부정 테스트를 돌리기 전까지 보이지
+-- 않았다. 010 위에 얹는 변경은 셋뿐이다: 상태 목록, 도착 확인일 때만 세션 종료,
+-- 디듀프 키에 상태 포함.
 create or replace function public.perform_check_in(
   target_circle_id uuid,
   target_companion_session_id uuid default null,
@@ -57,6 +64,7 @@ as $$
 declare
   current_user_id uuid := auth.uid();
   current_precision public.sharing_precision;
+  linked_companion_session_id uuid;
   resolved_dedupe_key text;
   saved_event public.check_in_events%rowtype;
 begin
@@ -89,14 +97,24 @@ begin
   current_precision := coalesce(current_precision, 'balanced'::public.sharing_precision);
 
   if target_companion_session_id is not null then
+    select cs.id
+      into linked_companion_session_id
+    from public.companion_sessions cs
+    where cs.id = target_companion_session_id
+      and cs.circle_id = target_circle_id
+      and cs.subject_profile_id = current_user_id
+      and cs.status in ('pending'::public.companion_status, 'active'::public.companion_status)
+      and cs.expires_at > now();
+
+    if linked_companion_session_id is null then
+      raise exception 'companion_session_subject_required';
+    end if;
+
     update public.companion_sessions
       set status = 'ended'::public.companion_status,
           ended_at = coalesce(ended_at, now()),
           end_reason = 'manual_check_in'
-    where id = target_companion_session_id
-      and circle_id = target_circle_id
-      and subject_profile_id = current_user_id
-      and status in ('pending'::public.companion_status, 'active'::public.companion_status);
+    where public.companion_sessions.id = linked_companion_session_id;
   end if;
 
   resolved_dedupe_key := coalesce(
@@ -120,13 +138,13 @@ begin
     target_circle_id,
     current_user_id,
     current_user_id,
-    target_companion_session_id,
+    linked_companion_session_id,
     target_status,
     current_precision,
     resolved_dedupe_key,
     jsonb_build_object('source', 'manual')
   )
-  on conflict (circle_id, subject_profile_id, dedupe_key)
+  on conflict on constraint check_in_events_circle_id_subject_profile_id_dedupe_key_key
   do update set
     status = excluded.status,
     sharing_precision = excluded.sharing_precision,
@@ -150,4 +168,4 @@ $$;
 grant execute on function public.perform_check_in(uuid, uuid, text, text) to authenticated;
 
 comment on function public.perform_check_in(uuid, uuid, text, text) is
-  'Creates a coordinate-free check-in or quick reply. Ends the caller subject companion session only for safe_arrived.';
+  'Creates a coordinate-free check-in or quick reply. Ends the caller subject companion session only for safe_arrived, and only when that session belongs to the caller and is still pending or active.';

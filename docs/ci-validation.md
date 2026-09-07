@@ -116,3 +116,44 @@ CI 는 `swift-actions/setup-swift` 로 Linux Swift 를 깔고 같은 스크립�
 
 검사가 실제로 잡는지 확인한 방법: 자정을 넘는 창의 `||` 를 `&&` 로 바꿔 보면
 야간 창 케이스 세 개가 실패한다.
+
+## 마이그레이션 체인 로컬 검증 (2026-09-07 추가)
+
+```
+python tools/check_migrations_local.py
+```
+
+Docker 없이 돈다. 포터블 PostgreSQL(`D:/Codex/toolchains/postgres/pgsql`, EDB
+바이너리 zip)로 임시 클러스터를 `initdb` 해 띄우고, Supabase 전제
+(`auth.uid()`, `auth.users` 의 id·aud·role·email·raw_user_meta_data, 세 역할,
+public 스키마 기본 권한, pgcrypto)를 shim 으로 넣은 뒤 `001`→`019` 를 순서대로
+적용한다. 이어서 `verification_after_*.sql` 열 개와 `negative_tests_after_*.sql`
+여섯 개(40개 단언)를 돌린다. 부정 테스트는 마지막에
+`bool_and(passed) | {단언: 통과} | {단언: 상세}` 한 줄을 내고, 러너는 첫 칸이
+`t` 가 아니면 실패시킨다 — 처음엔 둘째 칸을 보고 있어서 깨진 단언을 통과로
+셌다. 단언 하나를 일부러 틀리게 바꿔 실패하는 것을 확인했다.
+
+이 검사가 처음 돌면서 잡은 것:
+
+- **`016_quick_reply_statuses.sql` 이 009 를 베껴 010 을 되돌리고 있었다.**
+  010 이 넣은 세션 소유권 검사(`companion_session_subject_required`)가 사라지고,
+  반환 칼럼 `id` 와 겹치는 `where id = ...` 로 함수가 컴파일조차 안 됐다.
+  016 은 010 본문 위에 세 가지 변경만 얹도록 다시 썼다.
+- `014` 의 입력 인자 `quiet_hours` 가 반환 칼럼과 겹쳐 컴파일 실패.
+  `new_quiet_hours` 로 바꾸고 Dart 호출부도 맞췄다.
+- `015` 의 `on conflict (place_alert_id, ...)` 가 반환 칼럼과 모호. 함수에
+  `#variable_conflict use_column` 을 줬다.
+- `019` 의 반환 칼럼 `precision` 은 타입 키워드라 문법 오류. `viewed_precision`.
+- 부정 테스트 픽스처 셋이 애초에 실행 불가였다: `location_source` 에 없는
+  `'companion'`, 018 이후 없는 `raw_lat`, 서클 밖 사용자 역할로 RLS 에 가려진
+  행의 id 를 조회해 `place_alert_not_found` 를 받던 두 곳(012·015).
+
+프로덕션에 이미 올라간 `007`~`011` 은 손대지 않았다. 문제는 전부 **아직 올리지
+않은** 파일에 있었고, 그래서 로컬 체인이 있기 전엔 보이지 않았다.
+
+이 PC 특유의 함정: `pg_ctl start` 를 `capture_output` 으로 부르면 서버가 stdout
+파이프를 물고 있어 영원히 선다(러너는 start/stop 만 파이프를 끊는다).
+`LC_ALL=C` 를 주면 initdb 가 조용히 실패한다. 한국어가 든 SQL 을 `-c` 인자로
+넘기면 콘솔 코드페이지로 깨진다(파일로 넘긴다). postgres.exe 가 간헐적으로
+fail-fast(0xC0000409)로 죽어 initdb/start 에 재시도를 뒀다 — VS Build Tools
+설치 뒤 재시작이 보류된 상태에서 봤다.

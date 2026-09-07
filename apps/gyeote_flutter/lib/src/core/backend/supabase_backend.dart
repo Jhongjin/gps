@@ -150,7 +150,7 @@ class SupabaseCircleRepository implements CircleRepository {
         viewerProfileId: '${map['viewer_profile_id']}',
         viewerName: '${map['viewer_name'] ?? ''}',
         circleId: map['circle_id'] == null ? null : '${map['circle_id']}',
-        precision: _sharingModeFromJson('${map['precision']}'),
+        precision: _sharingModeFromJson('${map['viewed_precision']}'),
         viewedAt: DateTime.parse('${map['viewed_at']}').toLocal(),
       );
     }).toList(growable: false);
@@ -309,7 +309,7 @@ class SupabasePlaceAlertRepository implements PlaceAlertRepository {
       'set_place_alert_quiet_hours',
       params: {
         'alert_id': alertId,
-        'quiet_hours': quietHours.toJson(),
+        'new_quiet_hours': quietHours.toJson(),
       },
     );
     final map = Map<String, Object?>.from((rows as List).first);

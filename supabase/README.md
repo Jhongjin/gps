@@ -11,6 +11,17 @@ changes anything:
 .	oolspply-migrations.ps1 -Apply   # push after you have read the comparison
 ```
 
+Before pushing anything, run the whole chain against an empty local cluster:
+
+```
+python tools/check_migrations_local.py
+```
+
+It needs a local PostgreSQL install (no Docker), stands up a throwaway cluster,
+adds the Supabase shims (`auth.uid()`, roles, pgcrypto), applies `001` through
+the last file in order, then runs every `verification_after_*.sql`. A migration
+that only ever ran in the SQL Editor has never been tested as part of a chain.
+
 **Read the comparison before pushing.** Two hazards are stacked here.
 
 `007` through `011` were applied by hand in the SQL Editor, which leaves no row
@@ -44,6 +55,10 @@ Current production project:
   - `migrations/015_place_alert_event_ingest_rpc.sql`
   - `migrations/016_quick_reply_statuses.sql`
   - `migrations/017_meetups.sql`
+  - `migrations/018_drop_raw_coordinates.sql` — 앱이 이 칸을 더 이상 보내지
+    않게 된 뒤에 적용한다. 순서가 뒤집히면 구버전 클라이언트의 insert 가
+    거절되고 위치 업로드가 조용히 멈춘다.
+  - `migrations/019_viewer_log_read_rpc.sql`
 - Read-only verification queries:
   - `verification_after_008.sql`
   - `verification_after_009.sql`

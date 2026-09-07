@@ -484,3 +484,35 @@ UserNotifications — region monitoring, the notification request itself,
 `interruptionLevel`. Those still need a Mac. The boundary is explicit in the
 file: the portable section may not reference those frameworks, and the check
 fails if it does.
+
+## The migration chain had never been run as a chain (2026-09-07)
+
+Migrations `012`–`019` were pending on production and had only ever been read,
+never applied. No Docker here, so `supabase db reset` was not an option; instead
+`tools/check_migrations_local.py` stands up a throwaway PostgreSQL cluster from
+portable binaries, shims what Supabase provides, applies `001` through `019` in
+order, and then runs every `verification_after_*.sql` and every
+`negative_tests_after_*.sql` (40 assertions). It runs in CI too.
+
+The first run found that **four of the eight pending files would have failed
+on push**, and one of them was a regression of a security guard:
+
+- `016` had been written by copying `009` instead of `010`, silently dropping
+  the check that the caller owns the companion session it is ending
+  (`companion_session_subject_required`), and reintroducing an ambiguous `id`
+  that makes the function fail to compile. It is rebuilt on `010` with only the
+  three intended changes.
+- `014`: input parameter named like a return column. `015`: `on conflict`
+  target ambiguous with a return column. `019`: `precision` is a type keyword
+  and cannot name a return column. All three compiled nowhere but in review.
+- Three negative-test fixtures were unrunnable from the day they were written —
+  an enum value that does not exist, a column `018` removes, and two lookups
+  performed as the outsider whose RLS hides the row, which made the assertion
+  test RLS instead of the RPC guard it names.
+
+Nothing already in production was touched. Every failure was in a file that had
+not been applied yet, which is exactly why none of it had been seen.
+
+The Dart side follows: `set_place_alert_quiet_hours` takes `new_quiet_hours`,
+and `list_viewer_log` returns `viewed_precision`. The RPC contract check covers
+both.
