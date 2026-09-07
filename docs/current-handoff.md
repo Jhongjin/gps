@@ -516,3 +516,22 @@ not been applied yet, which is exactly why none of it had been seen.
 The Dart side follows: `set_place_alert_quiet_hours` takes `new_quiet_hours`,
 and `list_viewer_log` returns `viewed_precision`. The RPC contract check covers
 both.
+
+## Android runs on a real system now (2026-09-08)
+
+The earlier note said on-device behaviour was untested because this machine had
+no emulator images and no `cmdline-tools`. Both are installed, the machine has
+WHPX acceleration, and `tools/android-emulator-check.ps1` boots a headless API
+35 image in about thirty seconds, installs the debug APK, launches it, and
+checks through adb that the process stays up with no fatal exception, that the
+widget provider is registered with the system's AppWidget service, and that a
+`WIDGET_REFRESH` broadcast reaches the provider without crashing it.
+
+Two Robolectric tests also landed for the integration points the earlier tests
+stopped short of: a quiet-hours transition posts to the low-importance channel
+and still posts, and `sharedCoordinate` applies the private-place snap before
+precision reduction on a real `Location`.
+
+Still not verified anywhere but a phone in hand: delivery of a real geofence
+transition (a Play Services event that cannot be faked), the thirty-minute
+widget tick, and the act of placing the widget.

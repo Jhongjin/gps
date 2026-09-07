@@ -157,3 +157,29 @@ public 스키마 기본 권한, pgcrypto)를 shim 으로 넣은 뒤 `001`→`019
 넘기면 콘솔 코드페이지로 깨진다(파일로 넘긴다). postgres.exe 가 간헐적으로
 fail-fast(0xC0000409)로 죽어 initdb/start 에 재시도를 뒀다 — VS Build Tools
 설치 뒤 재시작이 보류된 상태에서 봤다.
+
+## 에뮬레이터 스모크 (2026-09-08 추가)
+
+```
+pwsh tools/android-emulator-check.ps1            # APK 빌드 포함
+pwsh tools/android-emulator-check.ps1 -SkipBuild
+```
+
+API 35 x86_64 AVD(`gyeote-api35`)를 headless 로 띄워 디버그 APK 를 설치·실행하고
+adb 로 본다: 프로세스 생존, FATAL EXCEPTION 없음, **위젯 provider 가 시스템
+AppWidget 서비스에 등록됨**, 알림 관리자에 패키지 등록, WIDGET_REFRESH 인텐트
+필터 존재, 그 브로드캐스트를 provider 가 크래시 없이 처리. 이 PC 에서는 WHPX
+가속으로 30초 안에 부팅한다.
+
+이 PC 의 함정: `avdmanager` 가 AVD 를 `~\.androidvd` 가 아니라
+`D:\AI\opencode-data\config\.androidvd` 에 만든다(다른 도구의 설정 루트).
+에뮬레이터는 기본 위치만 보고 "Unknown AVD" 로 즉시 죽는데, 스크립트는 그걸
+"부팅 실패"로만 보여 줬다. 지금은 `avdmanager list avd` 의 Path 를 읽어
+`ANDROID_AVD_HOME` 을 맞춘다.
+
+이걸로도 못 보는 것: 실제 지오펜스 전환의 도착(Play Services 가 만드는 이벤트라
+가짜로 넣을 수 없다), 30분 주기 위젯 갱신, 사용자가 위젯을 홈에 올리는 순간.
+그 셋은 실기기에서 손으로 본다.
+
+준비물(sdkmanager): `cmdline-tools;latest`, `platform-tools`, `emulator`,
+`system-images;android-35;google_apis;x86_64`(약 1.2GB).
