@@ -5,7 +5,12 @@ import '../../../l10n/app_localizations.dart';
 import '../../core/i18n/region_settings.dart';
 import '../../core/location/location_models.dart';
 import '../../theme/gyeote_theme.dart';
+import '../../core/i18n/sharing_mode_label.dart';
 import 'movement.dart';
+
+// 공유 정확도 라벨은 코어 enum 의 로케일 표현이라 코어에 산다. 지도 밖에서도
+// 쓰이므로 여기서 다시 내보내 기존 호출부를 그대로 둔다.
+export '../../core/i18n/sharing_mode_label.dart' show sharingModeLabel;
 
 /// 경로 꼬리의 표본 하나.
 ///
@@ -255,17 +260,6 @@ MapMemberTrack _trackFromSnapshot(
     batteryPercent: snapshot.batteryPercent,
     accuracyM: snapshot.accuracyM,
   );
-}
-
-/// 공유 정확도 라벨.
-String sharingModeLabel(AppL10n l10n, SharingMode mode) {
-  return switch (mode) {
-    SharingMode.precise => l10n.sharingModePrecise,
-    SharingMode.balanced => l10n.sharingModeBalanced,
-    SharingMode.area => l10n.sharingModeArea,
-    SharingMode.hidden => l10n.sharingModeHidden,
-    SharingMode.sosOnly => l10n.sharingModeSosOnly,
-  };
 }
 
 /// "3분 전" 형태의 상대 시각.

@@ -18,6 +18,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../core/i18n/region_settings.dart';
 import '../../theme/gyeote_theme.dart';
 import '../onboarding/permission_primer.dart';
+import '../privacy/viewer_log_view.dart';
 import 'widgets/animated_tracks.dart';
 import 'widgets/map_chrome.dart';
 import 'widgets/meetup_card.dart';
@@ -828,15 +829,49 @@ class _MapScreenState extends State<MapScreen> {
     );
   }
 
+  /// 남의 위치를 열어 봤다는 사실을 남긴다.
+  ///
+  /// 이 앱은 "누가 내 위치를 봤는지 보여 준다"를 로그인 화면에서부터 약속한다.
+  /// 003 에 `record_viewer_log` 가 있었는데 아무도 부르지 않아서, 약속만 있고
+  /// 기록은 비어 있었다. 여는 순간이 곧 보는 순간이므로 여기가 그 자리다.
+  ///
+  /// 실패해도 시트를 막지 않는다. 기록이 빠지는 것은 문제지만, 그것 때문에
+  /// 가족 위치를 못 보게 하는 것은 더 큰 문제다.
+  void _recordViewerLog(MapMemberTrack member) {
+    final repository = widget.circleRepository;
+    final circleId = _activeCircleId;
+    // 내 위치를 내가 보는 것은 열람이 아니다. 이걸 걸러야 목록이 "남이 본
+    // 횟수"로 읽힌다.
+    if (repository == null || circleId == null || member.isCurrentUser) return;
+
+    unawaited(
+      repository
+          .recordViewerLog(
+            profileId: member.id,
+            circleId: circleId,
+            precision: member.sharingMode,
+          )
+          .catchError((_) {}),
+    );
+  }
+
   void _openMemberSheet(MapMemberTrack member) {
     setState(() => _selectedMemberId = member.id);
+    _recordViewerLog(member);
     showMemberSheet(
       context,
       member: member,
       destination: _primaryDestination,
       onOpenViewerLog: () {
+        final repository = widget.circleRepository;
         Navigator.of(context).pop();
-        widget.onOpenCircle?.call();
+        // 서클 탭으로 보내는 것이 아니라 실제 기록을 연다. 예전에는 이 버튼이
+        // 탭만 바꿨고 그 탭에는 열람 기록이 없었다.
+        if (repository == null) {
+          widget.onOpenCircle?.call();
+          return;
+        }
+        showViewerLogSheet(context, repository: repository);
       },
     ).whenComplete(() {
       if (mounted) setState(() => _selectedMemberId = null);

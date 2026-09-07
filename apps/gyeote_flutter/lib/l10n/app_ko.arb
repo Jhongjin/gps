@@ -311,13 +311,9 @@
   "privacyViewerLogTitle": "최근 조회",
   "privacyViewerLogLabel": "조회 로그",
   "privacyViewerLogNote": "내가 확인 가능",
-  "privacyViewerFamilyBalanced": "가족 서클 · 균형 위치",
-  "privacyViewerFriendsArea": "친구 서클 · 동네만",
   "privacyCircleFamily": "가족 서클",
   "privacyCircleFriends": "친구 서클",
   "demoNameGuardian": "미라",
-  "privacyViewer12MinAgo": "12분 전",
-  "privacyViewerYesterday": "어제",
   "privacyAdsTitle": "광고와 데이터",
   "privacyAdsPersonalized": "개인화 광고",
   "privacyAdsPersonalizedBody": "동의 전에는 비개인화 광고만 사용",
@@ -337,7 +333,6 @@
   "privacyDataNeedsBackend": "Supabase 연결 후 데이터 요청을 보낼 수 있습니다.",
   "privacyDataLocationHistory": "위치 기록",
   "privacyDataCompanionRoutes": "동행 경로",
-  "privacyDataCompanionRoutesBody": "동행 세션 · 경로 꼬리",
   "privacyRetention30Days": "30일",
   "privacyRetention24Hours": "24시간",
   "privacyRetentionAutoDelete": "만료 후 자동 삭제",
@@ -902,5 +897,57 @@
       }
     }
   },
-  "privatePlacesUnnamed": "이름 없는 장소"
+  "privatePlacesUnnamed": "이름 없는 장소",
+  "viewerLogSheetTitle": "내 위치를 본 사람",
+  "@viewerLogSheetTitle": {
+    "description": "보는 쪽이 아니라 보여지는 쪽이 읽는 기록"
+  },
+  "viewerLogSheetBody": "지난 30일 동안 서클 멤버가 내 위치를 열어 본 기록입니다. 내가 본 것은 포함되지 않습니다.",
+  "viewerLogEmpty": "아직 아무도 열어 보지 않았습니다",
+  "viewerLogLoadFailed": "열람 기록을 불러오지 못했습니다.",
+  "viewerLogUnknownViewer": "이름 없는 멤버",
+  "viewerLogNeedsBackend": "서클에 연결되면 열람 기록이 쌓입니다.",
+  "viewerLogEntryDetail": "{precision} 정확도로 봤습니다",
+  "@viewerLogEntryDetail": {
+    "placeholders": {
+      "precision": {
+        "type": "String"
+      }
+    }
+  },
+  "viewerLogSeeAll": "전체 보기",
+  "playbackTitle": "오늘의 이동 다시 보기",
+  "@playbackTitle": {
+    "description": "기록 화면에서 여는 하루치 경로 재생"
+  },
+  "playbackOpen": "다시 보기",
+  "playbackSubtitle": "저장된 위치만 이어서 보여 줍니다. 없던 정밀도를 만들지 않습니다.",
+  "playbackLoading": "경로를 불러오는 중",
+  "playbackEmpty": "다시 볼 만큼의 기록이 없습니다",
+  "playbackEmptyHint": "위치 공유가 켜져 있는 동안 저장된 지점이 두 곳 이상 있어야 재생할 수 있습니다.",
+  "playbackLoadFailed": "경로를 불러오지 못했습니다.",
+  "playbackNeedsBackend": "서클에 연결되면 지난 이동을 다시 볼 수 있습니다.",
+  "playbackPlay": "재생",
+  "playbackPause": "멈춤",
+  "playbackGapNotice": "이 사이는 기록이 없습니다",
+  "playbackTravelled": "이동 {distance}",
+  "@playbackTravelled": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackWindow": "{start} ~ {end}",
+  "@playbackWindow": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackViewerLogNote": "다른 사람의 이동을 보면 그 사람의 열람 기록에 남습니다."
 }

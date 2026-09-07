@@ -6,6 +6,7 @@ import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
 import '../../core/privacy/private_place.dart';
 import '../../core/privacy/private_place_store.dart';
+import 'viewer_log_view.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../theme/gyeote_theme.dart';
 
@@ -52,6 +53,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   String? _permissionStatusMessage;
   List<PrivatePlace> _privatePlaces = const [];
   bool _isAddingPrivatePlace = false;
+  List<ViewerLogEntry>? _viewerLog;
+  bool _viewerLogFailed = false;
 
   bool get _hasBackend =>
       widget.circleRepository != null && widget.privacyRepository != null;
@@ -68,6 +71,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     _loadAdPreferences();
     _loadPermissionSnapshot();
     _loadPrivatePlaces();
+    _loadViewerLog();
   }
 
   @override
@@ -283,6 +287,26 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     }
   }
 
+  Future<void> _loadViewerLog() async {
+    final repository = widget.circleRepository;
+    if (repository == null) return;
+
+    try {
+      final entries = await repository.listViewerLog(limit: 20);
+      if (!mounted) return;
+      setState(() {
+        _viewerLog = entries;
+        _viewerLogFailed = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _viewerLog = const [];
+        _viewerLogFailed = true;
+      });
+    }
+  }
+
   Future<void> _loadPrivatePlaces() async {
     final places = await const PrivatePlaceStore().load();
     if (!mounted) return;
@@ -448,7 +472,11 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           onRemove: _removePrivatePlace,
         ),
         const SizedBox(height: 12),
-        const _ViewerLogCard(),
+        _ViewerLogCard(
+          entries: _viewerLog,
+          failed: _viewerLogFailed,
+          repository: widget.circleRepository,
+        ),
         const SizedBox(height: 12),
         _AdsCard(
           personalizedAdsEnabled: _personalizedAdsEnabled,
@@ -671,19 +699,63 @@ class _PermissionNotice extends StatelessWidget {
 }
 
 class _ViewerLogCard extends StatelessWidget {
-  const _ViewerLogCard();
+  const _ViewerLogCard({
+    required this.entries,
+    required this.failed,
+    required this.repository,
+  });
+
+  /// null 이면 아직 읽는 중. 빈 목록과 다르다.
+  final List<ViewerLogEntry>? entries;
+  final bool failed;
+  final CircleRepository? repository;
+
+  /// 카드에는 세 줄까지만. 나머지는 시트에서 본다.
+  static const int _preview = 3;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppL10n.of(context);
+    final palette = context.palette;
+    final repo = repository;
+    final rows = entries;
+
     return _PrivacyCard(
       title: l10n.privacyViewerLogTitle,
-      trailing: TextButton(onPressed: () {}, child: Text(l10n.historyFilterAll)),
+      trailing: repo == null || rows == null || rows.isEmpty
+          ? null
+          : TextButton(
+              onPressed: () => showViewerLogSheet(context, repository: repo),
+              child: Text(l10n.viewerLogSeeAll),
+            ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _ModeRow(label: l10n.demoNameGuardian, value: l10n.agoJustNow, detail: l10n.privacyViewerFamilyBalanced),
-          _ModeRow(label: l10n.demoNameChild, value: l10n.privacyViewer12MinAgo, detail: l10n.privacyDataCompanionRoutesBody),
-          _ModeRow(label: l10n.demoNameFriend, value: l10n.privacyViewerYesterday, detail: l10n.privacyViewerFriendsArea),
+          if (repo == null)
+            Text(
+              // 데모에서는 가짜 이름을 그리지 않는다. 예전에는 여기에 데모
+              // 이름 세 개가 진짜 열람 기록인 것처럼 박혀 있었다.
+              l10n.viewerLogNeedsBackend,
+              style: TextStyle(fontSize: 12, color: palette.muted),
+            )
+          else if (failed)
+            Text(
+              l10n.viewerLogLoadFailed,
+              style: TextStyle(fontSize: 12, color: palette.alert),
+            )
+          else if (rows == null)
+            Text(
+              l10n.privacySaving,
+              style: TextStyle(fontSize: 12, color: palette.muted),
+            )
+          else if (rows.isEmpty)
+            Text(
+              l10n.viewerLogEmpty,
+              style: TextStyle(fontSize: 12, color: palette.inkMuted),
+            )
+          else
+            for (final entry in rows.take(_preview))
+              ViewerLogRow(entry: entry),
         ],
       ),
     );

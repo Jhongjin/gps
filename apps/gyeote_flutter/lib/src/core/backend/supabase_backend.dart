@@ -115,6 +115,48 @@ class SupabaseCircleRepository implements CircleRepository {
   }
 
   @override
+  Future<void> recordViewerLog({
+    required String profileId,
+    required String circleId,
+    required SharingMode precision,
+  }) async {
+    await _client.rpc(
+      'record_viewer_log',
+      params: {
+        'target_profile_id': profileId,
+        'target_circle_id': circleId,
+        'viewed_precision': _sharingModeToJson(precision),
+      },
+    );
+  }
+
+  @override
+  Future<List<ViewerLogEntry>> listViewerLog({
+    int limit = 50,
+    Duration since = const Duration(days: 30),
+  }) async {
+    final rows = await _client.rpc(
+      'list_viewer_log',
+      params: {
+        'entry_limit': limit,
+        'since_at': DateTime.now().subtract(since).toUtc().toIso8601String(),
+      },
+    );
+
+    return (rows as List).map((row) {
+      final map = Map<String, Object?>.from(row);
+      return ViewerLogEntry(
+        id: '${map['id']}',
+        viewerProfileId: '${map['viewer_profile_id']}',
+        viewerName: '${map['viewer_name'] ?? ''}',
+        circleId: map['circle_id'] == null ? null : '${map['circle_id']}',
+        precision: _sharingModeFromJson('${map['precision']}'),
+        viewedAt: DateTime.parse('${map['viewed_at']}').toLocal(),
+      );
+    }).toList(growable: false);
+  }
+
+  @override
   Future<List<MemberRoutePoint>> getActiveCompanionRouteTail({
     required String companionSessionId,
     required String profileId,

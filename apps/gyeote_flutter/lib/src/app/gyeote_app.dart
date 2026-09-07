@@ -105,6 +105,7 @@ class _GyeoteAppState extends State<GyeoteApp> {
       HistoryScreen(
         circleRepository: backend?.circles,
         checkInRepository: backend?.checkIns,
+        backendConfig: widget.backendConfig,
       ),
       PrivacyScreen(
         circleRepository: backend?.circles,

@@ -321,3 +321,64 @@ the shared coordinate snaps to the place's centre.
 
 The 안심 screen has the card; adding uses the current position rather than a map
 picker, because whoever sets this up is usually standing in the place.
+
+## The viewer log was a promise with nothing behind it (2026-09-07)
+
+`record_viewer_log` has been in `003` since the beginning. Nothing called it.
+Nothing read the log either. Meanwhile the sign-in screen carried a trust badge
+saying the app shows who looked at your location, the member sheet had a "오늘
+이 위치를 본 사람" row, and the 안심 screen rendered **three demo names with
+fabricated timestamps** as if they were a real viewing record, behind a "전체"
+button wired to `onPressed: () {}`.
+
+Fabricating a privacy record is worse than having none. It is now real:
+
+- `recordViewerLog` fires when a member sheet opens — that is the moment someone
+  actually looks. Your own location is excluded, or the count stops meaning
+  "times someone else looked". A failure never blocks the sheet: a missing log
+  line is bad, but not being able to see where your family is, is worse.
+- `019_viewer_log_read_rpc.sql` adds `list_viewer_log`, scoped to `auth.uid()`
+  as the *viewed* profile, so nobody can read anyone else's log. It goes through
+  an RPC rather than a direct select because attaching the viewer's name means
+  joining `profiles`, which is a different policy's problem.
+- The 안심 card shows the real last three and opens a full sheet. In demo mode it
+  says the record starts once you join a circle, instead of inventing names.
+- **A load failure is never drawn as "nobody looked."** That is the dangerous
+  failure on this screen: it would tell someone they were not watched when the
+  app simply could not check. There is a test for it.
+
+Five ARB keys that existed only to feed the fake card were deleted.
+
+## Route playback (2026-09-07)
+
+The last item on the P1 list from `p0-map-implementation.md`. It is also the
+most surveillance-shaped feature in the product, which decided how it is built.
+
+`RoutePlaybackTimeline` is pure and interpolates **over wall-clock time, not
+sample index**. Index-based playback runs a ten-second gap and a three-hour gap
+at the same speed, which erases where someone actually spent their day — in a
+screen whose whole purpose is to show that, it is a distortion of fact, not a
+rendering detail.
+
+Gaps are not drawn as travel. When samples are more than twenty minutes apart
+the app does not know what happened in between, so the marker holds at the last
+known position, the screen says so, and the distance total excludes the gap —
+otherwise a phone that was off for three hours produces "20 km travelled" out of
+one straight line.
+
+The playback surface states that replaying someone else's movement appears in
+their viewing record, which is only true because the viewer log now works. The
+history tab's entry point replays **your own** day; viewing another member
+starts from their member sheet, so the default framing is not "watch someone".
+
+Coordinates come back already reduced by sharing precision and already masked by
+private places, so playback inherits both. It shows what was stored; it does not
+reconstruct anything finer.
+
+## Known gaps
+
+- `a11yBatteryLevel`, `a11yStaleLocation`, `a11yAttentionBadge` are defined in
+  ARB and referenced nowhere. The design skill §6 requires `Semantics` labels on
+  markers, sheet rows and status badges; the strings were written and never
+  applied.
+- `pendingLabel` and `meetupNone` are also unreferenced.

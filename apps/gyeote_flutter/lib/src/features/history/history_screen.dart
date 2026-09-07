@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../core/backend/backend_config.dart';
 import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_models.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../theme/gyeote_theme.dart';
 import '../ads/safe_ad_slot.dart';
+import '../map/widgets/route_playback_sheet.dart';
 
 enum _HistoryFilter {
   all,
@@ -19,10 +22,15 @@ class HistoryScreen extends StatefulWidget {
     super.key,
     this.circleRepository,
     this.checkInRepository,
+    this.backendConfig,
   });
 
   final CircleRepository? circleRepository;
   final CheckInRepository? checkInRepository;
+
+  /// `Supabase.instance` 를 조건 없이 읽으면 데모 모드에서 예외가 난다. 이
+  /// 저장소에서 이미 한 번 그렇게 27개 테스트를 깬 적이 있다.
+  final BackendConfig? backendConfig;
 
   @override
   State<HistoryScreen> createState() => _HistoryScreenState();
@@ -63,12 +71,19 @@ class _HistoryScreenState extends State<HistoryScreen> {
   ];
 
   List<CheckInEvent> _checkIns = const [];
+  String? _activeCircleId;
   _HistoryFilter _filter = _HistoryFilter.all;
   bool _isLoading = false;
   String? _message;
 
   bool get _hasBackend =>
       widget.circleRepository != null && widget.checkInRepository != null;
+
+  String? get _currentProfileId {
+    final config = widget.backendConfig;
+    if (config == null || !config.hasSupabase) return null;
+    return Supabase.instance.client.auth.currentUser?.id;
+  }
 
   @override
   void initState() {
@@ -99,6 +114,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
     try {
       final circles = await widget.circleRepository!.listCircles();
+      if (mounted && circles.isNotEmpty) {
+        setState(() => _activeCircleId = circles.first.id);
+      }
       if (circles.isEmpty) {
         if (mounted) {
           setState(() {
@@ -129,6 +147,27 @@ class _HistoryScreenState extends State<HistoryScreen> {
         _message = AppL10n.of(context).historyLoadFailed;
       });
     }
+  }
+
+  /// 내 하루를 되감는다.
+  ///
+  /// 남의 이동도 같은 화면에서 볼 수 있게 만들 수 있지만, 그건 멤버 시트에서
+  /// 그 사람을 고른 뒤에 들어가는 것이 맞다. 기록 탭에서 바로 남을 고르게 하면
+  /// 이 화면의 기본값이 "남을 본다"가 된다.
+  Future<void> _openPlayback() async {
+    final repository = widget.circleRepository;
+    final circleId = _activeCircleId;
+    final profileId = _currentProfileId;
+    if (repository == null || circleId == null || profileId == null) return;
+
+    await showRoutePlaybackSheet(
+      context,
+      repository: repository,
+      circleId: circleId,
+      profileId: profileId,
+      memberName: AppL10n.of(context).mapMeShort,
+      isSelf: true,
+    );
   }
 
   @override
@@ -166,6 +205,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
         _SafetySummaryCard(
           checkInCount: checkInCount,
           latestCheckIn: latestCheckIn,
+        ),
+        const SizedBox(height: 12),
+        _PlaybackCard(
+          onOpen: _openPlayback,
+          isAvailable: _hasBackend &&
+              _activeCircleId != null &&
+              _currentProfileId != null,
         ),
         const SizedBox(height: 12),
         _HistoryFilterBar(
@@ -608,5 +654,62 @@ String _sharingModeLabel(AppL10n l10n, SharingMode mode) {
       return l10n.sharingModeHidden;
     case SharingMode.sosOnly:
       return l10n.sharingModeSosOnly;
+  }
+}
+
+/// 하루치 이동 다시 보기 진입점.
+///
+/// 기록 목록 위에 둔다. 목록이 "무슨 일이 있었나"라면 이건 "어디를 다녔나"라,
+/// 같은 화면에서 이어 읽히는 것이 맞다.
+class _PlaybackCard extends StatelessWidget {
+  const _PlaybackCard({required this.onOpen, required this.isAvailable});
+
+  final Future<void> Function() onOpen;
+  final bool isAvailable;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(GyeoteRadius.card),
+        color: palette.surfaceAlt,
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.route_outlined, size: 20, color: palette.move),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.playbackTitle,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: palette.ink,
+                  ),
+                ),
+                Text(
+                  isAvailable
+                      ? l10n.playbackSubtitle
+                      : l10n.playbackNeedsBackend,
+                  style: TextStyle(fontSize: 11, color: palette.muted),
+                ),
+              ],
+            ),
+          ),
+          if (isAvailable)
+            TextButton(
+              onPressed: onOpen,
+              child: Text(l10n.playbackOpen),
+            ),
+        ],
+      ),
+    );
   }
 }

@@ -586,12 +586,6 @@ class AppL10nEn extends AppL10n {
   String get privacyViewerLogNote => 'Visible to you';
 
   @override
-  String get privacyViewerFamilyBalanced => 'Family circle · balanced location';
-
-  @override
-  String get privacyViewerFriendsArea => 'Friends circle · neighborhood only';
-
-  @override
   String get privacyCircleFamily => 'Family circle';
 
   @override
@@ -599,12 +593,6 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get demoNameGuardian => 'Mira';
-
-  @override
-  String get privacyViewer12MinAgo => '12 min ago';
-
-  @override
-  String get privacyViewerYesterday => 'Yesterday';
 
   @override
   String get privacyAdsTitle => 'Ads and data';
@@ -665,10 +653,6 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get privacyDataCompanionRoutes => 'Companion routes';
-
-  @override
-  String get privacyDataCompanionRoutesBody =>
-      'Companion sessions · route tails';
 
   @override
   String get privacyRetention30Days => '30 days';
@@ -1617,4 +1601,82 @@ class AppL10nEn extends AppL10n {
 
   @override
   String get privatePlacesUnnamed => 'Unnamed place';
+
+  @override
+  String get viewerLogSheetTitle => 'Who looked at my location';
+
+  @override
+  String get viewerLogSheetBody =>
+      'Times a circle member opened your location in the last 30 days. Your own views are not counted.';
+
+  @override
+  String get viewerLogEmpty => 'Nobody has looked yet';
+
+  @override
+  String get viewerLogLoadFailed => 'Could not load the viewing record.';
+
+  @override
+  String get viewerLogUnknownViewer => 'Unnamed member';
+
+  @override
+  String get viewerLogNeedsBackend =>
+      'Viewing records start once you join a circle.';
+
+  @override
+  String viewerLogEntryDetail(String precision) {
+    return 'Seen at $precision precision';
+  }
+
+  @override
+  String get viewerLogSeeAll => 'See all';
+
+  @override
+  String get playbackTitle => 'Replay today\'s movement';
+
+  @override
+  String get playbackOpen => 'Replay';
+
+  @override
+  String get playbackSubtitle =>
+      'Only stored positions are joined up. No precision is invented.';
+
+  @override
+  String get playbackLoading => 'Loading the route';
+
+  @override
+  String get playbackEmpty => 'Not enough recorded to replay';
+
+  @override
+  String get playbackEmptyHint =>
+      'Replay needs at least two positions stored while sharing was on.';
+
+  @override
+  String get playbackLoadFailed => 'Could not load the route.';
+
+  @override
+  String get playbackNeedsBackend =>
+      'Past movement becomes available once you join a circle.';
+
+  @override
+  String get playbackPlay => 'Play';
+
+  @override
+  String get playbackPause => 'Pause';
+
+  @override
+  String get playbackGapNotice => 'Nothing was recorded during this stretch';
+
+  @override
+  String playbackTravelled(String distance) {
+    return '$distance travelled';
+  }
+
+  @override
+  String playbackWindow(String start, String end) {
+    return '$start – $end';
+  }
+
+  @override
+  String get playbackViewerLogNote =>
+      'Replaying someone else\'s movement appears in their viewing record.';
 }

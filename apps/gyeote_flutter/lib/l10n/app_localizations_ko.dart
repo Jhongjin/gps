@@ -562,12 +562,6 @@ class AppL10nKo extends AppL10n {
   String get privacyViewerLogNote => '내가 확인 가능';
 
   @override
-  String get privacyViewerFamilyBalanced => '가족 서클 · 균형 위치';
-
-  @override
-  String get privacyViewerFriendsArea => '친구 서클 · 동네만';
-
-  @override
   String get privacyCircleFamily => '가족 서클';
 
   @override
@@ -575,12 +569,6 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get demoNameGuardian => '미라';
-
-  @override
-  String get privacyViewer12MinAgo => '12분 전';
-
-  @override
-  String get privacyViewerYesterday => '어제';
 
   @override
   String get privacyAdsTitle => '광고와 데이터';
@@ -638,9 +626,6 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get privacyDataCompanionRoutes => '동행 경로';
-
-  @override
-  String get privacyDataCompanionRoutesBody => '동행 세션 · 경로 꼬리';
 
   @override
   String get privacyRetention30Days => '30일';
@@ -1549,4 +1534,78 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get privatePlacesUnnamed => '이름 없는 장소';
+
+  @override
+  String get viewerLogSheetTitle => '내 위치를 본 사람';
+
+  @override
+  String get viewerLogSheetBody =>
+      '지난 30일 동안 서클 멤버가 내 위치를 열어 본 기록입니다. 내가 본 것은 포함되지 않습니다.';
+
+  @override
+  String get viewerLogEmpty => '아직 아무도 열어 보지 않았습니다';
+
+  @override
+  String get viewerLogLoadFailed => '열람 기록을 불러오지 못했습니다.';
+
+  @override
+  String get viewerLogUnknownViewer => '이름 없는 멤버';
+
+  @override
+  String get viewerLogNeedsBackend => '서클에 연결되면 열람 기록이 쌓입니다.';
+
+  @override
+  String viewerLogEntryDetail(String precision) {
+    return '$precision 정확도로 봤습니다';
+  }
+
+  @override
+  String get viewerLogSeeAll => '전체 보기';
+
+  @override
+  String get playbackTitle => '오늘의 이동 다시 보기';
+
+  @override
+  String get playbackOpen => '다시 보기';
+
+  @override
+  String get playbackSubtitle => '저장된 위치만 이어서 보여 줍니다. 없던 정밀도를 만들지 않습니다.';
+
+  @override
+  String get playbackLoading => '경로를 불러오는 중';
+
+  @override
+  String get playbackEmpty => '다시 볼 만큼의 기록이 없습니다';
+
+  @override
+  String get playbackEmptyHint =>
+      '위치 공유가 켜져 있는 동안 저장된 지점이 두 곳 이상 있어야 재생할 수 있습니다.';
+
+  @override
+  String get playbackLoadFailed => '경로를 불러오지 못했습니다.';
+
+  @override
+  String get playbackNeedsBackend => '서클에 연결되면 지난 이동을 다시 볼 수 있습니다.';
+
+  @override
+  String get playbackPlay => '재생';
+
+  @override
+  String get playbackPause => '멈춤';
+
+  @override
+  String get playbackGapNotice => '이 사이는 기록이 없습니다';
+
+  @override
+  String playbackTravelled(String distance) {
+    return '이동 $distance';
+  }
+
+  @override
+  String playbackWindow(String start, String end) {
+    return '$start ~ $end';
+  }
+
+  @override
+  String get playbackViewerLogNote => '다른 사람의 이동을 보면 그 사람의 열람 기록에 남습니다.';
 }

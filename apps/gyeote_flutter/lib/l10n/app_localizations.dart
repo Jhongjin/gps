@@ -1129,18 +1129,6 @@ abstract class AppL10n {
   /// **'내가 확인 가능'**
   String get privacyViewerLogNote;
 
-  /// No description provided for @privacyViewerFamilyBalanced.
-  ///
-  /// In ko, this message translates to:
-  /// **'가족 서클 · 균형 위치'**
-  String get privacyViewerFamilyBalanced;
-
-  /// No description provided for @privacyViewerFriendsArea.
-  ///
-  /// In ko, this message translates to:
-  /// **'친구 서클 · 동네만'**
-  String get privacyViewerFriendsArea;
-
   /// No description provided for @privacyCircleFamily.
   ///
   /// In ko, this message translates to:
@@ -1158,18 +1146,6 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'미라'**
   String get demoNameGuardian;
-
-  /// No description provided for @privacyViewer12MinAgo.
-  ///
-  /// In ko, this message translates to:
-  /// **'12분 전'**
-  String get privacyViewer12MinAgo;
-
-  /// No description provided for @privacyViewerYesterday.
-  ///
-  /// In ko, this message translates to:
-  /// **'어제'**
-  String get privacyViewerYesterday;
 
   /// No description provided for @privacyAdsTitle.
   ///
@@ -1284,12 +1260,6 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'동행 경로'**
   String get privacyDataCompanionRoutes;
-
-  /// No description provided for @privacyDataCompanionRoutesBody.
-  ///
-  /// In ko, this message translates to:
-  /// **'동행 세션 · 경로 꼬리'**
-  String get privacyDataCompanionRoutesBody;
 
   /// No description provided for @privacyRetention30Days.
   ///
@@ -2952,6 +2922,138 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'이름 없는 장소'**
   String get privatePlacesUnnamed;
+
+  /// 보는 쪽이 아니라 보여지는 쪽이 읽는 기록
+  ///
+  /// In ko, this message translates to:
+  /// **'내 위치를 본 사람'**
+  String get viewerLogSheetTitle;
+
+  /// No description provided for @viewerLogSheetBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'지난 30일 동안 서클 멤버가 내 위치를 열어 본 기록입니다. 내가 본 것은 포함되지 않습니다.'**
+  String get viewerLogSheetBody;
+
+  /// No description provided for @viewerLogEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'아직 아무도 열어 보지 않았습니다'**
+  String get viewerLogEmpty;
+
+  /// No description provided for @viewerLogLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'열람 기록을 불러오지 못했습니다.'**
+  String get viewerLogLoadFailed;
+
+  /// No description provided for @viewerLogUnknownViewer.
+  ///
+  /// In ko, this message translates to:
+  /// **'이름 없는 멤버'**
+  String get viewerLogUnknownViewer;
+
+  /// No description provided for @viewerLogNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클에 연결되면 열람 기록이 쌓입니다.'**
+  String get viewerLogNeedsBackend;
+
+  /// No description provided for @viewerLogEntryDetail.
+  ///
+  /// In ko, this message translates to:
+  /// **'{precision} 정확도로 봤습니다'**
+  String viewerLogEntryDetail(String precision);
+
+  /// No description provided for @viewerLogSeeAll.
+  ///
+  /// In ko, this message translates to:
+  /// **'전체 보기'**
+  String get viewerLogSeeAll;
+
+  /// 기록 화면에서 여는 하루치 경로 재생
+  ///
+  /// In ko, this message translates to:
+  /// **'오늘의 이동 다시 보기'**
+  String get playbackTitle;
+
+  /// No description provided for @playbackOpen.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 보기'**
+  String get playbackOpen;
+
+  /// No description provided for @playbackSubtitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 위치만 이어서 보여 줍니다. 없던 정밀도를 만들지 않습니다.'**
+  String get playbackSubtitle;
+
+  /// No description provided for @playbackLoading.
+  ///
+  /// In ko, this message translates to:
+  /// **'경로를 불러오는 중'**
+  String get playbackLoading;
+
+  /// No description provided for @playbackEmpty.
+  ///
+  /// In ko, this message translates to:
+  /// **'다시 볼 만큼의 기록이 없습니다'**
+  String get playbackEmpty;
+
+  /// No description provided for @playbackEmptyHint.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 공유가 켜져 있는 동안 저장된 지점이 두 곳 이상 있어야 재생할 수 있습니다.'**
+  String get playbackEmptyHint;
+
+  /// No description provided for @playbackLoadFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'경로를 불러오지 못했습니다.'**
+  String get playbackLoadFailed;
+
+  /// No description provided for @playbackNeedsBackend.
+  ///
+  /// In ko, this message translates to:
+  /// **'서클에 연결되면 지난 이동을 다시 볼 수 있습니다.'**
+  String get playbackNeedsBackend;
+
+  /// No description provided for @playbackPlay.
+  ///
+  /// In ko, this message translates to:
+  /// **'재생'**
+  String get playbackPlay;
+
+  /// No description provided for @playbackPause.
+  ///
+  /// In ko, this message translates to:
+  /// **'멈춤'**
+  String get playbackPause;
+
+  /// No description provided for @playbackGapNotice.
+  ///
+  /// In ko, this message translates to:
+  /// **'이 사이는 기록이 없습니다'**
+  String get playbackGapNotice;
+
+  /// No description provided for @playbackTravelled.
+  ///
+  /// In ko, this message translates to:
+  /// **'이동 {distance}'**
+  String playbackTravelled(String distance);
+
+  /// No description provided for @playbackWindow.
+  ///
+  /// In ko, this message translates to:
+  /// **'{start} ~ {end}'**
+  String playbackWindow(String start, String end);
+
+  /// No description provided for @playbackViewerLogNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'다른 사람의 이동을 보면 그 사람의 열람 기록에 남습니다.'**
+  String get playbackViewerLogNote;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

@@ -321,6 +321,31 @@ class AdPreferences {
   final bool preciseLocationAdsEnabled;
 }
 
+/// 누가 내 위치를 봤는지 한 줄.
+///
+/// 이 앱이 다른 위치 공유 앱과 갈리는 지점이다. 보는 쪽이 아니라 **보여지는
+/// 쪽**이 읽는 기록이라, 본인 것만 나온다.
+class ViewerLogEntry {
+  const ViewerLogEntry({
+    required this.id,
+    required this.viewerProfileId,
+    required this.viewerName,
+    required this.precision,
+    required this.viewedAt,
+    this.circleId,
+  });
+
+  final String id;
+  final String viewerProfileId;
+
+  /// 비어 있을 수 있다. 화면이 로케일에 맞는 대체 이름을 붙인다 — 여기에
+  /// 렌더된 문자열을 넣지 않는다.
+  final String viewerName;
+  final String? circleId;
+  final SharingMode precision;
+  final DateTime viewedAt;
+}
+
 abstract interface class CircleRepository {
   Future<List<CircleSummary>> listCircles();
 
@@ -346,6 +371,23 @@ abstract interface class CircleRepository {
   });
 
   Stream<List<MemberLocationSnapshot>> watchLatestLocations(String circleId);
+
+  /// 다른 사람의 위치를 열어 봤다는 사실을 남긴다.
+  ///
+  /// 본인 위치를 보는 것은 열람이 아니므로 호출부가 걸러야 한다. 실패해도
+  /// 화면을 막지 않는다 — 기록이 빠지는 것은 문제지만, 그것 때문에 위치를
+  /// 못 보게 하는 것은 더 큰 문제다.
+  Future<void> recordViewerLog({
+    required String profileId,
+    required String circleId,
+    required SharingMode precision,
+  });
+
+  /// 내 위치를 본 사람들. 남의 기록은 읽을 수 없다.
+  Future<List<ViewerLogEntry>> listViewerLog({
+    int limit = 50,
+    Duration since = const Duration(days: 30),
+  });
 }
 
 abstract interface class InvitationRepository {
