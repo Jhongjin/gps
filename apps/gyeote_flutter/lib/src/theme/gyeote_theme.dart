@@ -84,16 +84,19 @@ class GyeotePalette extends ThemeExtension<GyeotePalette> {
     surfaceAlt: Color(0xFFF2EDE4),
     ink: Color(0xFF191512),
     inkMuted: Color(0xFF4C443B),
-    muted: Color(0xFF877D71),
+    // 아래 넷은 측정 후 어두워졌다. 원래 값(877D71·BE7411·00825C·C03D2C)은
+    // 자기 바닥색 위에서 본문 기준 4.5:1 에 못 미쳤다. test/contrast_test.dart 가
+    // 지킨다.
+    muted: Color(0xFF736A60),
     line: Color(0x1A191512),
-    brand: Color(0xFF00825C),
+    brand: Color(0xFF007B57),
     brandVivid: Color(0xFF00A374),
     brandSoft: Color(0xFFDDF2EA),
-    warm: Color(0xFFBE7411),
+    warm: Color(0xFF9A5E0E),
     warmSoft: Color(0xFFFCEFD5),
     move: Color(0xFF2C6BA4),
     moveSoft: Color(0xFFE2EDF7),
-    alert: Color(0xFFC03D2C),
+    alert: Color(0xFFBE3C2C),
     alertSoft: Color(0xFFFBE7E2),
     mapLand: Color(0xFFEAE4D8),
     mapRoad: Color(0xFFFFFFFF),

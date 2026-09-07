@@ -834,12 +834,15 @@ PlaceAlertQuietHours _placeAlertQuietHoursFromJson(Object? value) {
     return const PlaceAlertQuietHours.none();
   }
 
+  final start = value['start']?.toString();
+  final end = value['end']?.toString();
   return PlaceAlertQuietHours(
     enabled: true,
-    start: value['start']?.toString(),
-    end: value['end']?.toString(),
-    timeZone: value['timeZone']?.toString(),
-    label: value['label']?.toString(),
+    start: start,
+    end: end,
+    // 프리셋 키가 있으면 그것. 없는 옛 행은 라벨이 아니라 시각으로 맞춘다.
+    preset: QuietHoursPreset.fromKey(value['preset']?.toString()) ??
+        QuietHoursPreset.fromTimes(start, end),
   );
 }
 

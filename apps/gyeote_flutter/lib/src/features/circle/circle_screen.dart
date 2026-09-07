@@ -409,7 +409,7 @@ class _CircleScreenState extends State<CircleScreen> {
       return;
     }
 
-    final nextQuietHours = _nextPlaceAlertQuietHours(_l10n, alert.quietHours);
+    final nextQuietHours = nextPlaceAlertQuietHours(alert.quietHours);
     setState(() {
       _busyPlaceAlertIds.add(alert.id);
       _placeAlertMessage = null;
@@ -1473,37 +1473,20 @@ String _placeAlertBody(AppL10n l10n, PlaceAlertRule alert) {
   ].join(' · ');
 }
 
-/// 다음 방해 금지 프리셋.
+/// 다음 방해 금지 프리셋: 없음 → 야간 → 수업/근무 → 없음.
 ///
-/// 저장된 `label` 을 번역 문구와 비교한다. 라벨은 만든 사람의 언어로 DB 에 굳기
-/// 때문에, 다른 언어를 쓰는 멤버가 순환시키면 첫 프리셋으로 되돌아간다. 제대로
-/// 고치려면 라벨 대신 프리셋 키를 저장해야 하고, 그건 스키마 변경이다.
-/// `timeZone` 이 서울로 고정된 것도 같은 자리에서 함께 고쳐야 한다.
-PlaceAlertQuietHours _nextPlaceAlertQuietHours(
-  AppL10n l10n,
-  PlaceAlertQuietHours current,
-) {
+/// 프리셋 **키**로 판단한다. 예전에는 저장된 라벨을 현재 로케일 번역과 비교해서,
+/// 만든 사람과 언어가 다른 멤버는 언제나 첫 프리셋으로 되돌아갔다.
+PlaceAlertQuietHours nextPlaceAlertQuietHours(PlaceAlertQuietHours current) {
   if (!current.enabled) {
-    return PlaceAlertQuietHours(
-      enabled: true,
-      start: '22:00',
-      end: '07:00',
-      timeZone: 'Asia/Seoul',
-      label: l10n.quietHoursNight,
-    );
+    return PlaceAlertQuietHours.preset(QuietHoursPreset.night);
   }
-
-  if (current.label == l10n.quietHoursNight) {
-    return PlaceAlertQuietHours(
-      enabled: true,
-      start: '09:00',
-      end: '17:00',
-      timeZone: 'Asia/Seoul',
-      label: l10n.quietHoursClassOrWork,
-    );
-  }
-
-  return const PlaceAlertQuietHours.none();
+  return switch (current.preset) {
+    QuietHoursPreset.night =>
+      PlaceAlertQuietHours.preset(QuietHoursPreset.classOrWork),
+    // 수업/근무 다음, 그리고 프리셋을 모르는 옛 값 다음은 '없음'이다.
+    _ => const PlaceAlertQuietHours.none(),
+  };
 }
 
 /// 상태는 문구를 훑어 추측하지 않고 호출부가 넘긴다.

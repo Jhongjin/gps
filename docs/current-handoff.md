@@ -388,3 +388,37 @@ because a string existing and a string being spoken are different things.
 
 `meetupNone` became the empty-state heading it was written for; `pendingLabel`
 had no consumer and was removed. No ARB key is unreferenced now.
+
+## Contrast was written down but never measured (2026-09-07)
+
+The design skill's §6 checklist said `muted` on `surfaceAlt` "must be measured".
+Measuring it: in light mode `muted` sat at 3.5–4.0:1 on every ground it is used
+on, `warm` at 3.2–3.7 (the attention badge is warm-on-warmSoft at 11px), `brand`
+on `brandSoft` at 4.1, `alert` on `alertSoft` at 4.47. Sixty-three captions were
+below the body-text floor. Dark mode passed everywhere.
+
+Four light tokens were darkened by the smallest amount that clears 4.5:1 on all
+their grounds — `muted` #736A60, `warm` #9A5E0E, `brand` #007B57, `alert`
+#BE3C2C — and the skill table now carries those. `test/contrast_test.dart`
+measures every text × ground pair in both themes plus each status colour on its
+own soft ground, so the next token change fails a test instead of a checklist.
+
+## Quiet hours: the fifth display-as-identity bug, and a feature nothing enforces
+
+`PlaceAlertQuietHours` persisted the *rendered* preset label and the cycle
+function compared it against the current locale's translation. A Korean
+creator's "야간" never equals an English member's "Night", so cycling from
+another language always fell back to the first preset. It now stores a
+`preset` key; the label is produced from the key in the reader's locale, and
+rows written before this have their preset inferred from start/end times —
+a locale-free fact — never from the label. `quiet_hours` is `jsonb`, so no
+migration was needed.
+
+It also stored `timeZone: 'Asia/Seoul'` for every device on earth. That value
+is gone: there is no source for an IANA zone name in the app yet, and a wrong
+value is worse than a missing one.
+
+While doing this: **nothing enforces quiet hours.** No Kotlin path and no SQL
+function reads the field. It is stored, displayed, and cycled, and has no
+effect on any notification. That is the next thing to either build or stop
+advertising.

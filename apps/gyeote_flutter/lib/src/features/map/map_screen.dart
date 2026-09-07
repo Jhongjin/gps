@@ -1105,7 +1105,7 @@ class _MapScreenState extends State<MapScreen> {
           notifyOnDeparture: _placeNotifyDeparture,
           notifyOnLate: _placeNotifyLate,
           notifyOnLongStay: _placeNotifyLongStay,
-          quietHours: _quietHoursFromPreset(_l10n, _placeQuietHoursPreset),
+          quietHours: _quietHoursFromPreset(_placeQuietHoursPreset),
         ),
       );
       if (!mounted) {
@@ -2429,35 +2429,16 @@ class _MemberSafetyNote extends StatelessWidget {
   }
 }
 
-/// 방해 금지 프리셋.
-///
-/// `label` 은 DB 에 저장돼 다른 멤버에게도 보인다. 만든 사람의 언어로 굳는다는
-/// 뜻이므로, 장기적으로는 라벨 대신 프리셋 키를 저장하고 읽는 쪽에서 번역해야
-/// 한다. `timeZone` 도 지금 서울로 고정돼 있어 다른 지역에서는 조용한 시간대가
-/// 어긋난다 — IANA 존을 구해 오도록 고쳐야 한다.
-PlaceAlertQuietHours _quietHoursFromPreset(
-  AppL10n l10n,
-  _PlaceQuietHoursPreset preset,
-) {
+/// 방해 금지 프리셋. 라벨이 아니라 키가 저장된다 — 읽는 쪽이 자기 로케일로
+/// 번역한다.
+PlaceAlertQuietHours _quietHoursFromPreset(_PlaceQuietHoursPreset preset) {
   switch (preset) {
     case _PlaceQuietHoursPreset.none:
       return const PlaceAlertQuietHours.none();
     case _PlaceQuietHoursPreset.night:
-      return PlaceAlertQuietHours(
-        enabled: true,
-        start: '22:00',
-        end: '07:00',
-        timeZone: 'Asia/Seoul',
-        label: l10n.quietHoursNight,
-      );
+      return PlaceAlertQuietHours.preset(QuietHoursPreset.night);
     case _PlaceQuietHoursPreset.schoolOrWork:
-      return PlaceAlertQuietHours(
-        enabled: true,
-        start: '09:00',
-        end: '17:00',
-        timeZone: 'Asia/Seoul',
-        label: l10n.quietHoursClassOrWork,
-      );
+      return PlaceAlertQuietHours.preset(QuietHoursPreset.classOrWork);
   }
 }
 

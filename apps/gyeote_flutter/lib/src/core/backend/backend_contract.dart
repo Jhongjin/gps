@@ -209,37 +209,85 @@ class PlaceAlertRule {
   final int targetCount;
 }
 
+/// 조용한 시간 프리셋.
+///
+/// DB 에는 이 키가 간다. 예전에는 렌더된 라벨("야간")이 갔고, 순환할 때 그
+/// 라벨을 현재 로케일의 번역과 비교했다. 만든 사람이 한국어면 영어 멤버에게는
+/// 어떤 프리셋과도 일치하지 않아 항상 첫 프리셋으로 되돌아갔다 — 이 저장소에서
+/// 다섯 번째로 나온 "보여주는 값을 판단에 쓴" 버그다.
+enum QuietHoursPreset {
+  night('night', '22:00', '07:00'),
+  classOrWork('classOrWork', '09:00', '17:00');
+
+  const QuietHoursPreset(this.key, this.start, this.end);
+
+  final String key;
+  final String start;
+  final String end;
+
+  String label(AppL10n l10n) => switch (this) {
+        QuietHoursPreset.night => l10n.quietHoursNight,
+        QuietHoursPreset.classOrWork => l10n.quietHoursClassOrWork,
+      };
+
+  static QuietHoursPreset? fromKey(String? key) {
+    for (final preset in values) {
+      if (preset.key == key) return preset;
+    }
+    return null;
+  }
+
+  /// 프리셋 키가 없는 옛 행을 위한 추론. 라벨이 아니라 **시각**으로 맞춘다 —
+  /// 시각은 로케일과 무관한 사실이다.
+  static QuietHoursPreset? fromTimes(String? start, String? end) {
+    for (final preset in values) {
+      if (preset.start == start && preset.end == end) return preset;
+    }
+    return null;
+  }
+}
+
 class PlaceAlertQuietHours {
   const PlaceAlertQuietHours({
     required this.enabled,
     this.start,
     this.end,
-    this.timeZone,
-    this.label,
+    this.preset,
   });
 
   const PlaceAlertQuietHours.none()
       : enabled = false,
         start = null,
         end = null,
-        timeZone = null,
-        label = null;
+        preset = null;
+
+  PlaceAlertQuietHours.preset(QuietHoursPreset preset)
+      : this(
+          enabled: true,
+          start: preset.start,
+          end: preset.end,
+          preset: preset,
+        );
 
   final bool enabled;
+
+  /// "HH:mm". 기기 현지 시각이다. 예전에는 `timeZone: 'Asia/Seoul'` 을 함께
+  /// 저장했는데, 기기가 어디 있든 서울로 적히는 값이라 사실이 아니었다. IANA
+  /// 이름을 알려 주는 출처가 생기기 전까지는 적지 않는다. 지금은 어느 쪽도
+  /// 이 값을 **집행하지 않는다** — 네이티브도 SQL 도 읽지 않는다.
   final String? start;
   final String? end;
-  final String? timeZone;
-  final String? label;
+  final QuietHoursPreset? preset;
 
-  /// 표시용 요약. 계약 계층이 문구를 만들지만, 문구 자체는 로케일에서 온다.
+  /// 표시용 요약. 라벨은 저장된 것이 아니라 프리셋에서 현재 로케일로 만든다.
   String summary(AppL10n l10n) {
     if (!enabled) {
       return l10n.quietHoursOff;
     }
     final timeLabel =
         start != null && end != null ? '$start-$end' : l10n.quietHoursOn;
-    final labelText = label;
-    if (labelText == null || labelText.isEmpty) {
+    final labelText = preset?.label(l10n);
+    if (labelText == null) {
       return timeLabel;
     }
     return '$labelText $timeLabel';
@@ -253,8 +301,7 @@ class PlaceAlertQuietHours {
       'enabled': enabled,
       'start': start,
       'end': end,
-      'timeZone': timeZone,
-      'label': label,
+      'preset': preset?.key,
     };
   }
 }
