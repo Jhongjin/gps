@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  귀갓길 팔레트의 라이트 값. lib/src/theme/gyeote_theme.dart 와 같아야 한다.
+  한쪽을 고치면 다른 쪽도 고칠 것.
+-->
+<resources>
+    <color name="gyeote_surface">#FFFFFFFF</color>
+    <color name="gyeote_surface_alt">#FFF2EDE4</color>
+    <color name="gyeote_ink">#FF191512</color>
+    <color name="gyeote_ink_muted">#FF4C443B</color>
+    <color name="gyeote_muted">#FF877D71</color>
+    <color name="gyeote_brand">#FF00825C</color>
+    <color name="gyeote_warm">#FFBE7411</color>
+    <color name="gyeote_alert">#FFC03D2C</color>
+</resources>

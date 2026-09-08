@@ -1,0 +1,970 @@
+{
+  "@@locale": "ko",
+  "appTitle": "곁에",
+  "@appTitle": {
+    "description": "앱 이름"
+  },
+  "navMap": "지도",
+  "navCircle": "서클",
+  "navHistory": "기록",
+  "navPrivacy": "안심",
+  "@navPrivacy": {
+    "description": "프라이버시 탭. '설정'이 아니라 '안심'이다 — 감시가 아닌 기다림의 톤"
+  },
+  "signOut": "로그아웃",
+  "mapDefaultCircleName": "우리 서클",
+  "mapLayersTooltip": "지도 종류",
+  "mapInvite": "초대",
+  "mapMeShort": "나",
+  "mapSharingCount": "{count}명이 위치 공유 중",
+  "@mapSharingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapAttentionCount": "확인 필요 {count}",
+  "@mapAttentionCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapConnecting": "서클 위치 연결 중",
+  "mapNoCircle": "아직 연결된 서클 없음",
+  "mapDemoNotice": "아직 서버 위치가 없어 데모 위치 표시 중",
+  "sosLabel": "SOS",
+  "sosButtonSemantics": "긴급 공유. 길게 눌러 시작",
+  "@sosButtonSemantics": {
+    "description": "탭 한 번으로는 발동하지 않는다는 것을 스크린리더에도 알린다"
+  },
+  "sosArming": "긴급 공유 준비",
+  "sosSecondsRemaining": "초 후 전송",
+  "sosAudience": "{audience}에게\n정확 위치와 배터리를 보냅니다",
+  "@sosAudience": {
+    "placeholders": {
+      "audience": {
+        "type": "String"
+      }
+    }
+  },
+  "sosNoAds": "이 화면에는 광고가 표시되지 않습니다.",
+  "sosCancel": "취소",
+  "sosSendNow": "지금 보내기",
+  "memberBattery": "배터리",
+  "memberAccuracy": "정확도",
+  "memberUpdated": "갱신",
+  "memberCall": "전화",
+  "memberNudge": "깨우기",
+  "memberDirections": "길찾기",
+  "memberPrecisionTitle": "{name}이(가) 나에게 공유하는 정확도",
+  "@memberPrecisionTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "memberPrecisionConsent": "바꾸려면 {name}의 동의가 필요합니다. 요청을 보내면 상대 기기에 알림이 갑니다.",
+  "@memberPrecisionConsent": {
+    "description": "정확도는 일방적으로 올릴 수 없다. 동의 우선 원칙의 UI 증거",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "viewerLogTitle": "이 위치를 본 사람",
+  "viewerLogSubtitle": "조회 기록은 안심 탭에서 전체를 볼 수 있습니다.",
+  "viewerLogOpen": "기록",
+  "precisionPrecise": "정확",
+  "precisionBalanced": "균형",
+  "precisionArea": "동네만",
+  "precisionHidden": "숨김",
+  "relativeJustNow": "방금",
+  "relativeMinutes": "{minutes}분",
+  "@relativeMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "relativeHours": "{hours}시간",
+  "@relativeHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "relativeDays": "{days}일",
+  "@relativeDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "valueUnknown": "—",
+  "adSlotSemantics": "스폰서 영역",
+  "adSlotTitle": "스폰서",
+  "adSlotBody": "위치 데이터와 분리된 광고 영역",
+  "@adSlotBody": {
+    "description": "정밀 위치·SOS·권한 데이터가 광고 타깃팅에 쓰이지 않는다는 사실을 알린다"
+  },
+  "adSlotBadge": "테스트",
+  "memberFallbackName": "멤버",
+  "sharingModePrecise": "정확",
+  "sharingModeBalanced": "균형",
+  "sharingModeArea": "동네 범위",
+  "sharingModeHidden": "숨김",
+  "sharingModeSosOnly": "긴급 전용",
+  "statusSharing": "{mode} 공유 중",
+  "@statusSharing": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "statusWaitingUpdate": "위치 업데이트 대기 중",
+  "statusLastKnownOnly": "마지막 위치만 표시 중",
+  "statusLowBattery": "배터리가 낮아 업데이트가 느릴 수 있어요",
+  "metaOldLocation": "오래된 위치 · {time}",
+  "@metaOldLocation": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "metaLastLocation": "마지막 위치 · {time}",
+  "@metaLastLocation": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "metaBattery": "배터리 {percent}%",
+  "@metaBattery": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "metaAccuracy": "정확도 {distance}",
+  "@metaAccuracy": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "metaJustUpdated": "방금 업데이트",
+  "noteVeryStale": "현재 위치가 아닐 수 있어요. 연결이 돌아오면 다시 업데이트돼요.",
+  "noteStale": "배터리, 신호, 권한 상태 때문에 늦을 수 있어요.",
+  "noteLowBattery": "배터리가 낮아 업데이트가 느릴 수 있어요.",
+  "agoJustNow": "방금",
+  "agoMinutes": "{minutes}분 전",
+  "@agoMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "agoHours": "{hours}시간 전",
+  "@agoHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "agoDays": "{days}일 전",
+  "@agoDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "demoNameChild": "준",
+  "demoNameFriend": "하나",
+  "demoNameElder": "할아버지",
+  "deviceArrivedStatus": "무사 도착 · 방금 확인",
+  "deviceArrivedMeta": "동행 공유 종료 · 균형 위치로 알림",
+  "historyTitle": "오늘 활동",
+  "historySubtitle": "장소 알림, 조회 로그, 동행 세션, 안전 확인",
+  "historySyncing": "활동 기록 동기화 중",
+  "historyLoadFailed": "활동 기록을 불러오지 못했습니다.",
+  "historyFilterAll": "전체",
+  "historyFilterCheckIn": "확인",
+  "historyFilterPlace": "장소",
+  "historyFilterCompanion": "동행",
+  "historyFilterData": "데이터",
+  "historyFilterEmpty": "이 필터의 활동이 없습니다",
+  "historyFilterEmptyHint": "다른 활동 필터를 선택하면 오늘 기록을 다시 볼 수 있습니다.",
+  "historyCheckInCount": "안전 확인 {count}개",
+  "@historyCheckInCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "historyNoAds": "광고 없음",
+  "historySafetyLoading": "안전 확인과 동행 종료 기록을 불러오고 있습니다.",
+  "historySafetyEmpty": "오늘 안전 확인이 없습니다",
+  "historySafetyEmptyHint": "동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 남습니다.",
+  "historySafetyNoRecent": "최근 도착 확인이 아직 없습니다.",
+  "checkInSafeArrived": "무사 도착",
+  "checkInPending": "안전 확인 대기",
+  "checkInNeedsCheck": "확인 필요",
+  "checkInWeakSignal": "신호가 잠시 약해요",
+  "companionEndedNote": "동행 공유 종료 · {mode} 위치로 알림",
+  "@companionEndedNote": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "demoEventPlaceArrival": "준 학교 도착",
+  "demoEventPlaceArrivalDetail": "예상보다 4분 빠름",
+  "demoEventViewed": "미라가 내 위치 확인",
+  "demoEventViewedDetail": "가족 서클 · 균형 위치",
+  "demoEventCompanion": "할아버지 산책 시작",
+  "demoEventCompanionDetail": "15분 동행 세션 · 상호 동의",
+  "demoEventCheckIn": "준 무사 도착",
+  "demoEventCheckInDetail": "동행 공유 종료 · 균형 위치로 알림",
+  "demoEventDataRequest": "위치 기록 삭제 요청",
+  "demoEventDataRequestDetail": "처리 대기 중",
+  "historyTypeViewed": "조회",
+  "authTagline": "가까운 사람끼리만, 필요한 만큼 위치를 나눠요.",
+  "authBadgeConsent": "동의 기반 공유",
+  "authBadgeViewerLog": "조회 기록",
+  "authBadgeNoAdTargeting": "정밀 위치 광고 차단",
+  "authSignIn": "로그인",
+  "authSignUp": "가입",
+  "authSignUpCta": "가입하고 시작",
+  "authEmail": "이메일",
+  "authPassword": "비밀번호",
+  "authDisplayName": "이름 또는 별명",
+  "authEmailRequired": "이메일을 입력해 주세요.",
+  "authPasswordTooShort": "6자 이상 입력해 주세요.",
+  "authGenericError": "처리 중 문제가 생겼습니다. 잠시 후 다시 시도해 주세요.",
+  "authVerifyEmailSent": "가입 확인 메일을 보냈습니다. 메일 확인 후 다시 로그인해 주세요.",
+  "authConsentNote": "초대받은 서클과 상호 동의한 동행 모드에서만 위치가 공유됩니다.",
+  "authPrivacyNote": "정밀 위치는 광고에 사용하지 않으며, 언제든 공유를 멈출 수 있어요.",
+  "privacyTitle": "안심 설정",
+  "privacySubtitle": "공유, 조회 기록, 광고, 삭제 요청",
+  "privacySharingScopeTitle": "공유 범위",
+  "privacySharingScopeBody": "지도와 동행 모드의 기본 위치 공유",
+  "privacyPauseSharing": "공유 멈춤",
+  "privacyPausedNotice": "1시간 동안 위치 공유를 멈췄습니다.",
+  "privacyPauseFailed": "공유 멈춤을 저장하지 못했습니다.",
+  "privacyPauseNeedsBackend": "Supabase 연결 후 공유를 멈출 수 있습니다.",
+  "privacyModePreciseTitle": "정확한 위치",
+  "privacyModePreciseBody": "공유 정밀도에 맞춰 지도 반경을 표시합니다.",
+  "privacyModeBalancedTitle": "균형 공유",
+  "privacyModeBalancedBody": "일상 공유에 맞춰 위치 최신성과 배터리를 함께 봅니다.",
+  "privacyModeApprox": "대략",
+  "privacyModeApproxBody": "대략 위치에서는 반경 원으로 표시됩니다.",
+  "privacyModeAdjusted": "현재 위치를 보정해서 표시",
+  "privacyModeHidesExact": "정확 좌표 숨김",
+  "privacyBatteryTitle": "배터리 모드",
+  "privacyBatteryBody": "배터리가 낮을 때 업데이트 간격을 늘리고 주요 알림을 우선합니다.",
+  "privacyBatteryRealtime": "실시간",
+  "privacyBatterySaver": "절전",
+  "privacyBatteryRealtimeNote": "실시간 우선",
+  "privacyBatteryBalancedNote": "균형 우선",
+  "privacyBatterySaverNote": "절전 우선",
+  "privacyBatteryFast": "빠른 갱신",
+  "privacyBatterySlow": "느린 갱신",
+  "privacyInterval15to30": "15-30초",
+  "privacyInterval30to90": "30-90초",
+  "privacyInterval2to5": "2-5분",
+  "privacyCompanionBatteryNote": "동행 중 빠르게 업데이트하며 배터리 사용량이 높아질 수 있습니다.",
+  "privacyPermissionTitle": "권한 상태",
+  "privacyPermissionRefresh": "권한 상태 새로고침",
+  "privacyPermissionFailed": "기기 권한 상태를 확인하지 못했습니다.",
+  "privacyPermissionBuildOnly": "Android/iOS 빌드에서 기기 권한을 확인합니다.",
+  "privacyPermissionBuildOnlyShort": "Android/iOS에서 실제 권한을 확인합니다.",
+  "privacyPermissionLocation": "위치 권한",
+  "privacyPermissionBackground": "배경 위치",
+  "privacyPermissionNotifications": "알림",
+  "privacyPermissionDeviceBuild": "기기 빌드",
+  "privacyPermissionGranted": "허용됨",
+  "privacyPermissionWhileInUse": "앱 사용 중",
+  "privacyPermissionUnknown": "확인 전",
+  "privacyPermissionWhenNeeded": "필요 시",
+  "privacyPermissionEducationNote": "위치 공유 시작 전에 권한 안내가 필요합니다.",
+  "privacyPermissionStagedNote": "동행, 장소 알림처럼 켜진 기능에서 단계적으로 요청",
+  "privacyNotificationsBody": "도착 확인, 장소 알림, SOS 수신",
+  "privacyNotificationsTitle": "안심 알림",
+  "privacyViewerLogTitle": "최근 조회",
+  "privacyViewerLogLabel": "조회 로그",
+  "privacyViewerLogNote": "내가 확인 가능",
+  "privacyCircleFamily": "가족 서클",
+  "privacyCircleFriends": "친구 서클",
+  "demoNameGuardian": "미라",
+  "privacyAdsTitle": "광고와 데이터",
+  "privacyAdsPersonalized": "개인화 광고",
+  "privacyAdsPersonalizedBody": "동의 전에는 비개인화 광고만 사용",
+  "privacyAdsSensitiveBlock": "민감 카테고리 차단",
+  "privacyAdsSensitiveBody": "가족, 위치, 응급 상황 문맥 보호",
+  "privacyAdsNoPreciseTargeting": "정밀 위치 광고 차단",
+  "privacyAdsLoadFailed": "광고 설정을 불러오지 못했습니다.",
+  "privacyAdsSaveFailed": "광고 설정을 저장하지 못했습니다.",
+  "privacyAdsSaved": "광고 설정을 저장했습니다.",
+  "privacyAdsNeedsBackend": "Supabase 연결 후 광고 설정을 저장할 수 있습니다.",
+  "privacyDataTitle": "내 데이터",
+  "privacyDataExport": "내보내기",
+  "privacyDataDelete": "기록 삭제",
+  "privacyDataExportSent": "데이터 내보내기 요청을 보냈습니다.",
+  "privacyDataDeleteSent": "기록 삭제 요청을 보냈습니다.",
+  "privacyDataRequestFailed": "데이터 요청을 보내지 못했습니다.",
+  "privacyDataNeedsBackend": "Supabase 연결 후 데이터 요청을 보낼 수 있습니다.",
+  "privacyDataLocationHistory": "위치 기록",
+  "privacyDataCompanionRoutes": "동행 경로",
+  "privacyRetention30Days": "30일",
+  "privacyRetention24Hours": "24시간",
+  "privacyRetentionAutoDelete": "만료 후 자동 삭제",
+  "privacyRetentionSummaryOnly": "세션 종료 후 요약 보관",
+  "privacyRecommended": "추천",
+  "privacySaving": "저장 중",
+  "privacyRequesting": "요청 중",
+  "privacyPending": "대기",
+  "privacyCompanionMode": "동행 모드",
+  "privacyCompanionConsentNote": "준과 상호 동의 완료 후 시작",
+  "privacyCompanion15MinLeft": "15분 남음",
+  "mapOpenCircle": "서클",
+  "mapOnboardTitle": "첫 서클을 시작하세요",
+  "mapOnboardBody": "초대가 완료되면 지도에 공유 위치가 표시됩니다.",
+  "placeDraftTitle": "장소 반경",
+  "placeDraftSubtitle": "도착/이탈 규칙 저장",
+  "placeDraftNameLabel": "장소 이름",
+  "placeDraftNameHint": "새 장소",
+  "placeDraftSave": "장소 알림 저장",
+  "placeDraftSaving": "장소 알림 저장 중",
+  "placeRuleArrival": "도착",
+  "placeRuleDeparture": "이탈",
+  "placeRuleLate": "늦음",
+  "placeRuleLongStay": "오래 머무름",
+  "quietHoursNone": "없음",
+  "quietHoursNight": "야간",
+  "quietHoursClass": "수업",
+  "quietHoursClassOrWork": "수업/근무",
+  "quietHoursNoneCopy": "중요한 도착/이탈 알림을 항상 받을 수 있습니다.",
+  "quietHoursNightCopy": "22:00-07:00에는 긴급하지 않은 장소 알림을 조용히 처리합니다.",
+  "quietHoursClassCopy": "09:00-17:00에는 반복적인 장소 알림을 줄이는 preset입니다.",
+  "placeAlertNeedsBackend": "Supabase 연결 후 저장할 수 있습니다.",
+  "placeAlertPickTarget": "대상 멤버를 선택해 주세요.",
+  "placeAlertNeedsName": "장소 이름을 입력해 주세요.",
+  "placeAlertNeedsRule": "알림 조건을 하나 이상 선택해 주세요.",
+  "placeAlertSaveFailed": "장소 알림을 저장하지 못했습니다. 대상과 공유 범위를 확인해 주세요.",
+  "placeAlertNeedsLiveCircle": "실제 서클 위치가 연결되면 저장할 수 있습니다.",
+  "placeAlertReady": "장소 알림 준비됨",
+  "placeAlertUnregistered": "장소 알림 반경이 기기에서 해제됨",
+  "placeAlertSavedPendingDevice": "장소 알림은 저장됨 · 기기 반경 등록 대기 중",
+  "placeAlertEnter": "저장한 장소 반경에 도착했습니다.",
+  "placeAlertExit": "저장한 장소 반경을 벗어났습니다.",
+  "placeAlertTransition": "저장한 장소 반경 변화가 감지됐습니다.",
+  "companionStart": "시작",
+  "companionFifteenMinutes": "15분",
+  "companionUntilArrival": "도착까지",
+  "companionCheckIn": "도착 확인",
+  "companionCheckInSending": "도착 확인을 보내는 중",
+  "companionCheckInFailed": "도착 확인을 보내지 못했습니다.",
+  "companionArrivedSent": "무사 도착을 보냈어요. 동행 공유는 종료됐습니다.",
+  "companionStarted": "동행 모드 위치 공유 시작",
+  "companionStartedWithSession": "동행 모드 위치 공유 시작 · 세션 연결됨",
+  "companionStopped": "동행 모드 위치 공유 중지",
+  "companionStartFailed": "동행 모드를 시작하지 못했습니다.",
+  "companionEndSyncPending": "동행 세션 종료 동기화 대기 중",
+  "checkInSyncPending": "안전 확인 기록 동기화 대기 중",
+  "uploadSyncTitle": "위치 동기화",
+  "uploadFlush": "대기 위치 동기화",
+  "uploadNothingPending": "업로드할 대기 위치 없음",
+  "uploadQueueReady": "업로드 큐 준비됨",
+  "uploadQueueWaiting": "업로드 큐 대기",
+  "uploadQueueSyncing": "업로드 큐 동기화 중",
+  "uploadQueueRequesting": "업로드 큐 동기화 요청 중",
+  "uploadQueueRequested": "업로드 큐 동기화 요청됨",
+  "uploadQueueRequestFailed": "업로드 큐 동기화를 요청하지 못했습니다.",
+  "uploadQueueConfigPending": "업로드 큐 설정 대기 중",
+  "uploadDeviceConfigPending": "기기 업로드 큐 설정 대기 중",
+  "uploadDeviceReady": "기기 업로드 큐 준비됨",
+  "uploadDeviceDisconnected": "기기 업로드 큐 연결 해제",
+  "uploadFailedRetryScheduled": "업로드 실패 · 자동 재시도 예약",
+  "uploadNeedsSignIn": "로그인 후 업로드 큐 연결",
+  "uploadIosPending": "iOS 업로드 큐 구현 대기 중",
+  "uploadBuildOnly": "Android/iOS 빌드에서 업로드 큐를 사용할 수 있습니다.",
+  "deviceLocationBuildOnly": "Android/iOS 빌드에서 기기 위치를 사용할 수 있습니다.",
+  "sosBuildOnly": "Android/iOS 빌드에서 긴급 위치를 보낼 수 있습니다.",
+  "deviceLocationBridgeNote": "기기 위치는 Android/iOS 빌드에서 연결됩니다.",
+  "deviceBridgeFailed": "기기 위치 브리지를 연결하지 못했습니다.",
+  "deviceReceiving": "내 위치 수신 중",
+  "deviceSharingRunning": "위치 공유 실행 중",
+  "deviceSharingStopped": "위치 공유 중지됨",
+  "devicePermissionChecked": "위치 권한 상태 확인됨",
+  "deviceLocationServiceAvailable": "위치 서비스 사용 가능",
+  "deviceLocationError": "위치 연결 오류",
+  "sosRequesting": "긴급 위치 요청 중",
+  "sosRequestFailed": "긴급 위치를 요청하지 못했습니다.",
+  "circleLoadFailed": "서클을 불러오지 못했습니다.",
+  "locationLoadFailed": "위치를 불러오지 못했습니다.",
+  "sharingHidden": "공유 숨김",
+  "sharingPausedByPolicy": "공유 정책에 따라 위치 수집 일시정지",
+  "precisionExactLocation": "정확 위치",
+  "precisionBalancedLocation": "균형 위치",
+  "checkInStatusChanged": "상태 변경",
+  "companionMinutesLeft": "{minutes}분 남음",
+  "@companionMinutesLeft": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadPendingCount": "대기 {count}건",
+  "@uploadPendingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadCompleted": "위치 업로드 완료 · {count}건",
+  "@uploadCompleted": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "uploadRetryIn": "업로드 재시도 대기 · {seconds}초 후",
+  "@uploadRetryIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "placeAlertRegistered": "장소 알림 반경 {count}개 기기 등록됨",
+  "@placeAlertRegistered": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "placeAlertSaved": "{name} 저장됨 · 대상 {count}명",
+  "@placeAlertSaved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deviceLocationService": "위치 서비스 {status}",
+  "@deviceLocationService": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "precisionRange": "{mode} · 약 {radius} 범위",
+  "@precisionRange": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "radius": {
+        "type": "String"
+      }
+    }
+  },
+  "precisionRangeStale": "마지막 위치 · {mode} · 약 {radius} 범위",
+  "@precisionRangeStale": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "radius": {
+        "type": "String"
+      }
+    }
+  },
+  "companionConfigNote": "최소 {seconds}초 간격 · {mode} 공유 · 상호 동의 후 시작",
+  "@companionConfigNote": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "checkInEventLine": "{name} · {status} · {time}",
+  "@checkInEventLine": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "quietHoursOff": "없음",
+  "quietHoursOn": "설정됨",
+  "circleCreate": "서클 만들기",
+  "circleCreateFirst": "서클을 먼저 만들어 주세요",
+  "circleCreateFirstBody": "첫 서클을 만들고 가까운 사람을 초대하세요",
+  "circleSyncing": "서클 동기화 중",
+  "circleManageMembers": "멤버 관리",
+  "circleNoMembers": "아직 멤버가 없습니다",
+  "circleNoMembersBody": "초대 링크를 만들면 이곳에 수락한 멤버가 표시됩니다.",
+  "inviteLink": "초대 링크",
+  "inviteCreate": "초대하기",
+  "inviteNewLink": "새 링크",
+  "inviteCopy": "복사",
+  "inviteJoin": "초대 참여",
+  "inviteAccept": "참여",
+  "inviteTokenLabel": "초대 링크 또는 토큰",
+  "inviteTokenRequired": "초대 링크나 토큰을 입력해 주세요.",
+  "inviteCreated": "24시간 초대 링크를 만들었습니다.",
+  "inviteCreateFailed": "초대 링크를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  "inviteCopied": "초대 링크를 복사했습니다.",
+  "inviteAccepted": "초대를 수락했습니다.",
+  "inviteAcceptFailed": "초대를 수락하지 못했습니다. 만료 여부를 확인해 주세요.",
+  "inviteNeedsBackend": "Supabase 연결 후 실제 초대 링크를 만들 수 있습니다.",
+  "inviteAcceptNeedsBackend": "Supabase 연결 후 초대를 수락할 수 있습니다.",
+  "inviteSafetyNote": "1회 사용 · 수락 전 공유 범위 확인 · 원문 토큰 저장 안 함",
+  "inviteVerifyInviter": "초대자 확인",
+  "inviteVerifyToken": "토큰 확인",
+  "inviteConsentLocation": "위치 동의",
+  "roleGuardian": "보호자",
+  "roleChild": "자녀",
+  "roleFriend": "친구",
+  "roleCare": "케어",
+  "sharingPreciseShort": "정확 공유",
+  "sharingBalancedShort": "균형 공유",
+  "companionWaiting": "동행 대기",
+  "companionRequest": "동행 요청",
+  "companionAllow": "동행 허용",
+  "companionLater": "나중에",
+  "companionRequestDemo": "준 · 학교에서 집까지",
+  "companionRequestBody": "15분 동안 균형 위치와 경로 꼬리만 공유됩니다.",
+  "checkInSectionTitle": "안전 확인",
+  "checkInLoading": "안전 확인 기록을 불러오는 중입니다.",
+  "checkInLoadFailed": "안전 확인 기록을 불러오지 못했습니다.",
+  "checkInSyncFailed": "안전 확인 동기화 실패",
+  "checkInNoneRecent": "최근 안전 확인이 없습니다",
+  "checkInEmptyBody": "동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 표시됩니다.",
+  "checkInNote": "도착 확인은 서클 멤버에게 짧은 안심 신호로 전달됩니다.",
+  "checkInTroubleshoot": "배터리, 신호, 권한, 기기 상태를 확인해 주세요.",
+  "checkInDemoScope": "가족 전체 · 도착 확인",
+  "checkInDemoLongStay": "할아버지 · 오래 머무름 확인",
+  "checkInDemoDetail": "동행 공유 종료 · 균형 위치로 알림 · 방금",
+  "placeAlertSectionTitle": "장소 알림",
+  "placeAlertLoading": "장소 알림을 불러오는 중입니다.",
+  "placeAlertLoadFailed": "장소 알림을 불러오지 못했습니다.",
+  "placeAlertNone": "저장된 장소 알림이 없습니다",
+  "placeAlertNoneBody": "장소 알림은 서클 멤버와 공유 범위를 정한 뒤 사용할 수 있습니다.",
+  "placeAlertHint": "지도에서 반경을 미리 보고 대상 멤버를 고른 뒤 안전한 알림 규칙으로 추가할 예정입니다.",
+  "placeAlertUpdating": "장소 알림 업데이트",
+  "placeAlertUpdateFailed": "장소 알림 변경 실패",
+  "placeAlertToggleFailed": "장소 알림 상태를 변경하지 못했습니다.",
+  "placeAlertPaused": "장소 알림을 일시정지했습니다.",
+  "placeAlertResumed": "장소 알림을 다시 켰습니다.",
+  "placeAlertDeleteTitle": "장소 알림 삭제",
+  "placeAlertDeleted": "장소 알림을 삭제했습니다.",
+  "placeAlertDeleteFailed": "장소 알림을 삭제하지 못했습니다.",
+  "quietHoursChange": "조용한 시간 변경",
+  "quietHoursChangeFailed": "조용한 시간을 변경하지 못했습니다.",
+  "placeAlertChangeNeedsBackend": "Supabase 연결 후 장소 알림을 변경할 수 있습니다.",
+  "placeAlertDeleteNeedsBackend": "Supabase 연결 후 장소 알림을 삭제할 수 있습니다.",
+  "quietHoursNeedsBackend": "Supabase 연결 후 조용한 시간을 변경할 수 있습니다.",
+  "placeAlertServerOnlyUpdate": "서버 변경은 완료됐고, 기기 반경 동기화는 대기 중입니다.",
+  "placeAlertServerOnlyDelete": "서버 삭제는 완료됐고, 기기 반경 동기화는 대기 중입니다.",
+  "deviceSyncPending": "기기 동기화 대기",
+  "syncLabel": "동기화",
+  "pauseLabel": "일시정지",
+  "resumeLabel": "다시 켜기",
+  "targetsUnset": "대상 미지정",
+  "rulesNone": "알림 조건 없음",
+  "mutualConsent": "상호 동의",
+  "adNotice": "광고 안내",
+  "sampleLabel": "예시",
+  "placeHome": "집",
+  "placeSchool": "학교",
+  "placeClinic": "병원",
+  "placeAlertDemoRule": "평일 08:00-17:00 · 도착/이탈 · 10분 지연",
+  "targetCount": "{count}명",
+  "@targetCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "itemCount": "{count}개",
+  "@itemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "radiusMeters": "반경 {meters}m",
+  "@radiusMeters": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "quietHoursSummary": "조용한 시간 {summary}",
+  "@quietHoursSummary": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "quietHoursChanged": "조용한 시간을 {summary}(으)로 변경했습니다.",
+  "@quietHoursChanged": {
+    "placeholders": {
+      "summary": {
+        "type": "String"
+      }
+    }
+  },
+  "placeAlertDeleteConfirm": "{name} 알림을 삭제할까요? 대상 멤버에게 더 이상 도착/이탈 알림이 가지 않습니다.",
+  "@placeAlertDeleteConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "circleSummary": "{count}명 · 장소 3개 · 동행 세션 1개 대기",
+  "@circleSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "checkInDetailLine": "{mode} 위치로 알림 · {time}",
+  "@checkInDetailLine": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "a11yMemberRow": "{name}, {status}. 두 번 눌러 상세 보기",
+  "a11yBatteryLevel": "배터리 {percent}퍼센트",
+  "a11yStaleLocation": "위치가 오래됐습니다",
+  "a11yAttentionBadge": "확인이 필요한 멤버 {count}명",
+  "@a11yMemberRow": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "@a11yBatteryLevel": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "@a11yAttentionBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardWelcomeTitle": "가까운 사람과, 필요한 만큼만",
+  "onboardWelcomeBody": "곁에는 서로 초대하고 동의한 사이에서만 위치를 나눕니다. 몰래 보는 방법은 만들지 않습니다.",
+  "onboardConsentTitle": "누가 나를 볼 수 있는지 항상 보입니다",
+  "onboardConsentBody": "서클마다 공유 정확도를 정하고, 언제든 멈출 수 있어요. 누가 언제 내 위치를 봤는지도 기록으로 남습니다.",
+  "onboardPermissionTitle": "위치 권한이 왜 필요한가요",
+  "onboardPermissionBody": "지도에 서로의 위치를 그리려면 기기 위치가 필요합니다. 다음 화면에서 시스템이 물어보고, 허용 여부는 직접 정하시면 됩니다.",
+  "onboardNext": "다음",
+  "onboardStart": "시작하기",
+  "onboardSkip": "건너뛰기",
+  "onboardStepOf": "{current} / {total}",
+  "primerContinue": "계속",
+  "primerLater": "나중에",
+  "primerWhenInUseTitle": "앱을 쓰는 동안 위치가 필요합니다",
+  "primerWhenInUseBody": "동행 모드에서 지도에 내 위치를 그리려면 필요합니다. 다음 화면에서 시스템이 물어봅니다.",
+  "primerAlwaysTitle": "장소 알림에는 백그라운드 위치가 필요합니다",
+  "primerAlwaysBody": "앱이 꺼져 있어도 저장한 장소에 도착·이탈했는지 확인하려면 필요합니다. 이 권한 없이는 장소 알림이 동작하지 않습니다.",
+  "primerPromise": "정밀 위치는 광고에 쓰지 않고, 공유는 언제든 멈출 수 있습니다.",
+  "@onboardStepOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "checkInOnTheWay": "가는 중",
+  "checkInImOk": "괜찮아",
+  "checkInCallMe": "전화해줘",
+  "quickReplyTitle": "한 번에 알리기",
+  "quickReplySent": "{label} 보냈어요",
+  "quickReplyFailed": "보내지 못했습니다. 잠시 후 다시 시도해 주세요.",
+  "quickReplyNeedsCircle": "서클에 연결되면 보낼 수 있습니다.",
+  "@quickReplySent": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "meetupSectionTitle": "약속",
+  "meetupCreate": "약속 만들기",
+  "meetupNone": "잡힌 약속이 없습니다",
+  "meetupNoneBody": "집결 장소와 시각을 정하면 서로의 도착까지 남은 시간이 보입니다.",
+  "meetupNameLabel": "약속 이름",
+  "meetupNameHint": "저녁 약속",
+  "meetupPlaceHint": "지도에 표시된 자리가 집결 장소가 됩니다.",
+  "meetupIn30": "30분 뒤",
+  "meetupIn1h": "1시간 뒤",
+  "meetupIn2h": "2시간 뒤",
+  "meetupSave": "약속 만들기",
+  "meetupSaving": "약속 만드는 중",
+  "meetupCreated": "약속을 만들었습니다.",
+  "meetupCreateFailed": "약속을 만들지 못했습니다.",
+  "meetupNeedsCircle": "서클에 연결되면 약속을 만들 수 있습니다.",
+  "meetupGoing": "참석",
+  "meetupMaybe": "미정",
+  "meetupDeclined": "불참",
+  "meetupRespondFailed": "응답을 저장하지 못했습니다.",
+  "meetupEnd": "약속 끝내기",
+  "meetupEndFailed": "약속을 끝내지 못했습니다.",
+  "meetupGoingCount": "참석 {going}/{total}",
+  "@meetupGoingCount": {
+    "placeholders": {
+      "going": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "meetupStartsIn": "{time} 뒤",
+  "@meetupStartsIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "meetupStartedAgo": "{time} 지남",
+  "@meetupStartedAgo": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "meetupAutoEnds": "약속 시각 {minutes}분 뒤 자동으로 사라집니다",
+  "@meetupAutoEnds": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "meetupDestination": "집결 장소",
+  "movementStopped": "머물러 있음",
+  "@movementStopped": {
+    "description": "이동 상태. 표본이 없을 때는 아무것도 그리지 않는다 — '모름'과 '멈춤'은 다르다"
+  },
+  "movementWalking": "걷는 중",
+  "movementRiding": "이동 중",
+  "movementDriving": "빠르게 이동 중",
+  "etaMinutesTo": "{place}까지 약 {minutes}분",
+  "@etaMinutesTo": {
+    "description": "직선거리에 우회 계수를 곱한 추정이라 '약'을 뺄 수 없다",
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "etaLeaving": "{place}에서 멀어지는 중",
+  "@etaLeaving": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "etaDistanceTo": "{place}까지 {distance}",
+  "@etaDistanceTo": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      },
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "etaNearby": "{place} 근처",
+  "@etaNearby": {
+    "placeholders": {
+      "place": {
+        "type": "String"
+      }
+    }
+  },
+  "etaMineMinutes": "내 도착 예상 약 {minutes}분",
+  "@etaMineMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "etaEstimateNote": "직선거리 기준 추정입니다",
+  "privatePlacesTitle": "민감 장소",
+  "@privatePlacesTitle": {
+    "description": "정확한 위치 대신 넓은 반경만 공유할 장소"
+  },
+  "privatePlacesBody": "여기 등록한 곳 안에 있으면 정확한 좌표 대신 이 장소의 가운데 지점만 공유됩니다. 목록은 이 기기에만 저장되고 서버로 보내지 않습니다.",
+  "privatePlacesEmpty": "등록된 곳이 없습니다",
+  "privatePlacesAddHere": "지금 있는 곳 등록",
+  "privatePlacesAdding": "위치 확인 중",
+  "privatePlacesNameLabel": "이 장소를 뭐라고 부를까요",
+  "privatePlacesNameHint": "집",
+  "privatePlacesRadius": "가릴 범위",
+  "privatePlacesSave": "등록",
+  "privatePlacesRemove": "지우기",
+  "privatePlacesSaved": "이제 이 장소 안에서는 정확한 위치가 공유되지 않습니다.",
+  "privatePlacesRemoved": "장소를 지웠습니다.",
+  "privatePlacesNoFix": "지금 위치를 확인하지 못했습니다.",
+  "privatePlacesFull": "장소는 {max}곳까지 등록할 수 있습니다.",
+  "@privatePlacesFull": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "privatePlacesRadiusValue": "반경 {meters}m",
+  "@privatePlacesRadiusValue": {
+    "placeholders": {
+      "meters": {
+        "type": "int"
+      }
+    }
+  },
+  "privatePlacesUnnamed": "이름 없는 장소",
+  "viewerLogSheetTitle": "내 위치를 본 사람",
+  "@viewerLogSheetTitle": {
+    "description": "보는 쪽이 아니라 보여지는 쪽이 읽는 기록"
+  },
+  "viewerLogSheetBody": "지난 30일 동안 서클 멤버가 내 위치를 열어 본 기록입니다. 내가 본 것은 포함되지 않습니다.",
+  "viewerLogEmpty": "아직 아무도 열어 보지 않았습니다",
+  "viewerLogLoadFailed": "열람 기록을 불러오지 못했습니다.",
+  "viewerLogUnknownViewer": "이름 없는 멤버",
+  "viewerLogNeedsBackend": "서클에 연결되면 열람 기록이 쌓입니다.",
+  "viewerLogEntryDetail": "{precision} 정확도로 봤습니다",
+  "@viewerLogEntryDetail": {
+    "placeholders": {
+      "precision": {
+        "type": "String"
+      }
+    }
+  },
+  "viewerLogSeeAll": "전체 보기",
+  "playbackTitle": "오늘의 이동 다시 보기",
+  "@playbackTitle": {
+    "description": "기록 화면에서 여는 하루치 경로 재생"
+  },
+  "playbackOpen": "다시 보기",
+  "playbackSubtitle": "저장된 위치만 이어서 보여 줍니다. 없던 정밀도를 만들지 않습니다.",
+  "playbackLoading": "경로를 불러오는 중",
+  "playbackEmpty": "다시 볼 만큼의 기록이 없습니다",
+  "playbackEmptyHint": "위치 공유가 켜져 있는 동안 저장된 지점이 두 곳 이상 있어야 재생할 수 있습니다.",
+  "playbackLoadFailed": "경로를 불러오지 못했습니다.",
+  "playbackNeedsBackend": "서클에 연결되면 지난 이동을 다시 볼 수 있습니다.",
+  "playbackPlay": "재생",
+  "playbackPause": "멈춤",
+  "playbackGapNotice": "이 사이는 기록이 없습니다",
+  "playbackTravelled": "이동 {distance}",
+  "@playbackTravelled": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackWindow": "{start} ~ {end}",
+  "@playbackWindow": {
+    "placeholders": {
+      "start": {
+        "type": "String"
+      },
+      "end": {
+        "type": "String"
+      }
+    }
+  },
+  "playbackViewerLogNote": "다른 사람의 이동을 보면 그 사람의 열람 기록에 남습니다.",
+  "privacyDeleteHistoryTitle": "위치 기록을 지울까요?",
+  "privacyDeleteHistoryBody": "저장된 위치 기록과 마지막 위치가 지금 지워집니다. 되돌릴 수 없습니다.",
+  "privacyDeleteHistoryDone": "위치 기록 {count}건을 지웠습니다.",
+  "@privacyDeleteHistoryDone": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "privacyDeleteAccount": "계정 삭제",
+  "privacyDeleteAccountTitle": "계정을 삭제할까요?",
+  "privacyDeleteAccountBody": "계정과 함께 서클 참여, 위치 기록, 확인 기록, 열람 기록이 모두 지워집니다. 되돌릴 수 없습니다.",
+  "privacyDeleteAccountFailed": "계정을 삭제하지 못했습니다. 잠시 뒤 다시 시도해 주세요.",
+  "privacyCancel": "취소",
+  "privacyExportNote": "내보내기는 접수 뒤 사람이 처리하며, 준비되면 가입한 이메일로 안내합니다.",
+  "privacyPolicyOpen": "개인정보 처리방침 보기",
+  "privacyPolicyOpenFailed": "개인정보 처리방침을 열지 못했습니다."
+}

@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import '../privacy/private_place.dart';
+import 'home_widget_snapshot.dart';
 import 'location_models.dart';
 
 class LocationBridge {
@@ -15,6 +17,11 @@ class LocationBridge {
 
   final MethodChannel _methodChannel;
   final EventChannel _eventChannel;
+
+  /// 네이티브가 이미 가려서 보내지만, 여기서 한 번 더 적용한다. 스냅은 여러 번
+  /// 걸어도 결과가 같고, 네이티브 가림이 없는 플랫폼에서는 이쪽이 유일한
+  /// 방어선이 된다. 정확한 좌표가 새는 실패는 조용하기 때문에 두 겹으로 둔다.
+  List<PrivatePlace> _privatePlaces = const [];
 
   Stream<Map<Object?, Object?>> get events {
     return _eventChannel.receiveBroadcastStream().map(_mapFromJson);
@@ -34,6 +41,7 @@ class LocationBridge {
   }
 
   Future<void> startLocationSession(LocationSessionConfig config) {
+    _privatePlaces = config.sharingPolicy.privatePlaces;
     return _invokeVoid('startLocationSession', _sessionConfigToJson(config));
   }
 
@@ -42,7 +50,19 @@ class LocationBridge {
   }
 
   Future<void> setSharingPolicy(SharingPolicy policy) {
+    _privatePlaces = policy.privatePlaces;
     return _invokeVoid('setSharingPolicy', _sharingPolicyToJson(policy));
+  }
+
+  /// 민감 장소만 갈아 끼운다.
+  ///
+  /// 전체 정책을 다시 밀지 않는 이유는, 안심 화면이 공유 모드나 일시정지처럼
+  /// 자기가 모르는 값까지 덮어쓰게 되기 때문이다.
+  Future<void> setPrivatePlaces(List<PrivatePlace> places) {
+    _privatePlaces = places;
+    return _invokeVoid('setPrivatePlaces', {
+      'privatePlaces': places.map((place) => place.toChannel()).toList(),
+    });
   }
 
   Future<void> configureUpload(NativeUploadConfig config) {
@@ -70,6 +90,20 @@ class LocationBridge {
 
   Future<void> flushPendingLocations() {
     return _invokeVoid('flushPendingLocations');
+  }
+
+  /// 홈 화면 위젯에 보여 줄 스냅샷을 넘긴다.
+  ///
+  /// **좌표를 담지 않는다.** 위젯은 잠금화면에서 주머니에서 꺼낸 사람 누구에게나
+  /// 보인다. 이름과 대략의 상태까지가 한계이고, 어디 있는지는 앱을 열어야
+  /// 보인다. 네이티브 쪽도 좌표 키를 아예 읽지 않는다.
+  Future<void> updateHomeWidget(HomeWidgetSnapshot snapshot) {
+    return _invokeVoid('updateHomeWidget', snapshot.toChannel());
+  }
+
+  /// 로그아웃이나 서클 이탈에서 부른다. 남겨 두면 잠금화면에 옛 이름이 남는다.
+  Future<void> clearHomeWidget() {
+    return _invokeVoid('clearHomeWidget');
   }
 
   Future<void> requestSosFix() {
@@ -142,6 +176,10 @@ class LocationBridge {
         'pausedUntil': policy.pausedUntil?.toUtc().toIso8601String(),
         'expiresAt': policy.expiresAt?.toUtc().toIso8601String(),
         'consentVersion': policy.consentVersion,
+        // 이름은 빼고 좌표와 반경만 내려보낸다. 네이티브는 가리는 데 이름이
+        // 필요 없고, 이름 자체가 민감하다.
+        'privatePlaces':
+            policy.privatePlaces.map((place) => place.toChannel()).toList(),
       };
 
   Map<String, Object?> _geofenceToJson(GeofenceSpec geofence) => {
@@ -150,6 +188,8 @@ class LocationBridge {
         'radiusM': geofence.radiusM,
         'notifyOnArrival': geofence.notifyOnArrival,
         'notifyOnDeparture': geofence.notifyOnDeparture,
+        'quietStart': geofence.quietStart,
+        'quietEnd': geofence.quietEnd,
       };
 
   PermissionSnapshot _permissionSnapshotFromJson(Map<Object?, Object?> json) {
@@ -165,7 +205,8 @@ class LocationBridge {
   LocationSample _locationSampleFromJson(Map<Object?, Object?> json) {
     return LocationSample(
       rawCoordinate: _coordinateFromJson(json['rawCoordinate']),
-      sharedCoordinate: _coordinateFromJson(json['sharedCoordinate']),
+      sharedCoordinate:
+          _maskedCoordinate(_coordinateFromJson(json['sharedCoordinate'])),
       accuracyM: _doubleFromJson(json['accuracyM']),
       sequence: _nullableIntFromJson(json['sequence']) ?? 0,
       altitudeM: _nullableDoubleFromJson(json['altitudeM']),
@@ -178,6 +219,19 @@ class LocationBridge {
       permissionSnapshot:
           _permissionSnapshotFromJson(_mapFromJson(json['permissionSnapshot'])),
       consentVersion: '${json['consentVersion'] ?? '2026-05-30'}',
+    );
+  }
+
+  /// 민감 장소 안이면 중심으로 스냅한다.
+  Coordinate _maskedCoordinate(Coordinate coordinate) {
+    final masked = maskWithPrivatePlaces(
+      _privatePlaces,
+      coordinate.latitude,
+      coordinate.longitude,
+    );
+    return Coordinate(
+      latitude: masked.latitude,
+      longitude: masked.longitude,
     );
   }
 

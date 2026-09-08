@@ -11,6 +11,16 @@ create temp table gyeote_place_alert_event_results (
 
 grant all on table gyeote_place_alert_event_results to authenticated;
 
+-- 서클 밖 사람은 RLS 때문에 알림 행을 못 본다. 그 역할로 id 를 조회하면 null
+-- 이 나오고 RPC 는 place_alert_not_found 를 낸다 — RLS 가 한 일이지 검사하려는
+-- 대상 검사(place_alert_target_required)가 한 일이 아니다. 만든 사람이 볼 수
+-- 있을 때 id 를 담아 둔다.
+create temp table gyeote_place_alert_event_fixture (
+  alert_id uuid not null
+) on commit drop;
+
+grant all on table gyeote_place_alert_event_fixture to authenticated;
+
 insert into auth.users (id, aud, role, email, raw_user_meta_data)
 values
   (
@@ -70,6 +80,9 @@ from public.create_place_alert_with_targets(
   false,
   '{}'::jsonb
 );
+
+insert into gyeote_place_alert_event_fixture (alert_id)
+select id from public.place_alerts where name = 'Event Place' limit 1;
 
 set local "request.jwt.claim.sub" = '15151515-1515-4000-8000-000000000002';
 
@@ -141,10 +154,9 @@ do $$
 declare
   existing_alert_id uuid;
 begin
-  select id
+  select alert_id
     into existing_alert_id
-  from public.place_alerts
-  where name = 'Event Place'
+  from gyeote_place_alert_event_fixture
   limit 1;
 
   perform public.record_place_alert_event(

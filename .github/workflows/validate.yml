@@ -29,8 +29,16 @@ jobs:
       - name: Analyze
         run: flutter analyze
 
+      # 오버플로는 배율을 키우거나 긴 로케일을 넣을 때만 드러난다.
+      # test/text_resilience_test.dart 가 그 조건을 재현한다.
       - name: Test
         run: flutter test
+
+      # 위젯 스냅샷이 좌표를 버리는지 네이티브 쪽에서도 확인한다. 위젯은
+      # 잠금화면에서 누구에게나 보이므로 이 단언이 깨지면 실제 유출이다.
+      - name: Android unit tests
+        working-directory: apps/gyeote_flutter/android
+        run: ./gradlew :app:testDebugUnitTest --console=plain
 
   static:
     name: Static repository checks
@@ -51,6 +59,38 @@ jobs:
       - name: Block emoji UI regressions
         run: |
           ! grep -RInE '🚨|🔔|🛡️|📍|🗺️|👥|🕒|➕' prototype src App.tsx app.json DESIGN.md docs apps supabase
+
+      # 사용자에게 보이는 문자열은 lib/l10n/*.arb 로 간다. 마이그레이션이 끝나기
+      # 전까지는 베이스라인을 허용하되, 늘어나면 실패시켜 빚을 고정한다.
+      - name: Block new hardcoded UI strings
+        run: python tools/check_hardcoded_strings.py
+
+      # RPC 이름과 인자는 문자열로만 이어져 있어 컴파일러가 못 잡는다.
+      # 마이그레이션이 프로덕션에 늦게 올라가는 동안 특히 어긋나기 쉽다.
+      - name: Check Supabase RPC contract
+        run: python tools/check_rpc_contract.py
+
+      # 정확한 좌표가 서버로 나가는 결함은 조용하다. 아무것도 깨지지 않고,
+      # 테스트도 통과하고, 몇 달 뒤에나 드러난다.
+      - name: Check precise coordinates never leave the device
+        run: python tools/check_precise_coordinates.py
+
+      # iOS 는 이 저장소에서 빌드되지 않는다. 대신 AppDelegate.swift 의
+      # Foundation 전용 구역(가림·조용한 시간·문구)을 Linux Swift 로 컴파일해
+      # 돌린다. 툴체인이 없으면 건너뛰지 않고 실패한다 — 검증 없음을 통과로
+      # 세지 않는다.
+      - name: Set up Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+      - name: Check iOS portable logic
+        run: python tools/check_ios_logic.py
+
+      # 마이그레이션 체인을 빈 클러스터에 순서대로 적용하고 부정 테스트까지
+      # 돌린다. supabase job 의 db reset 은 적용만 확인하고 부정 테스트는 돌리지
+      # 않는다. ubuntu 러너에는 PostgreSQL 바이너리가 이미 있다.
+      - name: Apply migration chain and run SQL negative tests
+        run: python tools/check_migrations_local.py
 
   supabase:
     name: Supabase migrations

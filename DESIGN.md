@@ -1,5 +1,9 @@
 # 곁에 Design System
 
+> **실행 규칙은 `.claude/skills/gyeote-design/SKILL.md`에 있다.**
+> 충돌하면 스킬이 우선한다. 이 문서는 배경과 의도를 담고, 스킬은 지킬 값을 담는다.
+> 2026-09-05 "귀갓길" 개정으로 팔레트·라디우스·굵기 규칙이 교체됐다.
+
 ## Reference Synthesis
 
 This design pass applies the user's requested references as product constraints, not as a visual clone:
@@ -25,80 +29,110 @@ Avoid words such as tracking, spying, monitoring, or hidden. Prefer share, check
 
 ## Visual Direction
 
-The interface is a quiet civic safety map:
+The interface is a warm, night-first safety map:
 
-- off-white and pale sage canvas
+- warm paper in light, warm charcoal in dark — never cool sage
 - ink-heavy readable type
-- deep green primary action
-- restrained coral only for SOS and risk
-- blue only for informational or moving states
-- amber only for ads, battery, or caution
+- vivid signal green for primary action and healthy state
+- amber as arrival and warmth, not only caution
+- blue only for moving states and route tails
+- coral only for SOS, check-needed, and destructive actions
 
-No decorative blobs, no purple/blue AI gradients, no dark sci-fi dashboard styling, and no emoji-based UI.
+Dark is the reference mode. Peak usage is at night, and markers and routes read
+better on a dark ground. Light must be finished to the same standard.
+
+No decorative blobs, no purple/blue AI gradients, no dark sci-fi dashboard
+styling, and no emoji-based UI. Map-surface elements (markers, the SOS dial) may
+use spherical shading and a colored glow — without it they sink into the tiles.
 
 ## Palette
 
-- Canvas: `#F4F6F1`
-- Surface: `#FFFEFA`
-- Surface Alt: `#E8EFE8`
-- Ink: `#151C19`
-- Muted: `#66736C`
-- Border: `#D8E1D9`
-- Primary: `#0F6A53`
-- Primary Strong: `#16483B`
-- Primary Soft: `#DCEFE6`
-- Danger: `#B83A33`
-- Danger Soft: `#FAE7E4`
-- Info: `#315F8C`
-- Info Soft: `#E4EDF6`
-- Amber: `#B87912`
-- Amber Soft: `#FFF1CF`
+Token values live in `lib/src/theme/gyeote_theme.dart` as `GyeotePalette.light`
+and `GyeotePalette.dark`, and are tabulated in the design skill. Do not restate
+hex values in feature code; read them from `context.palette`.
+
+Roles: `canvas`, `surface`, `surfaceAlt`, `ink`, `inkMuted`, `muted`, `line`,
+`brand`, `brandVivid`, `brandSoft`, `warm`, `warmSoft`, `move`, `moveSoft`,
+`alert`, `alertSoft`, plus the map tile family `mapLand`, `mapRoad`, `mapWater`,
+`mapPark`.
+
+Two rules that are easy to get wrong:
+
+- Ads use `surfaceAlt` and `muted` only. Never the brand color — ads must read
+  quieter than safety actions.
+- Deep green (the retired `#0F6A53`) must not return to map markers. It sank
+  into OpenStreetMap's green landcover, which was a legibility defect rather
+  than a taste one.
 
 ## Layout Rules
 
 - Use a 4pt spacing base.
-- Cards and repeated items use radius `8px` or less.
+- Radius: sheet `28`, card `16`, small surface `10`, chip/button/avatar `999`.
+  The old "8px or less" cap is retired — it was the single most dated rule here.
+- Build hierarchy from surface brightness and shadow, not from borders. Hairline
+  rules belong on dividers only.
 - Do not nest cards inside cards.
-- Make the map a functional first-screen surface, not a decorative hero.
-- Keep ads visually quieter than safety actions and never place ads near SOS, permissions, privacy save, or map-critical controls.
+- Make the map a full-bleed surface with a draggable sheet over it, not a boxed
+  card inside a scrolling document.
+- Keep ads visually quieter than safety actions and never place ads near SOS,
+  permissions, privacy save, or map-critical controls.
 - Keep all tap targets at least `44px`.
 - Use icon controls for tools and short command labels for actions.
-- Every interactive state needs default, hover, active, focus-visible, and disabled/loading/error where relevant.
+- Every interactive state needs default, hover, active, focus-visible, and
+  disabled/loading/error where relevant.
 
 ## Typography
 
-Use Geist for Latin UI, numbers, and controls, with a Korean-capable fallback for Hangul. Recommended stack:
+Bundle Pretendard and use it for both scripts. It ships in `assets/fonts/`
+under SIL OFL 1.1, in Regular and Bold only.
 
-`"Geist", "Geist Sans", "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif`
+The earlier Geist-for-Latin, Pretendard-for-Hangul pairing is retired. Almost
+every line in this product mixes the two scripts — `배터리 46%`, `정확도 85m`,
+`집까지 8분` — and two families in one line means two x-heights and two
+baselines, which makes the line wobble. Pretendard exists to solve exactly that:
+it carries a Latin set drawn to the same metrics as its Hangul. One family, and
+half the bytes.
 
-Use `Geist Mono` or tabular numbers for ETA, battery, time, and counters. Keep the scale compact:
+Pretendard supports `tnum`, so ETA, battery, time, and counters use
+`FontFeature.tabularFigures()`.
 
-- App name: 24px, heavy
-- Screen title: 24-28px, heavy
-- Section title: 16-18px, heavy
-- Body: 13-15px
-- Meta: 12-13px
+Localized builds must bundle the matching subset — Pretendard covers neither
+Devanagari nor Arabic, and Japanese needs Noto Sans JP for correct glyph
+shapes.
 
-Avoid viewport-based font sizing. Keep letter spacing at `0`.
+Use tabular numbers for ETA, battery, time, and counters. No mono family is
+bundled; Pretendard's `tnum` covers the alignment those figures need.
+
+- Screen title: 28px
+- Section title: 18px
+- Body: 15px
+- Secondary: 13px
+- Meta: 11px
+
+**Weight stops at 700.** The earlier w800/w900 default flattened hierarchy into
+shouting; size carries hierarchy instead. Negative letter-spacing (`-0.02em`)
+only on large titles, `0` elsewhere. Avoid viewport-based font sizing, and
+honor `MediaQuery.textScaler` — fixed `fontSize` with `maxLines: 1` is where
+text scaling and long locales both break.
 
 ## Button And Menu System
 
-Use a shadcn-inspired variant system:
-
-- Primary: deep green fill, used for clear constructive actions.
-- Secondary: surface fill with hairline border and soft shadow.
-- Outline: transparent/surface with border for neutral toggles.
+- Primary: brand fill, pill shape, used for clear constructive actions.
+- Secondary: `surfaceAlt` fill, pill shape, no border.
 - Ghost: no fill for low-risk utility actions.
-- Danger: coral for SOS, destructive actions, and check-needed states only.
+- Danger: `alert` for SOS, destructive actions, and check-needed states only.
 
 Interaction rules:
 
 - All tool buttons are at least 44px.
-- Radius stays at 8px or less.
+- Buttons, chips, and avatars are pill-shaped; cards and sheets carry the larger
+  radii above.
 - Use visible focus rings.
-- Active segmented controls use surface fill, primary border, and subtle shadow.
-- Pressed states use inset shadow or a 1px downward motion.
-- Do not make all buttons the same weight; duration choices, check-in, and stop actions need separate visual priority.
+- Active segmented controls use brand fill or `brandSoft`, without a border.
+- Pressed states use a subtle scale-down or 1px downward motion.
+- Do not make all buttons the same weight; duration choices, check-in, and stop
+  actions need separate visual priority.
+- SOS is never a single tap. Long-press to arm, then a cancellable countdown.
 
 ## Privacy UI Rules
 
@@ -135,14 +169,24 @@ Visual rules:
 - tiny shield notch or check detail
 - two-dot face only
 - no expressive emoji style
-- primary green body, ink eyes, optional amber signal ring
-- 8px max radius still applies to UI containers around it
+- brand green body, ink eyes, optional amber signal ring
+- containers around 곁핀 follow the radius scale in Layout Rules
 
 Marker rules:
+
+The marker carries state instead of explaining it in text. One avatar with a
+ring around it says three things at once:
+
+- Ring fill: battery level.
+- Ring style: solid for exact and balanced sharing, dashed for area sharing.
+- Ring color: `brand` healthy, `warm` stale, `alert` check needed — never flashing red.
+
+Accuracy radius circles stay. They are what makes approximate sharing look
+approximate, and they read better on the new palette than the old one.
 
 - Exact sharing: solid member marker.
 - Balanced sharing: solid marker with a soft accuracy radius.
 - Area sharing: dashed radius and no exact address.
 - Hidden: no live marker; show last shared state in the member sheet.
-- Moving: blue direction tail and a short route segment.
-- Check needed: coral ring, not flashing red.
+- Moving: `move` direction tail and a short route segment.
+- Name labels appear on the selected member only, not on everyone at once.

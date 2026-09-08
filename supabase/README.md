@@ -2,13 +2,42 @@
 
 This folder contains the initial Supabase/Postgres backend scaffold for `곁에`.
 
-The current desktop environment does not have the Supabase CLI configured. On a development machine:
+The Supabase CLI is available now, so applying the pending migrations no longer
+means pasting SQL into the dashboard. Use the script, which inspects before it
+changes anything:
+
+```powershell
+.	oolspply-migrations.ps1          # compare local and remote, change nothing
+.	oolspply-migrations.ps1 -Apply   # push after you have read the comparison
+```
+
+Before pushing anything, run the whole chain against an empty local cluster:
+
+```
+python tools/check_migrations_local.py
+```
+
+It needs a local PostgreSQL install (no Docker), stands up a throwaway cluster,
+adds the Supabase shims (`auth.uid()`, roles, pgcrypto), applies `001` through
+the last file in order, then runs every `verification_after_*.sql`. A migration
+that only ever ran in the SQL Editor has never been tested as part of a chain.
+
+**Read the comparison before pushing.** Two hazards are stacked here.
+
+`007` through `011` were applied by hand in the SQL Editor, which leaves no row
+in the remote `supabase_migrations.schema_migrations`. The CLI only reads that
+table, so it treats those five as unapplied and will try to run them again —
+along with `001`, which creates tables. Mark them first:
 
 ```bash
-supabase init
-supabase link --project-ref <project-ref>
-supabase db push
+supabase migration repair --status applied 007   # ... through 011
 ```
+
+The file names are also non-standard. The CLI generates
+`20260905150519_name.sql` and compares versions in that shape; this repo uses
+`012_place_alert_management_rpcs.sql`. Renaming them after some are already
+applied would be worse than living with it, so the comparison step is how you
+confirm the CLI read them the way you expect.
 
 Current production project:
 
@@ -19,11 +48,17 @@ Current production project:
   - `migrations/009_check_in_events.sql`
   - `migrations/010_check_in_session_ownership.sql`
   - `migrations/011_place_alert_target_rpc.sql`
-- Pending SQL Editor application:
+- Pending application:
   - `migrations/012_place_alert_management_rpcs.sql`
   - `migrations/013_active_companion_route_tail_rpc.sql`
   - `migrations/014_place_alert_quiet_hours_rpc.sql`
   - `migrations/015_place_alert_event_ingest_rpc.sql`
+  - `migrations/016_quick_reply_statuses.sql`
+  - `migrations/017_meetups.sql`
+  - `migrations/018_drop_raw_coordinates.sql` — 앱이 이 칸을 더 이상 보내지
+    않게 된 뒤에 적용한다. 순서가 뒤집히면 구버전 클라이언트의 insert 가
+    거절되고 위치 업로드가 조용히 멈춘다.
+  - `migrations/019_viewer_log_read_rpc.sql`
 - Read-only verification queries:
   - `verification_after_008.sql`
   - `verification_after_009.sql`
@@ -33,6 +68,8 @@ Current production project:
   - `verification_after_013.sql`
   - `verification_after_014.sql`
   - `verification_after_015.sql`
+  - `verification_after_016.sql`
+  - `verification_after_017.sql`
 - Rollback-only negative test:
   - `negative_tests_after_010.sql`
   - `negative_tests_after_011.sql`

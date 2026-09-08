@@ -22,6 +22,8 @@ class SupabaseBackend {
 
   CheckInRepository get checkIns => SupabaseCheckInRepository(client);
 
+  MeetupRepository get meetups => SupabaseMeetupRepository(client);
+
   DeviceRepository get devices => SupabaseDeviceRepository(client);
 
   LocationIngestRepository get locations =>
@@ -58,7 +60,8 @@ class SupabaseCircleRepository implements CircleRepository {
     required String name,
     String circleType = 'family',
   }) async {
-    final normalizedName = name.trim().isEmpty ? '가족 서클' : name.trim();
+    // 기본 이름은 화면이 정한다. 저장소가 만들면 만든 사람의 언어로 DB 에 굳는다.
+    final normalizedName = name.trim();
     final circleId = await _client.rpc(
       'create_circle_with_owner',
       params: {
@@ -108,6 +111,48 @@ class SupabaseCircleRepository implements CircleRepository {
     return (rows as List).map((row) {
       final map = Map<String, Object?>.from(row);
       return _memberRoutePointFromRow(map);
+    }).toList(growable: false);
+  }
+
+  @override
+  Future<void> recordViewerLog({
+    required String profileId,
+    required String circleId,
+    required SharingMode precision,
+  }) async {
+    await _client.rpc(
+      'record_viewer_log',
+      params: {
+        'target_profile_id': profileId,
+        'target_circle_id': circleId,
+        'viewed_precision': _sharingModeToJson(precision),
+      },
+    );
+  }
+
+  @override
+  Future<List<ViewerLogEntry>> listViewerLog({
+    int limit = 50,
+    Duration since = const Duration(days: 30),
+  }) async {
+    final rows = await _client.rpc(
+      'list_viewer_log',
+      params: {
+        'entry_limit': limit,
+        'since_at': DateTime.now().subtract(since).toUtc().toIso8601String(),
+      },
+    );
+
+    return (rows as List).map((row) {
+      final map = Map<String, Object?>.from(row);
+      return ViewerLogEntry(
+        id: '${map['id']}',
+        viewerProfileId: '${map['viewer_profile_id']}',
+        viewerName: '${map['viewer_name'] ?? ''}',
+        circleId: map['circle_id'] == null ? null : '${map['circle_id']}',
+        precision: _sharingModeFromJson('${map['viewed_precision']}'),
+        viewedAt: DateTime.parse('${map['viewed_at']}').toLocal(),
+      );
     }).toList(growable: false);
   }
 
@@ -264,7 +309,7 @@ class SupabasePlaceAlertRepository implements PlaceAlertRepository {
       'set_place_alert_quiet_hours',
       params: {
         'alert_id': alertId,
-        'quiet_hours': quietHours.toJson(),
+        'new_quiet_hours': quietHours.toJson(),
       },
     );
     final map = Map<String, Object?>.from((rows as List).first);
@@ -322,7 +367,7 @@ class SupabaseCheckInRepository implements CheckInRepository {
       },
     );
     final map = Map<String, Object?>.from((rows as List).first);
-    return _checkInEventFromRow(map, fallbackDisplayName: '나');
+    return _checkInEventFromRow(map);
   }
 
   @override
@@ -341,6 +386,114 @@ class SupabaseCheckInRepository implements CheckInRepository {
     return (rows as List)
         .map((row) => _checkInEventFromRow(Map<String, Object?>.from(row)))
         .toList(growable: false);
+  }
+}
+
+class SupabaseMeetupRepository implements MeetupRepository {
+  const SupabaseMeetupRepository(this._client);
+
+  final SupabaseClient _client;
+
+  @override
+  Future<List<Meetup>> listActiveMeetups(String circleId) async {
+    final rows = await _client.rpc(
+      'list_active_meetups',
+      params: {'target_circle_id': circleId},
+    );
+    return _rowsFrom(rows).map(_meetupFromRow).toList(growable: false);
+  }
+
+  @override
+  Future<Meetup> createMeetup(MeetupDraft draft) async {
+    final rows = await _client.rpc(
+      'create_meetup',
+      params: {
+        'target_circle_id': draft.circleId,
+        'meetup_name': draft.name,
+        'meetup_place_lat': draft.placeLat,
+        'meetup_place_lng': draft.placeLng,
+        'meetup_meet_at': draft.meetAt.toUtc().toIso8601String(),
+        'meetup_place_name': draft.placeName,
+        'meetup_grace_minutes': draft.graceMinutes,
+        'attendee_profile_ids': draft.attendeeProfileIds,
+      },
+    );
+    final list = _rowsFrom(rows);
+    if (list.isEmpty) {
+      throw StateError('create_meetup returned no row');
+    }
+    return _meetupFromRow(list.first);
+  }
+
+  @override
+  Future<void> respondToMeetup({
+    required String meetupId,
+    required MeetupResponse response,
+  }) async {
+    await _client.rpc(
+      'respond_to_meetup',
+      params: {
+        'target_meetup_id': meetupId,
+        'attendee_response': _meetupResponseToJson(response),
+      },
+    );
+  }
+
+  @override
+  Future<void> endMeetup(String meetupId) async {
+    await _client.rpc(
+      'end_meetup',
+      params: {'target_meetup_id': meetupId},
+    );
+  }
+}
+
+List<Map<String, Object?>> _rowsFrom(Object? rows) {
+  if (rows is! List) return const [];
+  return rows.whereType<Map<String, Object?>>().toList(growable: false);
+}
+
+Meetup _meetupFromRow(Map<String, Object?> row) {
+  return Meetup(
+    id: '${row['id']}',
+    circleId: '${row['circle_id']}',
+    createdBy: '${row['created_by']}',
+    name: '${row['name'] ?? ''}',
+    placeName: row['place_name'] as String?,
+    placeLat: (row['place_lat'] as num).toDouble(),
+    placeLng: (row['place_lng'] as num).toDouble(),
+    meetAt: DateTime.parse('${row['meet_at']}').toLocal(),
+    graceMinutes: (row['grace_minutes'] as num?)?.toInt() ?? 30,
+    myResponse: _meetupResponseFromJson(row['my_response'] as String?),
+    goingCount: (row['going_count'] as num?)?.toInt() ?? 0,
+    attendeeCount: (row['attendee_count'] as num?)?.toInt() ?? 0,
+  );
+}
+
+MeetupResponse _meetupResponseFromJson(String? value) {
+  switch (value) {
+    case 'going':
+      return MeetupResponse.going;
+    case 'maybe':
+      return MeetupResponse.maybe;
+    case 'declined':
+      return MeetupResponse.declined;
+    case 'invited':
+    default:
+      return MeetupResponse.invited;
+  }
+}
+
+String _meetupResponseToJson(MeetupResponse value) {
+  switch (value) {
+    case MeetupResponse.invited:
+      return 'invited';
+    case MeetupResponse.going:
+      return 'going';
+    case MeetupResponse.maybe:
+      return 'maybe';
+    case MeetupResponse.declined:
+      return 'declined';
   }
 }
 
@@ -438,6 +591,17 @@ class SupabasePrivacyRepository implements PrivacyRepository {
         .single();
 
     return _adPreferencesFromRow(Map<String, Object?>.from(row));
+  }
+
+  @override
+  Future<int> deleteLocationHistory() async {
+    final removed = await _client.rpc('delete_my_location_history');
+    return removed is num ? removed.toInt() : 0;
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    await _client.rpc('delete_my_account');
   }
 
   @override
@@ -581,8 +745,10 @@ Map<String, Object?> _baseLocationRow(
     'profile_id': _currentUserId(client),
     'device_id': upload.deviceId,
     'source': _locationSourceToJson(sample.source),
-    'raw_lat': sample.rawCoordinate.latitude,
-    'raw_lng': sample.rawCoordinate.longitude,
+    // 원시 좌표는 올리지 않는다. `LocationSample.rawCoordinate` 는 기기 안에서
+    // 민감 장소 판정에만 쓰이고 거기서 끝난다. 018 이전에는 이 두 칸이 서버로
+    // 갔는데, 스키마의 어떤 RPC 도 그 값을 읽지 않았다 — 아무도 쓰지 않는
+    // 정확한 좌표가 30일씩 쌓이고 있었다.
     'shared_lat':
         hideSharedCoordinate ? null : sample.sharedCoordinate.latitude,
     'shared_lng':
@@ -606,7 +772,7 @@ MemberLocationSnapshot _memberLocationFromRow(Map<String, Object?> map) {
   final lng = map['shared_lng'];
   return MemberLocationSnapshot(
     profileId: '${map['profile_id']}',
-    displayName: '${map['display_name'] ?? '멤버'}',
+    displayName: '${map['display_name'] ?? ''}',
     sharedCoordinate: lat is num && lng is num
         ? Coordinate(latitude: lat.toDouble(), longitude: lng.toDouble())
         : null,
@@ -654,7 +820,7 @@ PlaceAlertRule _placeAlertRuleFromRow(Map<String, Object?> map) {
   return PlaceAlertRule(
     id: '${map['id']}',
     circleId: '${map['circle_id']}',
-    name: '${map['name'] ?? '장소'}',
+    name: '${map['name'] ?? ''}',
     center: Coordinate(
       latitude: (map['center_lat'] as num).toDouble(),
       longitude: (map['center_lng'] as num).toDouble(),
@@ -679,12 +845,15 @@ PlaceAlertQuietHours _placeAlertQuietHoursFromJson(Object? value) {
     return const PlaceAlertQuietHours.none();
   }
 
+  final start = value['start']?.toString();
+  final end = value['end']?.toString();
   return PlaceAlertQuietHours(
     enabled: true,
-    start: value['start']?.toString(),
-    end: value['end']?.toString(),
-    timeZone: value['timeZone']?.toString(),
-    label: value['label']?.toString(),
+    start: start,
+    end: end,
+    // 프리셋 키가 있으면 그것. 없는 옛 행은 라벨이 아니라 시각으로 맞춘다.
+    preset: QuietHoursPreset.fromKey(value['preset']?.toString()) ??
+        QuietHoursPreset.fromTimes(start, end),
   );
 }
 
@@ -703,7 +872,7 @@ String _placeAlertEventTypeToJson(PlaceAlertEventType eventType) {
 
 CheckInEvent _checkInEventFromRow(
   Map<String, Object?> map, {
-  String fallbackDisplayName = '멤버',
+  String fallbackDisplayName = '',
 }) {
   return CheckInEvent(
     id: '${map['id']}',
@@ -730,6 +899,12 @@ CheckInStatus _checkInStatusFromJson(String value) {
   switch (value) {
     case 'needs_check':
       return CheckInStatus.needsCheck;
+    case 'on_the_way':
+      return CheckInStatus.onTheWay;
+    case 'im_ok':
+      return CheckInStatus.imOk;
+    case 'call_me':
+      return CheckInStatus.callMe;
     case 'signal_weak':
       return CheckInStatus.signalWeak;
     case 'safe_arrived':
@@ -746,6 +921,12 @@ String _checkInStatusToJson(CheckInStatus status) {
       return 'needs_check';
     case CheckInStatus.signalWeak:
       return 'signal_weak';
+    case CheckInStatus.onTheWay:
+      return 'on_the_way';
+    case CheckInStatus.imOk:
+      return 'im_ok';
+    case CheckInStatus.callMe:
+      return 'call_me';
   }
 }
 

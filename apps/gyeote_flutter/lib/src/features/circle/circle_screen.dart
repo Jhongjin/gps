@@ -5,6 +5,7 @@ import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
 import '../../core/location/place_alert_geofence_sync.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../theme/gyeote_theme.dart';
 
 class CircleScreen extends StatefulWidget {
@@ -28,15 +29,15 @@ class CircleScreen extends StatefulWidget {
 }
 
 class _CircleScreenState extends State<CircleScreen> {
-  static const _demoMembers = [
+  List<_CircleMember> _demoMembers(AppL10n l10n) => [
     _CircleMember(
-        name: '미라', role: '보호자', status: '정확 공유', tone: GyeoteColors.primary),
+        name: _l10n.demoNameGuardian, role: _l10n.roleGuardian, status: _l10n.sharingPreciseShort, tone: GyeoteTone.brand),
     _CircleMember(
-        name: '준', role: '자녀', status: '동행 대기', tone: GyeoteColors.info),
+        name: _l10n.demoNameChild, role: _l10n.roleChild, status: _l10n.companionWaiting, tone: GyeoteTone.move),
     _CircleMember(
-        name: '하나', role: '친구', status: '균형 공유', tone: GyeoteColors.amber),
+        name: _l10n.demoNameFriend, role: _l10n.roleFriend, status: _l10n.sharingBalancedShort, tone: GyeoteTone.warm),
     _CircleMember(
-        name: '할아버지', role: '케어', status: '동네만', tone: GyeoteColors.danger),
+        name: _l10n.demoNameElder, role: _l10n.roleCare, status: _l10n.precisionArea, tone: GyeoteTone.alert),
   ];
 
   List<CircleSummary> _circles = const [];
@@ -46,7 +47,14 @@ class _CircleScreenState extends State<CircleScreen> {
   final _inviteInputController = TextEditingController();
   InviteCreationResult? _inviteResult;
   String? _statusMessage;
+
+  AppL10n get _l10n => AppL10n.of(context);
+
+  /// 오류 색을 문구 내용으로 추측하지 않는다.
+  bool _statusIsError = false;
   String? _placeAlertMessage;
+  bool _placeAlertIsError = false;
+  bool _placeAlertIsPending = false;
   String? _checkInMessage;
   bool _isLoadingCircles = false;
   bool _isLoadingPlaceAlerts = false;
@@ -83,7 +91,10 @@ class _CircleScreenState extends State<CircleScreen> {
       _busyPlaceAlertIds.clear();
       _inviteResult = null;
       _statusMessage = null;
+      _statusIsError = false;
       _placeAlertMessage = null;
+      _placeAlertIsError = false;
+      _placeAlertIsPending = false;
       _checkInMessage = null;
       _loadCircles();
     }
@@ -100,7 +111,10 @@ class _CircleScreenState extends State<CircleScreen> {
       _isLoadingPlaceAlerts = false;
       _isLoadingCheckIns = false;
       _statusMessage = null;
+      _statusIsError = false;
       _placeAlertMessage = null;
+      _placeAlertIsError = false;
+      _placeAlertIsPending = false;
       _checkInMessage = null;
     });
 
@@ -123,7 +137,8 @@ class _CircleScreenState extends State<CircleScreen> {
       }
       setState(() {
         _isLoadingCircles = false;
-        _statusMessage = '서클을 불러오지 못했습니다.';
+        _statusMessage = _l10n.circleLoadFailed;
+        _statusIsError = true;
       });
     }
   }
@@ -140,6 +155,8 @@ class _CircleScreenState extends State<CircleScreen> {
     setState(() {
       _isLoadingPlaceAlerts = true;
       _placeAlertMessage = null;
+      _placeAlertIsError = false;
+      _placeAlertIsPending = false;
     });
 
     try {
@@ -158,7 +175,8 @@ class _CircleScreenState extends State<CircleScreen> {
       setState(() {
         _placeAlerts = const [];
         _isLoadingPlaceAlerts = false;
-        _placeAlertMessage = '장소 알림을 불러오지 못했습니다.';
+        _placeAlertMessage = _l10n.placeAlertLoadFailed;
+        _placeAlertIsError = true;
       });
     }
   }
@@ -196,7 +214,7 @@ class _CircleScreenState extends State<CircleScreen> {
       setState(() {
         _checkIns = const [];
         _isLoadingCheckIns = false;
-        _checkInMessage = '안전 확인 기록을 불러오지 못했습니다.';
+        _checkInMessage = _l10n.checkInLoadFailed;
       });
     }
   }
@@ -211,7 +229,7 @@ class _CircleScreenState extends State<CircleScreen> {
       throw StateError('Circle repository is not configured.');
     }
 
-    final circle = await repository.createCircle(name: '가족 서클');
+    final circle = await repository.createCircle(name: _l10n.privacyCircleFamily);
     if (mounted) {
       setState(() => _circles = [circle]);
       await _loadPlaceAlerts(circle.id);
@@ -222,13 +240,17 @@ class _CircleScreenState extends State<CircleScreen> {
 
   Future<void> _createInvite() async {
     if (!_hasBackend) {
-      setState(() => _statusMessage = 'Supabase 연결 후 실제 초대 링크를 만들 수 있습니다.');
+      setState(() {
+      _statusMessage = _l10n.inviteNeedsBackend;
+      _statusIsError = true;
+    });
       return;
     }
 
     setState(() {
       _isCreatingInvite = true;
       _statusMessage = null;
+      _statusIsError = false;
     });
 
     try {
@@ -242,13 +264,17 @@ class _CircleScreenState extends State<CircleScreen> {
       }
       setState(() {
         _inviteResult = invite;
-        _statusMessage = '24시간 초대 링크를 만들었습니다.';
+        _statusMessage = _l10n.inviteCreated;
+        _statusIsError = false;
       });
     } catch (_) {
       if (!mounted) {
         return;
       }
-      setState(() => _statusMessage = '초대 링크를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.');
+      setState(() {
+      _statusMessage = _l10n.inviteCreateFailed;
+      _statusIsError = true;
+    });
     } finally {
       if (mounted) {
         setState(() => _isCreatingInvite = false);
@@ -265,7 +291,10 @@ class _CircleScreenState extends State<CircleScreen> {
     await Clipboard.setData(
         ClipboardData(text: invite.rawInviteUrl.toString()));
     if (mounted) {
-      setState(() => _statusMessage = '초대 링크를 복사했습니다.');
+      setState(() {
+      _statusMessage = _l10n.inviteCopied;
+      _statusIsError = false;
+    });
     }
   }
 
@@ -274,19 +303,26 @@ class _CircleScreenState extends State<CircleScreen> {
     final rawInput = _inviteInputController.text.trim();
 
     if (repository == null) {
-      setState(() => _statusMessage = 'Supabase 연결 후 초대를 수락할 수 있습니다.');
+      setState(() {
+      _statusMessage = _l10n.inviteAcceptNeedsBackend;
+      _statusIsError = true;
+    });
       return;
     }
 
     final token = _inviteTokenFromInput(rawInput);
     if (token == null) {
-      setState(() => _statusMessage = '초대 링크나 토큰을 입력해 주세요.');
+      setState(() {
+      _statusMessage = _l10n.inviteTokenRequired;
+      _statusIsError = true;
+    });
       return;
     }
 
     setState(() {
       _isAcceptingInvite = true;
       _statusMessage = null;
+      _statusIsError = false;
     });
 
     try {
@@ -296,12 +332,18 @@ class _CircleScreenState extends State<CircleScreen> {
       if (!mounted) {
         return;
       }
-      setState(() => _statusMessage = '초대를 수락했습니다.');
+      setState(() {
+      _statusMessage = _l10n.inviteAccepted;
+      _statusIsError = false;
+    });
     } catch (_) {
       if (!mounted) {
         return;
       }
-      setState(() => _statusMessage = '초대를 수락하지 못했습니다. 만료 여부를 확인해 주세요.');
+      setState(() {
+      _statusMessage = _l10n.inviteAcceptFailed;
+      _statusIsError = true;
+    });
     } finally {
       if (mounted) {
         setState(() => _isAcceptingInvite = false);
@@ -312,7 +354,10 @@ class _CircleScreenState extends State<CircleScreen> {
   Future<void> _setPlaceAlertEnabled(PlaceAlertRule alert) async {
     final repository = widget.placeAlertRepository;
     if (repository == null) {
-      setState(() => _placeAlertMessage = 'Supabase 연결 후 장소 알림을 변경할 수 있습니다.');
+      setState(() {
+      _placeAlertMessage = _l10n.placeAlertChangeNeedsBackend;
+      _placeAlertIsError = true;
+    });
       return;
     }
 
@@ -320,6 +365,8 @@ class _CircleScreenState extends State<CircleScreen> {
     setState(() {
       _busyPlaceAlertIds.add(alert.id);
       _placeAlertMessage = null;
+      _placeAlertIsError = false;
+      _placeAlertIsPending = false;
     });
 
     try {
@@ -334,14 +381,17 @@ class _CircleScreenState extends State<CircleScreen> {
       }
       setState(() {
         _placeAlertMessage = synced
-            ? (nextEnabled ? '장소 알림을 다시 켰습니다.' : '장소 알림을 일시정지했습니다.')
-            : '서버 변경은 완료됐고, 기기 반경 동기화는 대기 중입니다.';
+            ? (nextEnabled ? _l10n.placeAlertResumed : _l10n.placeAlertPaused)
+            : _l10n.placeAlertServerOnlyUpdate;
       });
     } catch (_) {
       if (!mounted) {
         return;
       }
-      setState(() => _placeAlertMessage = '장소 알림 상태를 변경하지 못했습니다.');
+      setState(() {
+      _placeAlertMessage = _l10n.placeAlertToggleFailed;
+      _placeAlertIsError = true;
+    });
     } finally {
       if (mounted) {
         setState(() => _busyPlaceAlertIds.remove(alert.id));
@@ -352,14 +402,19 @@ class _CircleScreenState extends State<CircleScreen> {
   Future<void> _cyclePlaceAlertQuietHours(PlaceAlertRule alert) async {
     final repository = widget.placeAlertRepository;
     if (repository == null) {
-      setState(() => _placeAlertMessage = 'Supabase 연결 후 조용한 시간을 변경할 수 있습니다.');
+      setState(() {
+      _placeAlertMessage = _l10n.quietHoursNeedsBackend;
+      _placeAlertIsError = true;
+    });
       return;
     }
 
-    final nextQuietHours = _nextPlaceAlertQuietHours(alert.quietHours);
+    final nextQuietHours = nextPlaceAlertQuietHours(alert.quietHours);
     setState(() {
       _busyPlaceAlertIds.add(alert.id);
       _placeAlertMessage = null;
+      _placeAlertIsError = false;
+      _placeAlertIsPending = false;
     });
 
     try {
@@ -372,12 +427,15 @@ class _CircleScreenState extends State<CircleScreen> {
         return;
       }
       setState(() =>
-          _placeAlertMessage = '조용한 시간을 ${nextQuietHours.summary}(으)로 변경했습니다.');
+          _placeAlertMessage = _l10n.quietHoursChanged(nextQuietHours.summary(_l10n)));
     } catch (_) {
       if (!mounted) {
         return;
       }
-      setState(() => _placeAlertMessage = '조용한 시간을 변경하지 못했습니다.');
+      setState(() {
+      _placeAlertMessage = _l10n.quietHoursChangeFailed;
+      _placeAlertIsError = true;
+    });
     } finally {
       if (mounted) {
         setState(() => _busyPlaceAlertIds.remove(alert.id));
@@ -389,18 +447,18 @@ class _CircleScreenState extends State<CircleScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('장소 알림 삭제'),
+        title: Text(_l10n.placeAlertDeleteTitle),
         content:
-            Text('${alert.name} 알림을 삭제할까요? 대상 멤버에게 더 이상 도착/이탈 알림이 가지 않습니다.'),
+            Text(_l10n.placeAlertDeleteConfirm(alert.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('취소'),
+            child: Text(_l10n.sosCancel),
           ),
           FilledButton.tonalIcon(
             onPressed: () => Navigator.of(context).pop(true),
             icon: const Icon(Icons.delete_outline),
-            label: const Text('삭제'),
+            label: Text(_l10n.privacyDataDelete),
           ),
         ],
       ),
@@ -414,13 +472,18 @@ class _CircleScreenState extends State<CircleScreen> {
   Future<void> _deletePlaceAlert(PlaceAlertRule alert) async {
     final repository = widget.placeAlertRepository;
     if (repository == null) {
-      setState(() => _placeAlertMessage = 'Supabase 연결 후 장소 알림을 삭제할 수 있습니다.');
+      setState(() {
+      _placeAlertMessage = _l10n.placeAlertDeleteNeedsBackend;
+      _placeAlertIsError = true;
+    });
       return;
     }
 
     setState(() {
       _busyPlaceAlertIds.add(alert.id);
       _placeAlertMessage = null;
+      _placeAlertIsError = false;
+      _placeAlertIsPending = false;
     });
 
     try {
@@ -431,12 +494,15 @@ class _CircleScreenState extends State<CircleScreen> {
         return;
       }
       setState(() => _placeAlertMessage =
-          synced ? '장소 알림을 삭제했습니다.' : '서버 삭제는 완료됐고, 기기 반경 동기화는 대기 중입니다.');
+          synced ? _l10n.placeAlertDeleted : _l10n.placeAlertServerOnlyDelete);
     } catch (_) {
       if (!mounted) {
         return;
       }
-      setState(() => _placeAlertMessage = '장소 알림을 삭제하지 못했습니다.');
+      setState(() {
+      _placeAlertMessage = _l10n.placeAlertDeleteFailed;
+      _placeAlertIsError = true;
+    });
     } finally {
       if (mounted) {
         setState(() => _busyPlaceAlertIds.remove(alert.id));
@@ -479,19 +545,20 @@ class _CircleScreenState extends State<CircleScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
     final activeCircle = _circles.isEmpty ? null : _circles.first;
     final memberCount = activeCircle == null || activeCircle.memberCount == 0
         ? 1
         : activeCircle.memberCount;
-    final title = activeCircle?.name ?? '가족 서클';
+    final title = activeCircle?.name ?? l10n.privacyCircleFamily;
     final subtitle = _isLoadingCircles
-        ? '서클 동기화 중'
+        ? l10n.circleSyncing
         : activeCircle == null
-            ? '첫 서클을 만들고 가까운 사람을 초대하세요'
-            : '$memberCount명 · 장소 3개 · 동행 세션 1개 대기';
-    final statusColor = (_statusMessage?.contains('못했습니다') ?? false)
-        ? GyeoteColors.danger
-        : GyeoteColors.primary;
+            ? l10n.circleCreateFirstBody
+            : l10n.circleSummary(memberCount);
+    final statusColor = _statusIsError ? palette.alert : palette.brand;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -504,10 +571,10 @@ class _CircleScreenState extends State<CircleScreen> {
                 children: [
                   Text(title,
                       style: const TextStyle(
-                          fontSize: 28, fontWeight: FontWeight.w900)),
+                          fontSize: 28, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 4),
                   Text(subtitle,
-                      style: const TextStyle(color: GyeoteColors.muted)),
+                      style: TextStyle(color: palette.muted)),
                   if (_statusMessage != null) ...[
                     const SizedBox(height: 4),
                     Text(_statusMessage!,
@@ -528,7 +595,7 @@ class _CircleScreenState extends State<CircleScreen> {
                       height: 18,
                       child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.person_add_alt_1_outlined),
-              label: Text(activeCircle == null ? '서클 만들기' : '초대하기'),
+              label: Text(activeCircle == null ? l10n.circleCreate : l10n.inviteCreate),
             ),
           ],
         ),
@@ -546,16 +613,16 @@ class _CircleScreenState extends State<CircleScreen> {
         ),
         const SizedBox(height: 12),
         _SectionCard(
-          title: '멤버',
+          title: l10n.memberFallbackName,
           trailing: TextButton(
             onPressed: activeCircle == null && _hasBackend ? null : () {},
-            child: const Text('멤버 관리'),
+            child: Text(l10n.circleManageMembers),
           ),
           child: activeCircle == null && _hasBackend
               ? const _EmptyMembersState()
               : Column(
                   children: [
-                    for (final member in _demoMembers)
+                    for (final member in _demoMembers(l10n))
                       _MemberRow(member: member),
                   ],
                 ),
@@ -575,6 +642,8 @@ class _CircleScreenState extends State<CircleScreen> {
           hasCircle: activeCircle != null,
           isLoading: _isLoadingPlaceAlerts,
           message: _placeAlertMessage,
+          isError: _placeAlertIsError,
+          isPending: _placeAlertIsPending,
           busyAlertIds: _busyPlaceAlertIds,
           onToggleEnabled: _setPlaceAlertEnabled,
           onCycleQuietHours: _cyclePlaceAlertQuietHours,
@@ -590,21 +659,24 @@ class _EmptyMembersState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.primarySoft,
+        color: palette.brandSoft,
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('아직 멤버가 없습니다', style: TextStyle(fontWeight: FontWeight.w900)),
-          SizedBox(height: 4),
-          Text('초대 링크를 만들면 이곳에 수락한 멤버가 표시됩니다.',
-              style: TextStyle(color: GyeoteColors.muted)),
+          Text(l10n.circleNoMembers, style: const TextStyle(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          Text(l10n.circleNoMembersBody,
+              style: TextStyle(color: palette.muted)),
         ],
       ),
     );
@@ -624,9 +696,10 @@ class _InviteAcceptCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     return _SectionCard(
-      title: '초대 참여',
-      trailing: const _StatusChip(text: '토큰 확인'),
+      title: l10n.inviteJoin,
+      trailing: _StatusChip(text: l10n.inviteVerifyToken),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -635,9 +708,9 @@ class _InviteAcceptCard extends StatelessWidget {
             minLines: 1,
             maxLines: 2,
             textInputAction: TextInputAction.done,
-            decoration: const InputDecoration(
-              labelText: '초대 링크 또는 토큰',
-              prefixIcon: Icon(Icons.link_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.inviteTokenLabel,
+              prefixIcon: const Icon(Icons.link_outlined),
             ),
             onSubmitted: (_) async {
               if (!isLoading) {
@@ -658,7 +731,7 @@ class _InviteAcceptCard extends StatelessWidget {
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2))
                 : const Icon(Icons.check_circle_outline),
-            label: const Text('참여'),
+            label: Text(l10n.inviteAccept),
           ),
         ],
       ),
@@ -677,7 +750,7 @@ class _CircleMember {
   final String name;
   final String role;
   final String status;
-  final Color tone;
+  final GyeoteTone tone;
 }
 
 class _InviteCard extends StatelessWidget {
@@ -693,35 +766,38 @@ class _InviteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
     final invite = inviteResult?.invite;
     final rawInviteUrl = inviteResult?.rawInviteUrl.toString();
 
     return _SectionCard(
-      title: '초대 링크',
-      trailing: _StatusChip(text: invite == null ? '24시간' : invite.codeHint),
+      title: l10n.inviteLink,
+      trailing: _StatusChip(text: invite == null ? l10n.privacyRetention24Hours : invite.codeHint),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             invite == null ? 'GYE-42K' : invite.codeHint,
             style: const TextStyle(
-                fontSize: 24, fontWeight: FontWeight.w900, letterSpacing: 0),
+                fontSize: 24, fontWeight: FontWeight.w700, letterSpacing: 0),
           ),
           const SizedBox(height: 6),
           Text(
-            rawInviteUrl ?? '1회 사용 · 수락 전 공유 범위 확인 · 원문 토큰 저장 안 함',
+            rawInviteUrl ?? l10n.inviteSafetyNote,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(color: GyeoteColors.muted),
+            style: TextStyle(color: palette.muted),
           ),
           const SizedBox(height: 12),
-          const Wrap(
+          Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
-              _StatusChip(text: '초대자 확인'),
-              _StatusChip(text: '광고 안내'),
-              _StatusChip(text: '위치 동의'),
+              _StatusChip(text: l10n.inviteVerifyInviter),
+              _StatusChip(text: l10n.adNotice),
+              _StatusChip(text: l10n.inviteConsentLocation),
             ],
           ),
           const SizedBox(height: 12),
@@ -735,7 +811,7 @@ class _InviteCard extends StatelessWidget {
                           await onCreateInvite!();
                         },
                   icon: const Icon(Icons.refresh_outlined),
-                  label: const Text('새 링크'),
+                  label: Text(l10n.inviteNewLink),
                 ),
               ),
               const SizedBox(width: 8),
@@ -747,7 +823,7 @@ class _InviteCard extends StatelessWidget {
                           await onCopyInvite!();
                         },
                   icon: const Icon(Icons.copy_outlined),
-                  label: const Text('복사'),
+                  label: Text(l10n.inviteCopy),
                 ),
               ),
             ],
@@ -765,16 +841,20 @@ class _MemberRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
           CircleAvatar(
             radius: 18,
-            backgroundColor: member.tone.withValues(alpha: 0.14),
+            backgroundColor: member.tone.resolveSoft(palette),
             child: Text(
-              member.name.substring(0, 1),
-              style: TextStyle(color: member.tone, fontWeight: FontWeight.w900),
+              member.name.characters.first,
+              style: TextStyle(
+                  color: member.tone.resolve(palette),
+                  fontWeight: FontWeight.w700),
             ),
           ),
           const SizedBox(width: 12),
@@ -783,11 +863,11 @@ class _MemberRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(member.name,
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(member.role,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -803,27 +883,30 @@ class _CompanionRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
     return _SectionCard(
-      title: '동행 요청',
-      trailing: const _StatusChip(text: '상호 동의'),
+      title: l10n.companionRequest,
+      trailing: _StatusChip(text: l10n.mutualConsent),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('준 · 학교에서 집까지',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900)),
+          Text(l10n.companionRequestDemo,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
           const SizedBox(height: 6),
-          const Text('15분 동안 균형 위치와 경로 꼬리만 공유됩니다.',
-              style: TextStyle(color: GyeoteColors.muted)),
+          Text(l10n.companionRequestBody,
+              style: TextStyle(color: palette.muted)),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
                   child: OutlinedButton(
-                      onPressed: () {}, child: const Text('나중에'))),
+                      onPressed: () {}, child: Text(l10n.companionLater))),
               const SizedBox(width: 8),
               Expanded(
                   child: FilledButton(
-                      onPressed: () {}, child: const Text('동행 허용'))),
+                      onPressed: () {}, child: Text(l10n.companionAllow))),
             ],
           ),
         ],
@@ -847,12 +930,13 @@ class _CheckInStatusCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final items = events;
-    final countLabel = items == null ? '예시' : '${items.length}개';
+    final countLabel = items == null ? l10n.sampleLabel : l10n.itemCount(items.length);
 
     return _SectionCard(
-      title: '안전 확인',
-      trailing: _StatusChip(text: isLoading ? '동기화' : countLabel),
+      title: l10n.checkInSectionTitle,
+      trailing: _StatusChip(text: isLoading ? l10n.syncLabel : countLabel),
       child: _CheckInStatusBody(
         events: items,
         hasCircle: hasCircle,
@@ -878,49 +962,50 @@ class _CheckInStatusBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     if (isLoading) {
-      return const _InlineLoadingState(text: '안전 확인 기록을 불러오는 중입니다.');
+      return _InlineLoadingState(text: l10n.checkInLoading);
     }
 
     if (message != null) {
       return _InlineEmptyState(
         icon: Icons.sync_problem_outlined,
-        title: '안전 확인 동기화 실패',
+        title: l10n.checkInSyncFailed,
         body: message!,
       );
     }
 
     final items = events;
     if (items == null) {
-      return const Column(
+      return Column(
         children: [
           _CheckInRow(
-            name: '준',
-            status: '무사 도착',
-            body: '동행 공유 종료 · 균형 위치로 알림 · 방금',
+            name: l10n.demoNameChild,
+            status: l10n.checkInSafeArrived,
+            body: l10n.checkInDemoDetail,
           ),
           _CheckInRow(
-            name: '할아버지',
-            status: '신호가 잠시 약해요',
-            body: '배터리, 신호, 권한, 기기 상태를 확인해 주세요.',
+            name: l10n.demoNameElder,
+            status: l10n.checkInWeakSignal,
+            body: l10n.checkInTroubleshoot,
           ),
         ],
       );
     }
 
     if (!hasCircle) {
-      return const _InlineEmptyState(
+      return _InlineEmptyState(
         icon: Icons.verified_user_outlined,
-        title: '서클을 먼저 만들어 주세요',
-        body: '도착 확인은 서클 멤버에게 짧은 안심 신호로 전달됩니다.',
+        title: l10n.circleCreateFirst,
+        body: l10n.checkInNote,
       );
     }
 
     if (items.isEmpty) {
-      return const _InlineEmptyState(
+      return _InlineEmptyState(
         icon: Icons.check_circle_outline,
-        title: '최근 안전 확인이 없습니다',
-        body: '동행 중 도착 확인을 보내면 이곳에 무사 도착 기록이 표시됩니다.',
+        title: l10n.checkInNoneRecent,
+        body: l10n.checkInEmptyBody,
       );
     }
 
@@ -928,10 +1013,15 @@ class _CheckInStatusBody extends StatelessWidget {
       children: [
         for (final event in items)
           _CheckInRow(
-            name: event.displayName,
-            status: _checkInStatusLabel(event.status),
+            name: event.displayName.isEmpty
+                ? l10n.memberFallbackName
+                : event.displayName,
+            status: _checkInStatusLabel(l10n, event.status),
             body:
-                '${_sharingModeLabel(event.sharingMode)} 위치로 알림 · ${_relativeTimeLabel(event.createdAt)}',
+                l10n.checkInDetailLine(
+      _sharingModeLabel(l10n, event.sharingMode),
+      _relativeTimeLabel(l10n, event.createdAt),
+    ),
           ),
       ],
     );
@@ -951,24 +1041,26 @@ class _CheckInRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(Icons.verified_user_outlined,
-              size: 20, color: GyeoteColors.primary),
+          Icon(Icons.verified_user_outlined,
+              size: 20, color: palette.brand),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('$name · $status',
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(body,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -984,6 +1076,8 @@ class _PlaceAlertCard extends StatelessWidget {
     required this.hasCircle,
     required this.isLoading,
     required this.message,
+    required this.isError,
+    required this.isPending,
     required this.busyAlertIds,
     required this.onToggleEnabled,
     required this.onCycleQuietHours,
@@ -994,6 +1088,8 @@ class _PlaceAlertCard extends StatelessWidget {
   final bool hasCircle;
   final bool isLoading;
   final String? message;
+  final bool isError;
+  final bool isPending;
   final Set<String> busyAlertIds;
   final ValueChanged<PlaceAlertRule> onToggleEnabled;
   final ValueChanged<PlaceAlertRule> onCycleQuietHours;
@@ -1001,17 +1097,20 @@ class _PlaceAlertCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final rules = alerts;
-    final countLabel = rules == null ? '예시' : '${rules.length}개';
+    final countLabel = rules == null ? l10n.sampleLabel : l10n.itemCount(rules.length);
 
     return _SectionCard(
-      title: '장소 알림',
-      trailing: _StatusChip(text: isLoading ? '동기화' : countLabel),
+      title: l10n.placeAlertSectionTitle,
+      trailing: _StatusChip(text: isLoading ? l10n.syncLabel : countLabel),
       child: _PlaceAlertCardBody(
         alerts: rules,
         hasCircle: hasCircle,
         isLoading: isLoading,
         message: message,
+        isError: isError,
+        isPending: isPending,
         busyAlertIds: busyAlertIds,
         onToggleEnabled: onToggleEnabled,
         onCycleQuietHours: onCycleQuietHours,
@@ -1027,6 +1126,8 @@ class _PlaceAlertCardBody extends StatelessWidget {
     required this.hasCircle,
     required this.isLoading,
     required this.message,
+    required this.isError,
+    required this.isPending,
     required this.busyAlertIds,
     required this.onToggleEnabled,
     required this.onCycleQuietHours,
@@ -1037,6 +1138,8 @@ class _PlaceAlertCardBody extends StatelessWidget {
   final bool hasCircle;
   final bool isLoading;
   final String? message;
+  final bool isError;
+  final bool isPending;
   final Set<String> busyAlertIds;
   final ValueChanged<PlaceAlertRule> onToggleEnabled;
   final ValueChanged<PlaceAlertRule> onCycleQuietHours;
@@ -1044,8 +1147,9 @@ class _PlaceAlertCardBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     if (isLoading) {
-      return const _InlineLoadingState(text: '장소 알림을 불러오는 중입니다.');
+      return _InlineLoadingState(text: l10n.placeAlertLoading);
     }
 
     final rules = alerts;
@@ -1054,10 +1158,17 @@ class _PlaceAlertCardBody extends StatelessWidget {
         : Padding(
             padding: const EdgeInsets.only(bottom: 10),
             child: _InlineNoticeState(
-              icon: _placeAlertMessageIcon(message!),
-              title: _placeAlertMessageTitle(message!),
+              icon: _placeAlertMessageIcon(
+                isError: isError,
+                isPending: isPending,
+              ),
+              title: _placeAlertMessageTitle(
+                l10n,
+                isError: isError,
+                isPending: isPending,
+              ),
               body: message!,
-              isError: _placeAlertMessageIsError(message!),
+              isError: isError || isPending,
             ),
           );
 
@@ -1065,10 +1176,10 @@ class _PlaceAlertCardBody extends StatelessWidget {
       return Column(
         children: [
           if (messageBanner != null) messageBanner,
-          const _AlertRule(
-              title: '학교', body: '평일 08:00-17:00 · 도착/이탈 · 10분 지연'),
-          const _AlertRule(title: '집', body: '가족 전체 · 도착 확인'),
-          const _AlertRule(title: '병원', body: '할아버지 · 오래 머무름 확인'),
+          _AlertRule(
+              title: l10n.placeSchool, body: l10n.placeAlertDemoRule),
+          _AlertRule(title: l10n.placeHome, body: l10n.checkInDemoScope),
+          _AlertRule(title: l10n.placeClinic, body: l10n.checkInDemoLongStay),
         ],
       );
     }
@@ -1077,10 +1188,10 @@ class _PlaceAlertCardBody extends StatelessWidget {
       return Column(
         children: [
           if (messageBanner != null) messageBanner,
-          const _InlineEmptyState(
+          _InlineEmptyState(
             icon: Icons.add_location_alt_outlined,
-            title: '서클을 먼저 만들어 주세요',
-            body: '장소 알림은 서클 멤버와 공유 범위를 정한 뒤 사용할 수 있습니다.',
+            title: l10n.circleCreateFirst,
+            body: l10n.placeAlertNoneBody,
           ),
         ],
       );
@@ -1090,10 +1201,10 @@ class _PlaceAlertCardBody extends StatelessWidget {
       return Column(
         children: [
           if (messageBanner != null) messageBanner,
-          const _InlineEmptyState(
+          _InlineEmptyState(
             icon: Icons.notifications_none_outlined,
-            title: '저장된 장소 알림이 없습니다',
-            body: '지도에서 반경을 미리 보고 대상 멤버를 고른 뒤 안전한 알림 규칙으로 추가할 예정입니다.',
+            title: l10n.placeAlertNone,
+            body: l10n.placeAlertHint,
           ),
         ],
       );
@@ -1105,7 +1216,7 @@ class _PlaceAlertCardBody extends StatelessWidget {
         for (final alert in rules)
           _AlertRule(
             title: alert.name,
-            body: _placeAlertBody(alert),
+            body: _placeAlertBody(l10n, alert),
             enabled: alert.enabled,
             isBusy: busyAlertIds.contains(alert.id),
             onToggleEnabled: () => onToggleEnabled(alert),
@@ -1132,7 +1243,9 @@ class _InlineNoticeState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isError ? GyeoteColors.danger : GyeoteColors.primary;
+    final palette = context.palette;
+
+    final color = isError ? palette.alert : palette.brand;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
@@ -1152,11 +1265,11 @@ class _InlineNoticeState extends StatelessWidget {
               children: [
                 Text(title,
                     style:
-                        TextStyle(color: color, fontWeight: FontWeight.w900)),
+                        TextStyle(color: color, fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(body,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -1187,7 +1300,10 @@ class _AlertRule extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final iconColor = enabled ? GyeoteColors.amber : GyeoteColors.muted;
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
+    final iconColor = enabled ? palette.warm : palette.muted;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -1203,7 +1319,7 @@ class _AlertRule extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(title,
-                          style: const TextStyle(fontWeight: FontWeight.w900)),
+                          style: const TextStyle(fontWeight: FontWeight.w700)),
                     ),
                     if (isBusy)
                       const SizedBox(
@@ -1212,11 +1328,11 @@ class _AlertRule extends StatelessWidget {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     else ...[
-                      if (!enabled) const _StatusChip(text: '일시정지'),
+                      if (!enabled) _StatusChip(text: l10n.pauseLabel),
                       if (onToggleEnabled != null) ...[
                         const SizedBox(width: 4),
                         Tooltip(
-                          message: enabled ? '일시정지' : '다시 켜기',
+                          message: enabled ? l10n.pauseLabel : l10n.resumeLabel,
                           child: IconButton(
                             visualDensity: VisualDensity.compact,
                             icon: Icon(enabled
@@ -1229,7 +1345,7 @@ class _AlertRule extends StatelessWidget {
                       if (onCycleQuietHours != null) ...[
                         const SizedBox(width: 2),
                         Tooltip(
-                          message: '조용한 시간 변경',
+                          message: l10n.quietHoursChange,
                           child: IconButton(
                             visualDensity: VisualDensity.compact,
                             icon: const Icon(Icons.bedtime_outlined),
@@ -1240,11 +1356,11 @@ class _AlertRule extends StatelessWidget {
                       if (onDelete != null) ...[
                         const SizedBox(width: 2),
                         Tooltip(
-                          message: '삭제',
+                          message: l10n.privacyDataDelete,
                           child: IconButton(
                             visualDensity: VisualDensity.compact,
                             icon: const Icon(Icons.delete_outline),
-                            color: GyeoteColors.danger,
+                            color: palette.alert,
                             onPressed: onDelete,
                           ),
                         ),
@@ -1254,8 +1370,8 @@ class _AlertRule extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(body,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -1272,6 +1388,8 @@ class _InlineLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Row(
       children: [
         const SizedBox(
@@ -1281,7 +1399,7 @@ class _InlineLoadingState extends StatelessWidget {
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: Text(text, style: const TextStyle(color: GyeoteColors.muted)),
+          child: Text(text, style: TextStyle(color: palette.muted)),
         ),
       ],
     );
@@ -1301,29 +1419,31 @@ class _InlineEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surfaceAlt,
+        color: palette.surfaceAlt,
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: GyeoteColors.primary, size: 22),
+          Icon(icon, color: palette.brand, size: 22),
           const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(title,
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 3),
                 Text(body,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -1333,112 +1453,90 @@ class _InlineEmptyState extends StatelessWidget {
   }
 }
 
-String _placeAlertBody(PlaceAlertRule alert) {
+String _placeAlertBody(AppL10n l10n, PlaceAlertRule alert) {
   final events = [
-    if (alert.notifyOnArrival) '도착',
-    if (alert.notifyOnDeparture) '이탈',
-    if (alert.notifyOnLate) '늦음 확인',
-    if (alert.notifyOnLongStay) '오래 머무름',
+    if (alert.notifyOnArrival) l10n.placeRuleArrival,
+    if (alert.notifyOnDeparture) l10n.placeRuleDeparture,
+    if (alert.notifyOnLate) l10n.placeRuleLate,
+    if (alert.notifyOnLongStay) l10n.placeRuleLongStay,
   ];
   final quietHoursLabel =
-      alert.quietHours.enabled ? '조용한 시간 ${alert.quietHours.summary}' : null;
+      alert.quietHours.enabled ? l10n.quietHoursSummary(alert.quietHours.summary(l10n)) : null;
   final targetLabel =
-      alert.targetCount == 0 ? '대상 미지정' : '${alert.targetCount}명';
-  final eventLabel = events.isEmpty ? '알림 조건 없음' : events.join('/');
+      alert.targetCount == 0 ? l10n.targetsUnset : l10n.targetCount(alert.targetCount);
+  final eventLabel = events.isEmpty ? l10n.rulesNone : events.join('/');
   return [
     targetLabel,
-    '반경 ${alert.radiusM}m',
+    l10n.radiusMeters(alert.radiusM),
     eventLabel,
     if (quietHoursLabel != null) quietHoursLabel,
   ].join(' · ');
 }
 
-PlaceAlertQuietHours _nextPlaceAlertQuietHours(PlaceAlertQuietHours current) {
+/// 다음 방해 금지 프리셋: 없음 → 야간 → 수업/근무 → 없음.
+///
+/// 프리셋 **키**로 판단한다. 예전에는 저장된 라벨을 현재 로케일 번역과 비교해서,
+/// 만든 사람과 언어가 다른 멤버는 언제나 첫 프리셋으로 되돌아갔다.
+PlaceAlertQuietHours nextPlaceAlertQuietHours(PlaceAlertQuietHours current) {
   if (!current.enabled) {
-    return const PlaceAlertQuietHours(
-      enabled: true,
-      start: '22:00',
-      end: '07:00',
-      timeZone: 'Asia/Seoul',
-      label: '야간',
-    );
+    return PlaceAlertQuietHours.preset(QuietHoursPreset.night);
   }
-
-  if (current.label == '야간') {
-    return const PlaceAlertQuietHours(
-      enabled: true,
-      start: '09:00',
-      end: '17:00',
-      timeZone: 'Asia/Seoul',
-      label: '수업/근무',
-    );
-  }
-
-  return const PlaceAlertQuietHours.none();
+  return switch (current.preset) {
+    QuietHoursPreset.night =>
+      PlaceAlertQuietHours.preset(QuietHoursPreset.classOrWork),
+    // 수업/근무 다음, 그리고 프리셋을 모르는 옛 값 다음은 '없음'이다.
+    _ => const PlaceAlertQuietHours.none(),
+  };
 }
 
-bool _placeAlertMessageIsError(String message) {
-  return message.contains('못했습니다') || message.contains('대기 중');
-}
-
-IconData _placeAlertMessageIcon(String message) {
-  if (message.contains('대기 중')) {
-    return Icons.sync_problem_outlined;
-  }
-  if (_placeAlertMessageIsError(message)) {
-    return Icons.error_outline;
-  }
+/// 상태는 문구를 훑어 추측하지 않고 호출부가 넘긴다.
+/// 예전에는 '못했습니다'/'대기 중' 부분 문자열로 판별해서 번역과 함께 깨졌다.
+IconData _placeAlertMessageIcon({required bool isError, required bool isPending}) {
+  if (isPending) return Icons.sync_problem_outlined;
+  if (isError) return Icons.error_outline;
   return Icons.check_circle_outline;
 }
 
-String _placeAlertMessageTitle(String message) {
-  if (message.contains('대기 중')) {
-    return '기기 동기화 대기';
-  }
-  if (_placeAlertMessageIsError(message)) {
-    return '장소 알림 변경 실패';
-  }
-  return '장소 알림 업데이트';
+String _placeAlertMessageTitle(
+  AppL10n l10n, {
+  required bool isError,
+  required bool isPending,
+}) {
+  if (isPending) return l10n.deviceSyncPending;
+  if (isError) return l10n.placeAlertUpdateFailed;
+  return l10n.placeAlertUpdating;
 }
 
-String _checkInStatusLabel(CheckInStatus status) {
-  switch (status) {
-    case CheckInStatus.safeArrived:
-      return '무사 도착';
-    case CheckInStatus.needsCheck:
-      return '확인 필요';
-    case CheckInStatus.signalWeak:
-      return '신호가 잠시 약해요';
-  }
-}
+String _checkInStatusLabel(AppL10n l10n, CheckInStatus status) =>
+    status.label(l10n);
 
-String _sharingModeLabel(SharingMode mode) {
+String _sharingModeLabel(AppL10n l10n, SharingMode mode) {
   switch (mode) {
     case SharingMode.precise:
-      return '정확';
+      return l10n.sharingModePrecise;
     case SharingMode.balanced:
-      return '균형';
+      return l10n.sharingModeBalanced;
     case SharingMode.area:
-      return '동네 범위';
+      return l10n.sharingModeArea;
     case SharingMode.hidden:
-      return '숨김';
+      return l10n.sharingModeHidden;
     case SharingMode.sosOnly:
-      return '긴급 전용';
+      return l10n.sharingModeSosOnly;
   }
 }
 
-String _relativeTimeLabel(DateTime recordedAt) {
+String _relativeTimeLabel(AppL10n l10n, DateTime recordedAt) {
   final diff = DateTime.now().difference(recordedAt);
   if (diff.inSeconds < 60) {
-    return '방금';
+    return l10n.agoJustNow;
   }
   if (diff.inMinutes < 60) {
-    return '${diff.inMinutes}분 전';
+    return l10n.agoMinutes(diff.inMinutes);
   }
   if (diff.inHours < 24) {
-    return '${diff.inHours}시간 전';
+    return l10n.agoHours(diff.inHours);
   }
-  return '${diff.inDays}일 전';
+  return l10n.agoDays(diff.inDays);
 }
 
 class _SectionCard extends StatelessWidget {
@@ -1454,12 +1552,14 @@ class _SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surface,
+        color: palette.surface,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1468,7 +1568,7 @@ class _SectionCard extends StatelessWidget {
             children: [
               Expanded(
                   child: Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.w900))),
+                      style: const TextStyle(fontWeight: FontWeight.w700))),
               if (trailing != null) trailing!,
             ],
           ),
@@ -1487,19 +1587,21 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(6),
-        color: GyeoteColors.surfaceAlt,
+        color: palette.surfaceAlt,
       ),
       child: Text(
         text,
-        style: const TextStyle(
-            color: GyeoteColors.primary,
+        style: TextStyle(
+            color: palette.brand,
             fontSize: 12,
-            fontWeight: FontWeight.w800),
+            fontWeight: FontWeight.w700),
       ),
     );
   }

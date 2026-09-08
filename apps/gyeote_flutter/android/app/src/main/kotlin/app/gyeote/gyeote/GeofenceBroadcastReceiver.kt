@@ -49,17 +49,26 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             transition,
             requestIds,
         )
-        showPlaceAlertNotification(context, transition)
+        // 조용한 시간이면 소리 없는 채널로 간다. 버리지는 않는다 — 안전 앱에서
+        // "도착했다"는 사실을 자고 있었다는 이유로 없앨 수는 없다.
+        showPlaceAlertNotification(
+            context,
+            transition,
+            quiet = GyeoteQuietHours.isQuietNow(context, requestIds),
+        )
     }
 
-    private fun showPlaceAlertNotification(context: Context, transition: Int) {
+    /** 테스트가 어느 채널로 갔는지 볼 수 있도록 internal 로 연다. */
+    @androidx.annotation.VisibleForTesting
+    internal fun showPlaceAlertNotification(context: Context, transition: Int, quiet: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
             return
         }
 
-        createNotificationChannel(context)
+        createNotificationChannels(context)
+        val channelId = if (quiet) QUIET_CHANNEL_ID else CHANNEL_ID
 
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName)
             ?: Intent(context, MainActivity::class.java)
@@ -67,7 +76,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) PendingIntent.FLAG_IMMUTABLE else 0
         val pendingIntent = PendingIntent.getActivity(context, 5200, launchIntent, flags)
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(context, CHANNEL_ID)
+            Notification.Builder(context, channelId)
         } else {
             @Suppress("DEPRECATION")
             Notification.Builder(context)
@@ -75,45 +84,68 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
 
         val notification = builder
             .setSmallIcon(context.applicationInfo.icon)
-            .setContentTitle("곁에 장소 알림")
-            .setContentText(placeAlertNotificationText(transition))
+            .setContentTitle(context.getString(R.string.place_alert_channel))
+            .setContentText(placeAlertNotificationText(context, transition))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .setCategory(Notification.CATEGORY_STATUS)
             .setShowWhen(true)
+            .apply {
+                // O 미만은 채널이 없어 우선순위로 조용히 한다.
+                if (quiet && Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                    @Suppress("DEPRECATION")
+                    setPriority(Notification.PRIORITY_LOW)
+                }
+            }
             .build()
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         manager.notify(NOTIFICATION_ID, notification)
     }
 
-    private fun createNotificationChannel(context: Context) {
+    private fun createNotificationChannels(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
 
         val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "곁에 장소 알림",
-            NotificationManager.IMPORTANCE_DEFAULT,
-        ).apply {
-            description = "저장한 장소의 도착과 이탈 알림을 표시합니다."
-            setShowBadge(true)
-        }
-        manager.createNotificationChannel(channel)
+        manager.createNotificationChannel(
+            NotificationChannel(
+                CHANNEL_ID,
+                context.getString(R.string.place_alert_channel),
+                NotificationManager.IMPORTANCE_DEFAULT,
+            ).apply {
+                description = context.getString(R.string.place_alert_channel_description)
+                setShowBadge(true)
+            },
+        )
+        // 채널은 한 번 만들어지면 중요도를 코드로 못 바꾼다. 조용한 시간은
+        // 별도 채널이어야 하고, 사용자가 시스템 설정에서 따로 다룰 수 있다.
+        manager.createNotificationChannel(
+            NotificationChannel(
+                QUIET_CHANNEL_ID,
+                context.getString(R.string.place_alert_quiet_channel),
+                NotificationManager.IMPORTANCE_LOW,
+            ).apply {
+                description = context.getString(R.string.place_alert_quiet_channel_description)
+                setShowBadge(true)
+            },
+        )
     }
 
-    private fun placeAlertNotificationText(transition: Int): String {
-        return when (transition) {
-            Geofence.GEOFENCE_TRANSITION_ENTER -> "저장한 장소 반경에 도착했습니다."
-            Geofence.GEOFENCE_TRANSITION_EXIT -> "저장한 장소 반경을 벗어났습니다."
-            else -> "저장한 장소 반경 변화가 감지됐습니다."
-        }
+    private fun placeAlertNotificationText(context: Context, transition: Int): String {
+        return context.getString(
+            when (transition) {
+                Geofence.GEOFENCE_TRANSITION_ENTER -> R.string.place_alert_arrived
+                Geofence.GEOFENCE_TRANSITION_EXIT -> R.string.place_alert_departed
+                else -> R.string.place_alert_changed
+            },
+        )
     }
 
-    private companion object {
+    internal companion object {
         const val CHANNEL_ID = "gyeote_place_alerts"
+        const val QUIET_CHANNEL_ID = "gyeote_place_alerts_quiet"
         const val NOTIFICATION_ID = 5200
     }
 }

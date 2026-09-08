@@ -1,8 +1,19 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// 업로드 키. android/key.properties 는 .gitignore 에 있고, 없으면 디버그 키로
+// 서명해 `flutter run --release` 가 계속 된다. 스토어에 올리는 빌드는 반드시
+// 이 파일이 있어야 한다 — 없으면 Play Console 이 "디버그 서명" 으로 거절한다.
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("key.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+val hasUploadKey = keystoreProperties.getProperty("storeFile") != null
 
 android {
     namespace = "app.gyeote.gyeote"
@@ -23,13 +34,28 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        // 에뮬레이터에서 진짜 지오펜스 전환을 받는 계측 테스트용.
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        if (hasUploadKey) {
+            create("upload") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (hasUploadKey) {
+                signingConfigs.getByName("upload")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }
@@ -44,6 +70,37 @@ flutter {
     source = "../.."
 }
 
+android.testOptions {
+    unitTests.isReturnDefaultValues = true
+    // 위젯이 실제로 무엇을 그리는지 보려면 리소스가 필요하다. Robolectric 이
+    // 에뮬레이터 없이 JVM 에서 프레임워크를 돌린다.
+    unitTests.isIncludeAndroidResources = true
+}
+
+// Robolectric 이 리소스를 읽으려면 유닛테스트 패키징이 Flutter 에셋 병합 뒤에
+// 와야 한다. Flutter Gradle 플러그인이 그 의존을 선언하지 않아서 Gradle 9 의
+// 검증이 빌드를 막는다. 여기서 명시한다.
+listOf("Debug", "Release").forEach { variant ->
+    tasks.matching { it.name == "package${variant}UnitTestForUnitTest" }
+        .configureEach { dependsOn("copyFlutterAssets$variant") }
+}
+
 dependencies {
     implementation("com.google.android.gms:play-services-location:21.3.0")
+    testImplementation("junit:junit:4.13.2")
+    // org.json 은 안드로이드 런타임에만 있다. JVM 단위 테스트에서는 스텁이
+    // 예외를 던지므로 실제 구현을 넣어 준다.
+    testImplementation("org.json:json:20240303")
+    // 이 워크스테이션의 유일한 JDK 가 Android Studio 의 JBR 25 다. Robolectric 은
+    // 클래스를 ASM 으로 계측하는데, 4.14.1 이 쓰는 ASM 9.7 은 클래스 파일
+    // major 69(=Java 25)를 읽지 못하고 전부 IllegalArgumentException 으로 죽는다.
+    // JDK 를 내리는 대신 계측기를 올린다.
+    testImplementation("org.robolectric:robolectric:4.16.1")
+    testImplementation("androidx.test:core:1.6.1")
+    // Robolectric 4.16.1 은 ASM 9.8 을 끌고 오는데, 그건 Java 25 를 막 지원하기
+    // 시작한 버전이다. 여유를 두고 명시적으로 올린다.
+    testImplementation("org.ow2.asm:asm:9.10.1")
+    testImplementation("org.ow2.asm:asm-commons:9.10.1")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:runner:1.6.2")
 }

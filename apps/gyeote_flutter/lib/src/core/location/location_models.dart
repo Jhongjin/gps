@@ -1,3 +1,5 @@
+import '../privacy/private_place.dart';
+
 enum LocationSource {
   gps,
   network,
@@ -92,6 +94,7 @@ class SharingPolicy {
     this.pausedUntil,
     this.expiresAt,
     this.consentVersion = '2026-05-30',
+    this.privatePlaces = const [],
   });
 
   final bool enabled;
@@ -99,6 +102,11 @@ class SharingPolicy {
   final DateTime? pausedUntil;
   final DateTime? expiresAt;
   final String consentVersion;
+
+  /// 정확한 좌표를 내보내지 않을 장소들. 기기에만 사는 값이라 서버 스키마에
+  /// 대응하는 자리가 없다. 정책의 일부인 이유는, 좌표를 만들어 내는 쪽이
+  /// 네이티브라서 거기까지 내려가야 실제로 가려지기 때문이다.
+  final List<PrivatePlace> privatePlaces;
 }
 
 class LocationSessionConfig {
@@ -128,6 +136,8 @@ class GeofenceSpec {
     required this.radiusM,
     required this.notifyOnArrival,
     required this.notifyOnDeparture,
+    this.quietStart,
+    this.quietEnd,
   });
 
   final String id;
@@ -135,6 +145,12 @@ class GeofenceSpec {
   final double radiusM;
   final bool notifyOnArrival;
   final bool notifyOnDeparture;
+
+  /// "HH:mm" 기기 현지 시각. 둘 다 있어야 창이 된다. 지오펜스 전환은 앱이 죽어
+  /// 있어도 네이티브 리시버가 처리하므로, 조용한 시간은 여기까지 내려가야
+  /// 실제로 조용해진다.
+  final String? quietStart;
+  final String? quietEnd;
 }
 
 class NativeUploadConfig {

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  홈 화면 위젯.
+
+  여기에는 **정확한 위치나 주소를 절대 넣지 않는다.** 위젯은 잠금화면에서
+  주머니에서 꺼낸 사람 누구에게나 보인다. 이름과 대략의 상태까지가 한계다.
+  "누가 괜찮은지"를 보여 주는 것이 목적이지, 어디 있는지를 보여 주는 것이
+  아니다.
+
+  RemoteViews 는 LinearLayout/TextView/ImageView 같은 제한된 위젯만 받는다.
+  ConstraintLayout 은 쓸 수 없다.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_background"
+    android:padding="14dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/widget_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/gyeote_ink"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/widget_attention"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_badge_warm"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:textColor="@color/gyeote_warm"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@color/gyeote_muted"
+        android:textSize="11sp" />
+
+    <!--
+      행은 세 개로 고정한다. RemoteViewsService 를 붙이면 목록을 늘릴 수 있지만
+      위젯에서 네 명 넘게 훑는 일은 드물고, 서비스 하나가 늘면 그만큼 조용히
+      죽을 자리도 늘어난다.
+    -->
+    <LinearLayout
+        android:id="@+id/widget_row_0"
+        style="@style/GyeoteWidgetRow">
+
+        <ImageView
+            android:id="@+id/widget_dot_0"
+            style="@style/GyeoteWidgetDot"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/widget_name_0"
+            style="@style/GyeoteWidgetName" />
+
+        <TextView
+            android:id="@+id/widget_status_0"
+            style="@style/GyeoteWidgetStatus" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_row_1"
+        style="@style/GyeoteWidgetRow">
+
+        <ImageView
+            android:id="@+id/widget_dot_1"
+            style="@style/GyeoteWidgetDot"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/widget_name_1"
+            style="@style/GyeoteWidgetName" />
+
+        <TextView
+            android:id="@+id/widget_status_1"
+            style="@style/GyeoteWidgetStatus" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/widget_row_2"
+        style="@style/GyeoteWidgetRow">
+
+        <ImageView
+            android:id="@+id/widget_dot_2"
+            style="@style/GyeoteWidgetDot"
+            android:contentDescription="@null" />
+
+        <TextView
+            android:id="@+id/widget_name_2"
+            style="@style/GyeoteWidgetName" />
+
+        <TextView
+            android:id="@+id/widget_status_2"
+            style="@style/GyeoteWidgetStatus" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/widget_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/gyeote_muted"
+        android:textSize="12sp"
+        android:visibility="gone" />
+</LinearLayout>

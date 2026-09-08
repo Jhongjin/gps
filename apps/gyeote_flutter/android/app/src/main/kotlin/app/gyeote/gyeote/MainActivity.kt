@@ -56,6 +56,14 @@ class MainActivity : FlutterActivity() {
                         GyeoteLocationPayloads.emitPermissionChanged(this, locationManager)
                         result.success(null)
                     }
+                    // 민감 장소만 갈아 끼운다. 전체 정책을 다시 밀면 안심 화면이
+                    // 모드나 일시정지 같은, 자기가 모르는 값을 덮어쓰게 된다.
+                    "setPrivatePlaces" -> {
+                        val places = (call.arguments as? Map<*, *>)?.get("privatePlaces")
+                        GyeoteLocationState.sharingPolicy =
+                            GyeoteLocationState.sharingPolicy + ("privatePlaces" to places)
+                        result.success(null)
+                    }
                     "configureUpload" -> {
                         GyeoteLocationState.uploadConfig = call.arguments as? Map<String, Any?>
                         GyeoteLocationUploadQueue.resetBackoff()
@@ -80,6 +88,21 @@ class MainActivity : FlutterActivity() {
                     }
                     "requestSosFix" -> {
                         startLocationService(LocationForegroundService.ACTION_SOS)
+                        result.success(null)
+                    }
+                    "updateHomeWidget" -> {
+                        // 스냅샷에는 좌표가 들어오지 않는다. fromChannel 이
+                        // 이름·상태·톤만 읽고 나머지는 버린다.
+                        GyeoteWidgetSnapshot.write(
+                            this,
+                            GyeoteWidgetSnapshot.fromChannel(call.arguments as? Map<*, *>),
+                        )
+                        GyeoteCircleWidget.refresh(this)
+                        result.success(null)
+                    }
+                    "clearHomeWidget" -> {
+                        GyeoteWidgetSnapshot.clear(this)
+                        GyeoteCircleWidget.refresh(this)
                         result.success(null)
                     }
                     else -> result.notImplemented()
@@ -160,9 +183,10 @@ class MainActivity : FlutterActivity() {
     private fun registerGeofences(arguments: Any?, result: MethodChannel.Result) {
         val payload = arguments as? Map<*, *> ?: throw IllegalArgumentException("registerGeofences requires a map payload.")
         val rawGeofences = payload["geofences"] as? List<*> ?: emptyList<Any?>()
-        val geofences = rawGeofences
-            .mapNotNull { geofenceFromPayload(it as? Map<*, *>) }
-            .take(20)
+        val geofencePayloads = rawGeofences.filterIsInstance<Map<*, *>>().take(20)
+        val geofences = geofencePayloads.mapNotNull { geofenceFromPayload(it) }
+        // 리시버는 앱이 죽어 있어도 돈다. 창은 메모리가 아니라 저장소에 둔다.
+        GyeoteQuietHours.store(this, geofencePayloads)
 
         val client = LocationServices.getGeofencingClient(this)
         val pendingIntent = geofencePendingIntent()

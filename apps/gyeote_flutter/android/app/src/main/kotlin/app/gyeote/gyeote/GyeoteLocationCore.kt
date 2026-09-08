@@ -216,7 +216,21 @@ object GyeoteLocationPayloads {
         )
     }
 
-    private fun sharedCoordinate(location: Location): Map<String, Double> {
+    /**
+     * 공유될 좌표.
+     *
+     * 민감 장소 가림이 정밀도 하향보다 **먼저** 온다. 순서를 바꾸면 반올림된
+     * 값이 반경 밖으로 밀려 나가 가림이 걸리지 않는 경우가 생긴다. 가림이
+     * 걸린 뒤에는 이미 중심으로 스냅된 값이라 더 뭉갤 것이 없다.
+     */
+    @androidx.annotation.VisibleForTesting
+    internal fun sharedCoordinate(location: Location): Map<String, Double> {
+        val places = GyeotePrivatePlaces.fromPolicy(GyeoteLocationState.sharingPolicy)
+        val covering = GyeotePrivatePlaces.covering(places, location.latitude, location.longitude)
+        if (covering != null) {
+            return mapOf("latitude" to covering.lat, "longitude" to covering.lng)
+        }
+
         return when (sharingMode()) {
             "area" -> mapOf(
                 "latitude" to round(location.latitude * 1000.0) / 1000.0,

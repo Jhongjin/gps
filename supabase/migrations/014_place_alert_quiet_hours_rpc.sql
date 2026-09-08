@@ -1,6 +1,10 @@
+-- 입력 인자 이름이 반환 테이블의 quiet_hours 칼럼과 겹치면 PL/pgSQL 이
+-- "parameter name used more than once" 로 컴파일을 거부한다. 이 파일은
+-- 프로덕션에 올라간 적이 없어서 그 사실이 tools/check_migrations_local.py 로
+-- 빈 클러스터에 적용해 보기 전까지 드러나지 않았다.
 create or replace function public.set_place_alert_quiet_hours(
   alert_id uuid,
-  quiet_hours jsonb
+  new_quiet_hours jsonb
 )
 returns table (
   id uuid,
@@ -25,7 +29,7 @@ as $$
 declare
   current_user_id uuid := auth.uid();
   target_alert public.place_alerts%rowtype;
-  normalized_quiet_hours jsonb := coalesce(quiet_hours, '{}'::jsonb);
+  normalized_quiet_hours jsonb := coalesce(new_quiet_hours, '{}'::jsonb);
 begin
   if current_user_id is null then
     raise exception 'not_authenticated';

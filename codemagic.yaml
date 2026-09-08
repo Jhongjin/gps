@@ -1,0 +1,109 @@
+# Codemagic 워크플로. 이 저장소는 Windows 에서 작업하고 Mac 이 없다.
+# 저장소를 Codemagic 에 연결하면 Mac 러너가 iOS 를 빌드하고 TestFlight 까지 올린다.
+#
+# 연결할 때 Codemagic UI 에서 채울 것:
+#   - App Store Connect 연동 (팀 → Integrations → App Store Connect, API 키)
+#   - 환경변수 그룹 `gyeote_backend`:
+#       SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, INVITE_BASE_URL, PRIVACY_POLICY_URL,
+#       MAP_TILE_URL, MAP_TILE_ATTRIBUTION
+#   - iOS 자동 서명은 Codemagic 이 API 키로 인증서·프로파일을 만든다.
+#
+# 이 파일에는 비밀이 없다. 값은 전부 Codemagic 의 암호화된 환경변수에서 온다.
+
+workflows:
+  ios-testflight:
+    name: iOS → TestFlight
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    environment:
+      groups:
+        - gyeote_backend
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: app.gyeote.gyeote
+    integrations:
+      app_store_connect: gyeote-asc
+    scripts:
+      - name: Flutter 의존성
+        script: |
+          cd apps/gyeote_flutter
+          flutter pub get
+      - name: 검사 (analyze · test)
+        script: |
+          cd apps/gyeote_flutter
+          flutter analyze
+          flutter test
+      - name: iOS 순수 로직 검사
+        script: |
+          python3 tools/check_ios_logic.py
+      - name: CocoaPods
+        script: |
+          cd apps/gyeote_flutter/ios
+          pod install
+      - name: 서명 프로파일 적용
+        script: |
+          xcode-project use-profiles
+      - name: IPA 빌드
+        script: |
+          cd apps/gyeote_flutter
+          flutter build ipa --release \
+            --build-number=$PROJECT_BUILD_NUMBER \
+            --export-options-plist=/Users/builder/export_options.plist \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY \
+            --dart-define=INVITE_BASE_URL=$INVITE_BASE_URL \
+            --dart-define=PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL \
+            --dart-define=MAP_TILE_URL=$MAP_TILE_URL \
+            --dart-define=MAP_TILE_ATTRIBUTION="$MAP_TILE_ATTRIBUTION"
+    artifacts:
+      - apps/gyeote_flutter/build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - 내부 테스터
+
+  android-aab:
+    name: Android → AAB
+    max_build_duration: 45
+    instance_type: linux_x2
+    environment:
+      groups:
+        - gyeote_backend
+        - gyeote_android_signing   # CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_ALIAS, CM_KEY_PASSWORD
+      flutter: stable
+      java: 17
+    scripts:
+      - name: 업로드 키 복원
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > apps/gyeote_flutter/android/upload-keystore.jks
+          cat > apps/gyeote_flutter/android/key.properties <<EOF
+          storeFile=../upload-keystore.jks
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          keyPassword=$CM_KEY_PASSWORD
+          EOF
+      - name: 검사
+        script: |
+          cd apps/gyeote_flutter
+          flutter pub get
+          flutter analyze
+          flutter test
+      - name: AAB 빌드
+        script: |
+          cd apps/gyeote_flutter
+          flutter build appbundle --release \
+            --build-number=$PROJECT_BUILD_NUMBER \
+            --dart-define=SUPABASE_URL=$SUPABASE_URL \
+            --dart-define=SUPABASE_PUBLISHABLE_KEY=$SUPABASE_PUBLISHABLE_KEY \
+            --dart-define=INVITE_BASE_URL=$INVITE_BASE_URL \
+            --dart-define=PRIVACY_POLICY_URL=$PRIVACY_POLICY_URL \
+            --dart-define=MAP_TILE_URL=$MAP_TILE_URL \
+            --dart-define=MAP_TILE_ATTRIBUTION="$MAP_TILE_ATTRIBUTION"
+    artifacts:
+      - apps/gyeote_flutter/build/app/outputs/bundle/release/*.aab

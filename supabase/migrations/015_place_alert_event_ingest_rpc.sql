@@ -19,6 +19,11 @@ language plpgsql
 security definer
 set search_path = public
 as $$
+-- 반환 테이블 칼럼(place_alert_id, dedupe_key ...)과 같은 이름을 SQL 문에서
+-- 한정 없이 쓰면 PL/pgSQL 이 변수인지 칼럼인지 모른다며 죽는다. ON CONFLICT
+-- 의 칼럼 목록은 표 이름으로 한정할 수 없으니, 이 함수 안에서는 칼럼을 우선한다.
+-- 프로덕션에 올라간 적 없는 파일이라 부정 테스트를 돌리기 전까지 안 보였다.
+#variable_conflict use_column
 declare
   current_user_id uuid := auth.uid();
   target_alert public.place_alerts%rowtype;

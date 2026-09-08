@@ -1,9 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
+import '../../core/privacy/private_place.dart';
+import '../../core/privacy/private_place_store.dart';
+import 'viewer_log_view.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../theme/gyeote_theme.dart';
 
 enum _BatteryMode {
@@ -19,6 +24,7 @@ class PrivacyScreen extends StatefulWidget {
     this.privacyRepository,
     this.locationBridge,
     this.onSignOut,
+    this.privacyPolicyUrl,
   });
 
   final CircleRepository? circleRepository;
@@ -26,12 +32,21 @@ class PrivacyScreen extends StatefulWidget {
   final LocationBridge? locationBridge;
   final Future<void> Function()? onSignOut;
 
+  /// 스토어 양식에 적는 것과 같은 주소. 앱 안에서도 열 수 있어야 한다.
+  final String? privacyPolicyUrl;
+
   @override
   State<PrivacyScreen> createState() => _PrivacyScreenState();
 }
 
 class _PrivacyScreenState extends State<PrivacyScreen> {
   String? _statusMessage;
+
+  /// 오류 색을 문구 내용으로 추측하지 않기 위한 플래그.
+  /// 예전에는 '못했습니다' 부분 문자열로 판별해서, 번역하는 순간 조용히 깨졌다.
+  bool _statusIsError = false;
+
+  AppL10n get _l10n => AppL10n.of(context);
   bool _isPausing = false;
   bool _isRequestingData = false;
   bool _isSavingAds = false;
@@ -41,6 +56,10 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   _BatteryMode _batteryMode = _BatteryMode.balanced;
   PermissionSnapshot? _permissionSnapshot;
   String? _permissionStatusMessage;
+  List<PrivatePlace> _privatePlaces = const [];
+  bool _isAddingPrivatePlace = false;
+  List<ViewerLogEntry>? _viewerLog;
+  bool _viewerLogFailed = false;
 
   bool get _hasBackend =>
       widget.circleRepository != null && widget.privacyRepository != null;
@@ -56,6 +75,8 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     super.initState();
     _loadAdPreferences();
     _loadPermissionSnapshot();
+    _loadPrivatePlaces();
+    _loadViewerLog();
   }
 
   @override
@@ -87,7 +108,10 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
       });
     } catch (_) {
       if (mounted) {
-        setState(() => _statusMessage = '광고 설정을 불러오지 못했습니다.');
+        setState(() {
+        _statusMessage = _l10n.privacyAdsLoadFailed;
+        _statusIsError = true;
+      });
       }
     }
   }
@@ -96,7 +120,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     final bridge = widget.locationBridge;
     if (!_supportsNativeLocation || bridge == null) {
       setState(
-          () => _permissionStatusMessage = 'Android/iOS 빌드에서 기기 권한을 확인합니다.');
+          () => _permissionStatusMessage = _l10n.privacyPermissionBuildOnly);
       return;
     }
 
@@ -118,7 +142,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
       if (mounted) {
         setState(() {
           _isLoadingPermissions = false;
-          _permissionStatusMessage = '기기 권한 상태를 확인하지 못했습니다.';
+          _permissionStatusMessage = _l10n.privacyPermissionFailed;
         });
       }
     }
@@ -139,13 +163,17 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
 
   Future<void> _pauseSharing() async {
     if (!_hasBackend) {
-      setState(() => _statusMessage = 'Supabase 연결 후 공유를 멈출 수 있습니다.');
+      setState(() {
+        _statusMessage = _l10n.privacyPauseNeedsBackend;
+        _statusIsError = true;
+      });
       return;
     }
 
     setState(() {
       _isPausing = true;
       _statusMessage = null;
+      _statusIsError = false;
     });
 
     try {
@@ -159,11 +187,17 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         ),
       );
       if (mounted) {
-        setState(() => _statusMessage = '1시간 동안 위치 공유를 멈췄습니다.');
+        setState(() {
+        _statusMessage = _l10n.privacyPausedNotice;
+        _statusIsError = false;
+      });
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _statusMessage = '공유 멈춤을 저장하지 못했습니다.');
+        setState(() {
+        _statusMessage = _l10n.privacyPauseFailed;
+        _statusIsError = true;
+      });
       }
     } finally {
       if (mounted) {
@@ -172,28 +206,123 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     }
   }
 
+  /// 기록을 지금 지운다. 확인을 한 번 받는다 — 되돌릴 수 없다.
+  Future<void> _deleteHistory() async {
+    final repository = widget.privacyRepository;
+    if (repository == null) {
+      _setStatus(_l10n.privacyDataNeedsBackend, isError: true);
+      return;
+    }
+    final confirmed = await _confirm(
+      title: _l10n.privacyDeleteHistoryTitle,
+      body: _l10n.privacyDeleteHistoryBody,
+      action: _l10n.privacyDataDelete,
+    );
+    if (!confirmed || !mounted) return;
+
+    setState(() => _isRequestingData = true);
+    try {
+      final removed = await repository.deleteLocationHistory();
+      if (mounted) _setStatus(_l10n.privacyDeleteHistoryDone(removed), isError: false);
+    } catch (_) {
+      if (mounted) _setStatus(_l10n.privacyDataRequestFailed, isError: true);
+    } finally {
+      if (mounted) setState(() => _isRequestingData = false);
+    }
+  }
+
+  /// 계정을 지금 지운다. 서클·기록·열람 기록이 함께 사라진다.
+  Future<void> _deleteAccount() async {
+    final repository = widget.privacyRepository;
+    if (repository == null) {
+      _setStatus(_l10n.privacyDataNeedsBackend, isError: true);
+      return;
+    }
+    final confirmed = await _confirm(
+      title: _l10n.privacyDeleteAccountTitle,
+      body: _l10n.privacyDeleteAccountBody,
+      action: _l10n.privacyDeleteAccount,
+    );
+    if (!confirmed || !mounted) return;
+
+    setState(() => _isRequestingData = true);
+    try {
+      await repository.deleteAccount();
+      // 서버에서 사용자가 사라졌다. 남은 세션 토큰은 더 이상 아무도 아니다.
+      await widget.onSignOut?.call();
+    } catch (_) {
+      if (mounted) _setStatus(_l10n.privacyDeleteAccountFailed, isError: true);
+    } finally {
+      if (mounted) setState(() => _isRequestingData = false);
+    }
+  }
+
+  Future<bool> _confirm({
+    required String title,
+    required String body,
+    required String action,
+  }) async {
+    final palette = context.palette;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(body),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(_l10n.privacyCancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: palette.alert,
+              foregroundColor: palette.surface,
+            ),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(action),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
+  Future<void> _openPrivacyPolicy() async {
+    final url = widget.privacyPolicyUrl;
+    if (url == null || url.isEmpty) return;
+    final ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    if (!ok && mounted) _setStatus(_l10n.privacyPolicyOpenFailed, isError: true);
+  }
+
   Future<void> _requestData(DataRequestType type) async {
     final repository = widget.privacyRepository;
     if (repository == null) {
-      setState(() => _statusMessage = 'Supabase 연결 후 데이터 요청을 보낼 수 있습니다.');
+      setState(() {
+        _statusMessage = _l10n.privacyDataNeedsBackend;
+        _statusIsError = true;
+      });
       return;
     }
 
     setState(() {
       _isRequestingData = true;
       _statusMessage = null;
+      _statusIsError = false;
     });
 
     try {
       await repository.requestData(type);
       if (mounted) {
         setState(() => _statusMessage = type == DataRequestType.export
-            ? '데이터 내보내기 요청을 보냈습니다.'
-            : '기록 삭제 요청을 보냈습니다.');
+            ? _l10n.privacyDataExportSent
+            : _l10n.privacyDataDeleteSent);
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _statusMessage = '데이터 요청을 보내지 못했습니다.');
+        setState(() {
+        _statusMessage = _l10n.privacyDataRequestFailed;
+        _statusIsError = true;
+      });
       }
     } finally {
       if (mounted) {
@@ -208,7 +337,10 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
   }) async {
     final repository = widget.privacyRepository;
     if (repository == null) {
-      setState(() => _statusMessage = 'Supabase 연결 후 광고 설정을 저장할 수 있습니다.');
+      setState(() {
+        _statusMessage = _l10n.privacyAdsNeedsBackend;
+        _statusIsError = true;
+      });
       return;
     }
 
@@ -221,6 +353,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     setState(() {
       _isSavingAds = true;
       _statusMessage = null;
+      _statusIsError = false;
       _personalizedAdsEnabled = nextPreferences.personalizedAdsEnabled;
       _sensitiveCategoriesBlocked = nextPreferences.sensitiveCategoriesBlocked;
     });
@@ -228,11 +361,17 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     try {
       await repository.updateAdPreferences(nextPreferences);
       if (mounted) {
-        setState(() => _statusMessage = '광고 설정을 저장했습니다.');
+        setState(() {
+        _statusMessage = _l10n.privacyAdsSaved;
+        _statusIsError = false;
+      });
       }
     } catch (_) {
       if (mounted) {
-        setState(() => _statusMessage = '광고 설정을 저장하지 못했습니다.');
+        setState(() {
+        _statusMessage = _l10n.privacyAdsSaveFailed;
+        _statusIsError = true;
+      });
       }
     } finally {
       if (mounted) {
@@ -241,11 +380,115 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
     }
   }
 
+  Future<void> _loadViewerLog() async {
+    final repository = widget.circleRepository;
+    if (repository == null) return;
+
+    try {
+      final entries = await repository.listViewerLog(limit: 20);
+      if (!mounted) return;
+      setState(() {
+        _viewerLog = entries;
+        _viewerLogFailed = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _viewerLog = const [];
+        _viewerLogFailed = true;
+      });
+    }
+  }
+
+  Future<void> _loadPrivatePlaces() async {
+    final places = await const PrivatePlaceStore().load();
+    if (!mounted) return;
+    setState(() => _privatePlaces = places);
+  }
+
+  /// 지금 있는 곳을 민감 장소로 등록한다.
+  ///
+  /// 지도에서 점을 찍게 하지 않는 이유는, 이걸 설정하는 사람은 대개 그 장소에
+  /// 서 있기 때문이다. 지도 피커를 붙이면 단계가 늘고, 늘어난 단계만큼 안 쓰게
+  /// 된다.
+  Future<void> _addPrivatePlaceHere() async {
+    final bridge = widget.locationBridge;
+    if (bridge == null) return;
+
+    if (_privatePlaces.length >= PrivatePlaceStore.maxPlaces) {
+      _setStatus(_l10n.privatePlacesFull(PrivatePlaceStore.maxPlaces),
+          isError: true);
+      return;
+    }
+
+    setState(() => _isAddingPrivatePlace = true);
+    try {
+      final sample = await bridge.getLastKnownLocation();
+      if (!mounted) return;
+      if (sample == null) {
+        _setStatus(_l10n.privatePlacesNoFix, isError: true);
+        return;
+      }
+
+      // 등록에는 **원시 좌표**를 쓴다. 이미 가려진 좌표로 중심을 잡으면 반경이
+      // 실제 위치에서 밀려나 정작 집이 반경 밖에 남는다.
+      final draft = await _askPrivatePlaceDetails();
+      if (!mounted || draft == null) return;
+
+      final place = PrivatePlace(
+        id: DateTime.now().microsecondsSinceEpoch.toString(),
+        name: draft.name,
+        latitude: sample.rawCoordinate.latitude,
+        longitude: sample.rawCoordinate.longitude,
+        radiusM: draft.radiusM,
+      );
+
+      await _savePrivatePlaces([..._privatePlaces, place]);
+      if (mounted) _setStatus(_l10n.privatePlacesSaved, isError: false);
+    } catch (_) {
+      if (mounted) _setStatus(_l10n.privatePlacesNoFix, isError: true);
+    } finally {
+      if (mounted) setState(() => _isAddingPrivatePlace = false);
+    }
+  }
+
+  Future<void> _removePrivatePlace(String id) async {
+    await _savePrivatePlaces(
+      _privatePlaces.where((place) => place.id != id).toList(),
+    );
+    if (mounted) _setStatus(_l10n.privatePlacesRemoved, isError: false);
+  }
+
+  Future<void> _savePrivatePlaces(List<PrivatePlace> places) async {
+    await const PrivatePlaceStore().save(places);
+    // 저장과 적용이 갈리면 화면은 등록됐다고 하는데 좌표는 계속 정확하게
+    // 나간다. 그래서 저장 직후에 곧바로 밀어 넣는다.
+    await widget.locationBridge?.setPrivatePlaces(places);
+    if (mounted) setState(() => _privatePlaces = places);
+  }
+
+  Future<({String name, int radiusM})?> _askPrivatePlaceDetails() {
+    return showModalBottomSheet<({String name, int radiusM})>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) => const _PrivatePlaceComposer(),
+    );
+  }
+
+  void _setStatus(String message, {required bool isError}) {
+    setState(() {
+      _statusMessage = message;
+      _statusIsError = isError;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final statusColor = (_statusMessage?.contains('못했습니다') ?? false)
-        ? GyeoteColors.danger
-        : GyeoteColors.primary;
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
+    final statusColor = _statusIsError ? palette.alert : palette.brand;
 
     return ListView(
       padding: const EdgeInsets.all(20),
@@ -256,12 +499,12 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('안심 설정',
+                  Text(l10n.privacyTitle,
                       style:
-                          TextStyle(fontSize: 28, fontWeight: FontWeight.w900)),
+                          const TextStyle(fontSize: 28, fontWeight: FontWeight.w700)),
                   const SizedBox(height: 4),
-                  const Text('공유, 조회 기록, 광고, 삭제 요청',
-                      style: TextStyle(color: GyeoteColors.muted)),
+                  Text(l10n.privacySubtitle,
+                      style: TextStyle(color: palette.muted)),
                   if (_statusMessage != null) ...[
                     const SizedBox(height: 4),
                     Text(_statusMessage!,
@@ -275,15 +518,15 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
               children: [
                 FilledButton.tonal(
                   style: FilledButton.styleFrom(
-                    backgroundColor: GyeoteColors.dangerSoft,
-                    foregroundColor: GyeoteColors.danger,
+                    backgroundColor: palette.alertSoft,
+                    foregroundColor: palette.alert,
                   ),
                   onPressed: _isPausing
                       ? null
                       : () async {
                           await _pauseSharing();
                         },
-                  child: Text(_isPausing ? '저장 중' : '공유 멈춤'),
+                  child: Text(_isPausing ? l10n.privacySaving : l10n.privacyPauseSharing),
                 ),
                 if (widget.onSignOut != null) ...[
                   const SizedBox(height: 6),
@@ -292,7 +535,7 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
                       await widget.onSignOut!();
                     },
                     icon: const Icon(Icons.logout_outlined, size: 18),
-                    label: const Text('로그아웃'),
+                    label: Text(l10n.signOut),
                   ),
                 ],
               ],
@@ -314,7 +557,19 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
           onRefresh: _loadPermissionSnapshot,
         ),
         const SizedBox(height: 12),
-        const _ViewerLogCard(),
+        _PrivatePlacesCard(
+          places: _privatePlaces,
+          isAdding: _isAddingPrivatePlace,
+          canAdd: widget.locationBridge != null,
+          onAdd: _addPrivatePlaceHere,
+          onRemove: _removePrivatePlace,
+        ),
+        const SizedBox(height: 12),
+        _ViewerLogCard(
+          entries: _viewerLog,
+          failed: _viewerLogFailed,
+          repository: widget.circleRepository,
+        ),
         const SizedBox(height: 12),
         _AdsCard(
           personalizedAdsEnabled: _personalizedAdsEnabled,
@@ -329,7 +584,10 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         _DataRequestCard(
           isLoading: _isRequestingData,
           onExport: () => _requestData(DataRequestType.export),
-          onDeleteHistory: () => _requestData(DataRequestType.deleteHistory),
+          onDeleteHistory: _deleteHistory,
+          onDeleteAccount: _deleteAccount,
+          onOpenPrivacyPolicy:
+              widget.privacyPolicyUrl == null ? null : _openPrivacyPolicy,
         ),
       ],
     );
@@ -341,13 +599,14 @@ class _SharingModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _PrivacyCard(
-      title: '공유 범위',
+    final l10n = AppL10n.of(context);
+    return _PrivacyCard(
+      title: l10n.privacySharingScopeTitle,
       child: Column(
         children: [
-          _ModeRow(label: '가족 서클', value: '균형 공유', detail: '현재 위치를 보정해서 표시'),
-          _ModeRow(label: '동행 모드', value: '15분 남음', detail: '준과 상호 동의 완료 후 시작'),
-          _ModeRow(label: '친구 서클', value: '동네만', detail: '정확 좌표 숨김'),
+          _ModeRow(label: l10n.privacyCircleFamily, value: l10n.privacyModeBalancedTitle, detail: l10n.privacyModeAdjusted),
+          _ModeRow(label: l10n.privacyCompanionMode, value: l10n.privacyCompanion15MinLeft, detail: l10n.privacyCompanionConsentNote),
+          _ModeRow(label: l10n.privacyCircleFriends, value: l10n.precisionArea, detail: l10n.privacyModeHidesExact),
         ],
       ),
     );
@@ -365,9 +624,10 @@ class _BatteryModeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     return _PrivacyCard(
-      title: '배터리 모드',
-      trailing: _Badge(text: _batteryModeBadge(mode)),
+      title: l10n.privacyBatteryTitle,
+      trailing: _Badge(text: _batteryModeBadge(l10n, mode)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -375,21 +635,21 @@ class _BatteryModeCard extends StatelessWidget {
             width: double.infinity,
             child: SegmentedButton<_BatteryMode>(
               showSelectedIcon: false,
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: _BatteryMode.live,
-                  icon: Icon(Icons.speed_outlined),
-                  label: Text('실시간'),
+                  icon: const Icon(Icons.speed_outlined),
+                  label: Text(l10n.privacyBatteryRealtime),
                 ),
                 ButtonSegment(
                   value: _BatteryMode.balanced,
-                  icon: Icon(Icons.tune_outlined),
-                  label: Text('균형'),
+                  icon: const Icon(Icons.tune_outlined),
+                  label: Text(l10n.precisionBalanced),
                 ),
                 ButtonSegment(
                   value: _BatteryMode.saver,
-                  icon: Icon(Icons.battery_saver_outlined),
-                  label: Text('절전'),
+                  icon: const Icon(Icons.battery_saver_outlined),
+                  label: Text(l10n.privacyBatterySaver),
                 ),
               ],
               selected: {mode},
@@ -402,9 +662,9 @@ class _BatteryModeCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           _ModeRow(
-            label: _batteryModeTitle(mode),
-            value: _batteryModeInterval(mode),
-            detail: _batteryModeDetail(mode),
+            label: _batteryModeTitle(l10n, mode),
+            value: _batteryModeInterval(l10n, mode),
+            detail: _batteryModeDetail(l10n, mode),
           ),
         ],
       ),
@@ -427,12 +687,13 @@ class _PermissionHealthCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
     final current = snapshot;
 
     return _PrivacyCard(
-      title: '권한 상태',
+      title: l10n.privacyPermissionTitle,
       trailing: IconButton.filledTonal(
-        tooltip: '권한 상태 새로고침',
+        tooltip: l10n.privacyPermissionRefresh,
         onPressed: isLoading
             ? null
             : () async {
@@ -453,46 +714,46 @@ class _PermissionHealthCard extends StatelessWidget {
             const SizedBox(height: 10),
           ],
           _ModeRow(
-            label: '위치 권한',
+            label: l10n.privacyPermissionLocation,
             value: current == null
-                ? '기기 빌드'
+                ? l10n.privacyPermissionDeviceBuild
                 : current.foregroundGranted
-                    ? '앱 사용 중'
-                    : '대기',
+                    ? l10n.privacyPermissionWhileInUse
+                    : l10n.privacyPending,
             detail: current == null
-                ? 'Android/iOS에서 실제 권한을 확인합니다.'
+                ? l10n.privacyPermissionBuildOnlyShort
                 : current.foregroundGranted
-                    ? '지도와 동행 모드의 기본 위치 공유'
-                    : '위치 공유 시작 전에 권한 안내가 필요합니다.',
+                    ? l10n.privacySharingScopeBody
+                    : l10n.privacyPermissionEducationNote,
           ),
           _ModeRow(
-            label: '배경 위치',
+            label: l10n.privacyPermissionBackground,
             value: current == null
-                ? '필요 시'
+                ? l10n.privacyPermissionWhenNeeded
                 : current.backgroundGranted
-                    ? '허용됨'
-                    : '필요 시',
-            detail: '동행, 장소 알림처럼 켜진 기능에서 단계적으로 요청',
+                    ? l10n.privacyPermissionGranted
+                    : l10n.privacyPermissionWhenNeeded,
+            detail: l10n.privacyPermissionStagedNote,
           ),
           _ModeRow(
-            label: '정확한 위치',
+            label: l10n.privacyModePreciseTitle,
             value: current == null
-                ? '확인 전'
+                ? l10n.privacyPermissionUnknown
                 : current.preciseGranted
-                    ? '정확'
-                    : '대략',
+                    ? l10n.precisionPrecise
+                    : l10n.privacyModeApprox,
             detail: current?.preciseGranted == false
-                ? '대략 위치에서는 반경 원으로 표시됩니다.'
-                : '공유 정밀도에 맞춰 지도 반경을 표시합니다.',
+                ? l10n.privacyModeApproxBody
+                : l10n.privacyModePreciseBody,
           ),
           _ModeRow(
-            label: '알림',
+            label: l10n.privacyPermissionNotifications,
             value: current == null
-                ? '안심 알림'
+                ? l10n.privacyNotificationsTitle
                 : current.notificationsGranted
-                    ? '허용됨'
-                    : '대기',
-            detail: '도착 확인, 장소 알림, SOS 수신',
+                    ? l10n.privacyPermissionGranted
+                    : l10n.privacyPending,
+            detail: l10n.privacyNotificationsBody,
           ),
         ],
       ),
@@ -507,22 +768,24 @@ class _PermissionNotice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surfaceAlt,
+        color: palette.surfaceAlt,
       ),
       child: Row(
         children: [
-          const Icon(Icons.info_outline, size: 18, color: GyeoteColors.primary),
+          Icon(Icons.info_outline, size: 18, color: palette.brand),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
               message,
-              style: const TextStyle(color: GyeoteColors.muted, fontSize: 12),
+              style: TextStyle(color: palette.muted, fontSize: 12),
             ),
           ),
         ],
@@ -532,18 +795,63 @@ class _PermissionNotice extends StatelessWidget {
 }
 
 class _ViewerLogCard extends StatelessWidget {
-  const _ViewerLogCard();
+  const _ViewerLogCard({
+    required this.entries,
+    required this.failed,
+    required this.repository,
+  });
+
+  /// null 이면 아직 읽는 중. 빈 목록과 다르다.
+  final List<ViewerLogEntry>? entries;
+  final bool failed;
+  final CircleRepository? repository;
+
+  /// 카드에는 세 줄까지만. 나머지는 시트에서 본다.
+  static const int _preview = 3;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+    final repo = repository;
+    final rows = entries;
+
     return _PrivacyCard(
-      title: '최근 조회',
-      trailing: TextButton(onPressed: () {}, child: const Text('전체')),
-      child: const Column(
+      title: l10n.privacyViewerLogTitle,
+      trailing: repo == null || rows == null || rows.isEmpty
+          ? null
+          : TextButton(
+              onPressed: () => showViewerLogSheet(context, repository: repo),
+              child: Text(l10n.viewerLogSeeAll),
+            ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _ModeRow(label: '미라', value: '방금', detail: '가족 서클 · 균형 위치'),
-          _ModeRow(label: '준', value: '12분 전', detail: '동행 세션 · 경로 꼬리'),
-          _ModeRow(label: '하나', value: '어제', detail: '친구 서클 · 동네만'),
+          if (repo == null)
+            Text(
+              // 데모에서는 가짜 이름을 그리지 않는다. 예전에는 여기에 데모
+              // 이름 세 개가 진짜 열람 기록인 것처럼 박혀 있었다.
+              l10n.viewerLogNeedsBackend,
+              style: TextStyle(fontSize: 12, color: palette.muted),
+            )
+          else if (failed)
+            Text(
+              l10n.viewerLogLoadFailed,
+              style: TextStyle(fontSize: 12, color: palette.alert),
+            )
+          else if (rows == null)
+            Text(
+              l10n.privacySaving,
+              style: TextStyle(fontSize: 12, color: palette.muted),
+            )
+          else if (rows.isEmpty)
+            Text(
+              l10n.viewerLogEmpty,
+              style: TextStyle(fontSize: 12, color: palette.inkMuted),
+            )
+          else
+            for (final entry in rows.take(_preview))
+              ViewerLogRow(entry: entry),
         ],
       ),
     );
@@ -567,16 +875,19 @@ class _AdsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
     return _PrivacyCard(
-      title: '광고와 데이터',
-      trailing: const _Badge(text: '정밀 위치 광고 차단'),
+      title: l10n.privacyAdsTitle,
+      trailing: _Badge(text: l10n.privacyAdsNoPreciseTargeting),
       child: Column(
         children: [
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('개인화 광고'),
-            subtitle: const Text('동의 전에는 비개인화 광고만 사용',
-                style: TextStyle(color: GyeoteColors.muted)),
+            title: Text(l10n.privacyAdsPersonalized),
+            subtitle: Text(l10n.privacyAdsPersonalizedBody,
+                style: TextStyle(color: palette.muted)),
             value: personalizedAdsEnabled,
             onChanged: isSaving
                 ? null
@@ -586,9 +897,9 @@ class _AdsCard extends StatelessWidget {
           ),
           SwitchListTile(
             contentPadding: EdgeInsets.zero,
-            title: const Text('민감 카테고리 차단'),
-            subtitle: const Text('가족, 위치, 응급 상황 문맥 보호',
-                style: TextStyle(color: GyeoteColors.muted)),
+            title: Text(l10n.privacyAdsSensitiveBlock),
+            subtitle: Text(l10n.privacyAdsSensitiveBody,
+                style: TextStyle(color: palette.muted)),
             value: sensitiveCategoriesBlocked,
             onChanged: isSaving
                 ? null
@@ -607,23 +918,29 @@ class _DataRequestCard extends StatelessWidget {
     required this.isLoading,
     required this.onExport,
     required this.onDeleteHistory,
+    required this.onDeleteAccount,
+    this.onOpenPrivacyPolicy,
   });
 
   final bool isLoading;
   final Future<void> Function() onExport;
   final Future<void> Function() onDeleteHistory;
+  final Future<void> Function() onDeleteAccount;
+  final Future<void> Function()? onOpenPrivacyPolicy;
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppL10n.of(context);
     return _PrivacyCard(
-      title: '내 데이터',
+      title: l10n.privacyDataTitle,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const _ModeRow(label: '위치 기록', value: '30일', detail: '만료 후 자동 삭제'),
-          const _ModeRow(
-              label: '동행 경로', value: '24시간', detail: '세션 종료 후 요약 보관'),
-          const _ModeRow(label: '조회 로그', value: '30일', detail: '내가 확인 가능'),
+          _ModeRow(label: l10n.privacyDataLocationHistory, value: l10n.privacyRetention30Days, detail: l10n.privacyRetentionAutoDelete),
+          _ModeRow(
+              label: l10n.privacyDataCompanionRoutes, value: l10n.privacyRetention24Hours, detail: l10n.privacyRetentionSummaryOnly),
+          _ModeRow(label: l10n.privacyViewerLogLabel, value: l10n.privacyRetention30Days, detail: l10n.privacyViewerLogNote),
           const SizedBox(height: 10),
           Row(
             children: [
@@ -634,7 +951,7 @@ class _DataRequestCard extends StatelessWidget {
                       : () async {
                           await onExport();
                         },
-                  child: const Text('내보내기'),
+                  child: Text(l10n.privacyDataExport),
                 ),
               ),
               const SizedBox(width: 8),
@@ -645,58 +962,88 @@ class _DataRequestCard extends StatelessWidget {
                       : () async {
                           await onDeleteHistory();
                         },
-                  child: Text(isLoading ? '요청 중' : '기록 삭제'),
+                  child: Text(isLoading ? l10n.privacyRequesting : l10n.privacyDataDelete),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 10),
+          Text(
+            // 내보내기는 사람이 처리한다. 접수라는 사실을 숨기지 않는다.
+            l10n.privacyExportNote,
+            style: TextStyle(fontSize: 11, color: palette.muted),
+          ),
+          const SizedBox(height: 12),
+          Divider(color: palette.line, height: 1),
+          const SizedBox(height: 12),
+          Text(
+            l10n.privacyDeleteAccountBody,
+            style: TextStyle(fontSize: 12, color: palette.inkMuted),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(foregroundColor: palette.alert),
+              onPressed: isLoading ? null : () => onDeleteAccount(),
+              child: Text(l10n.privacyDeleteAccount),
+            ),
+          ),
+          if (onOpenPrivacyPolicy != null) ...[
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: () => onOpenPrivacyPolicy!(),
+              icon: const Icon(Icons.open_in_new, size: 16),
+              label: Text(l10n.privacyPolicyOpen),
+            ),
+          ],
         ],
       ),
     );
   }
 }
 
-String _batteryModeBadge(_BatteryMode mode) {
+String _batteryModeBadge(AppL10n l10n, _BatteryMode mode) {
   switch (mode) {
     case _BatteryMode.live:
-      return '빠른 갱신';
+      return l10n.privacyBatteryFast;
     case _BatteryMode.balanced:
-      return '추천';
+      return l10n.privacyRecommended;
     case _BatteryMode.saver:
-      return '느린 갱신';
+      return l10n.privacyBatterySlow;
   }
 }
 
-String _batteryModeTitle(_BatteryMode mode) {
+String _batteryModeTitle(AppL10n l10n, _BatteryMode mode) {
   switch (mode) {
     case _BatteryMode.live:
-      return '실시간 우선';
+      return l10n.privacyBatteryRealtimeNote;
     case _BatteryMode.balanced:
-      return '균형 우선';
+      return l10n.privacyBatteryBalancedNote;
     case _BatteryMode.saver:
-      return '절전 우선';
+      return l10n.privacyBatterySaverNote;
   }
 }
 
-String _batteryModeInterval(_BatteryMode mode) {
+String _batteryModeInterval(AppL10n l10n, _BatteryMode mode) {
   switch (mode) {
     case _BatteryMode.live:
-      return '15-30초';
+      return l10n.privacyInterval15to30;
     case _BatteryMode.balanced:
-      return '30-90초';
+      return l10n.privacyInterval30to90;
     case _BatteryMode.saver:
-      return '2-5분';
+      return l10n.privacyInterval2to5;
   }
 }
 
-String _batteryModeDetail(_BatteryMode mode) {
+String _batteryModeDetail(AppL10n l10n, _BatteryMode mode) {
   switch (mode) {
     case _BatteryMode.live:
-      return '동행 중 빠르게 업데이트하며 배터리 사용량이 높아질 수 있습니다.';
+      return l10n.privacyCompanionBatteryNote;
     case _BatteryMode.balanced:
-      return '일상 공유에 맞춰 위치 최신성과 배터리를 함께 봅니다.';
+      return l10n.privacyModeBalancedBody;
     case _BatteryMode.saver:
-      return '배터리가 낮을 때 업데이트 간격을 늘리고 주요 알림을 우선합니다.';
+      return l10n.privacyBatteryBody;
   }
 }
 
@@ -713,6 +1060,8 @@ class _ModeRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -722,11 +1071,11 @@ class _ModeRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(label,
-                    style: const TextStyle(fontWeight: FontWeight.w900)),
+                    style: const TextStyle(fontWeight: FontWeight.w700)),
                 const SizedBox(height: 2),
                 Text(detail,
-                    style: const TextStyle(
-                        color: GyeoteColors.muted, fontSize: 12)),
+                    style: TextStyle(
+                        color: palette.muted, fontSize: 12)),
               ],
             ),
           ),
@@ -750,12 +1099,14 @@ class _PrivacyCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(8),
-        color: GyeoteColors.surface,
+        color: palette.surface,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -764,7 +1115,7 @@ class _PrivacyCard extends StatelessWidget {
             children: [
               Expanded(
                   child: Text(title,
-                      style: const TextStyle(fontWeight: FontWeight.w900))),
+                      style: const TextStyle(fontWeight: FontWeight.w700))),
               if (trailing != null) trailing!,
             ],
           ),
@@ -783,19 +1134,201 @@ class _Badge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: GyeoteColors.border),
+        border: Border.all(color: palette.line),
         borderRadius: BorderRadius.circular(6),
-        color: GyeoteColors.surfaceAlt,
+        color: palette.surfaceAlt,
       ),
       child: Text(
         text,
-        style: const TextStyle(
-            color: GyeoteColors.primary,
+        style: TextStyle(
+            color: palette.brand,
             fontSize: 12,
-            fontWeight: FontWeight.w800),
+            fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+/// 민감 장소 카드.
+///
+/// 광고는 여기 들어가지 않는다. 프라이버시 설정 저장 흐름은 스킬 §5 의
+/// 광고 금지 화면이다.
+class _PrivatePlacesCard extends StatelessWidget {
+  const _PrivatePlacesCard({
+    required this.places,
+    required this.isAdding,
+    required this.canAdd,
+    required this.onAdd,
+    required this.onRemove,
+  });
+
+  final List<PrivatePlace> places;
+  final bool isAdding;
+  final bool canAdd;
+  final Future<void> Function() onAdd;
+  final Future<void> Function(String id) onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
+    return _PrivacyCard(
+      title: l10n.privatePlacesTitle,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.privatePlacesBody,
+            style: TextStyle(fontSize: 12, color: palette.muted),
+          ),
+          const SizedBox(height: 10),
+          if (places.isEmpty)
+            Text(
+              l10n.privatePlacesEmpty,
+              style: TextStyle(fontSize: 12, color: palette.inkMuted),
+            )
+          else
+            for (final place in places)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Row(
+                  children: [
+                    Icon(Icons.shield_outlined, size: 16, color: palette.brand),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            place.name.isEmpty
+                                ? l10n.privatePlacesUnnamed
+                                : place.name,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: palette.ink,
+                            ),
+                          ),
+                          Text(
+                            l10n.privatePlacesRadiusValue(place.radiusM),
+                            style:
+                                TextStyle(fontSize: 11, color: palette.muted),
+                          ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => onRemove(place.id),
+                      child: Text(l10n.privatePlacesRemove),
+                    ),
+                  ],
+                ),
+              ),
+          const SizedBox(height: 4),
+          if (canAdd)
+            FilledButton.tonal(
+              onPressed: isAdding ? null : onAdd,
+              child: Text(
+                isAdding
+                    ? l10n.privatePlacesAdding
+                    : l10n.privatePlacesAddHere,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// 이름과 가릴 범위를 받는 시트.
+class _PrivatePlaceComposer extends StatefulWidget {
+  const _PrivatePlaceComposer();
+
+  @override
+  State<_PrivatePlaceComposer> createState() => _PrivatePlaceComposerState();
+}
+
+class _PrivatePlaceComposerState extends State<_PrivatePlaceComposer> {
+  final TextEditingController _name = TextEditingController();
+  int _radiusM = PrivatePlace.radiusPresetsM[1];
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppL10n.of(context);
+    final palette = context.palette;
+
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          20,
+          0,
+          20,
+          24 + MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.privatePlacesTitle,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: palette.ink,
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: _name,
+              autofocus: true,
+              decoration: InputDecoration(
+                labelText: l10n.privatePlacesNameLabel,
+                hintText: l10n.privatePlacesNameHint,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.privatePlacesRadius,
+              style: TextStyle(fontSize: 13, color: palette.inkMuted),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final preset in PrivatePlace.radiusPresetsM)
+                  ChoiceChip(
+                    label: Text(l10n.privatePlacesRadiusValue(preset)),
+                    selected: _radiusM == preset,
+                    onSelected: (_) => setState(() => _radiusM = preset),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () => Navigator.of(context).pop(
+                  (name: _name.text.trim(), radiusM: _radiusM),
+                ),
+                child: Text(l10n.privatePlacesSave),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
