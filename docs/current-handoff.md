@@ -4,18 +4,31 @@ Date: 2026-09-06
 
 ## Migration State (2026-09-06)
 
-The blocker moved. `supabase` CLI is on PATH now (2.109.0), so the SQL-Editor
-workaround is no longer needed. What is still missing is credentials — no
-`.env.local`, and the DB password is deliberately not stored in one.
+**Done (2026-09-08).** Production `usetuwqbzkmywmtgwwdx` was rebuilt with
+`supabase db reset --linked` and the dashboard's Database → Migrations page now
+lists `001`–`020`. REST probes confirm the shape: `delete_my_account`,
+`delete_my_location_history`, `set_place_alert_quiet_hours(alert_id,
+new_quiet_hours)` answer `not_authenticated` for an anonymous caller (they
+exist and gate on `auth.uid()`), `list_viewer_log` returns `[]`. The reset
+wiped the hand-applied tables and every auth user; nothing had rows. Region is
+AWS `ap-northeast-1` (Tokyo) — read from the pooler host `supabase link`
+caches, and now written into the privacy policy as an overseas transfer.
+
+From here on, new migrations go through `tools/apply-migrations.ps1 -Apply`
+(link, list, push) in a terminal that holds `SUPABASE_ACCESS_TOKEN` — the
+project belongs to a different Supabase account than the CLI's stored login,
+so the token lives in the shell, never in a file. `supabase/.temp/` is
+git-ignored because the link caches the pooler connection string there.
+
+The paragraphs below describe the pre-reset state and are kept for context.
 
 `tools/apply-migrations.ps1` makes the apply a two-step: it links, prints the
 local-vs-remote migration list, and stops. `-Apply` pushes. Whoever holds the
 credentials runs it.
 
-Before pushing, read `supabase/README.md`. `007` through `011` were applied by
-hand in the SQL Editor and are almost certainly unrecorded in the remote
-migration table, so a naive `db push` would try to re-run them and `001` along
-with them.
+Before the reset, `007` through `011` had been applied by hand in the SQL
+Editor and were unrecorded in the remote migration table, so a naive `db push`
+would have tried to re-run them and `001` along with them.
 
 `016_quick_reply_statuses.sql` joins the pending set. It widens the
 `check_in_events` status constraint and rewrites `perform_check_in` — the
