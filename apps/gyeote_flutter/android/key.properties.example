@@ -3,7 +3,8 @@
 # 쓰면 업로드 키는 재설정할 수 있지만 그래도 안전한 곳에 백업한다):
 #   keytool -genkey -v -keystore upload-keystore.jks -keyalg RSA -keysize 2048 \
 #     -validity 10000 -alias upload
-storeFile=../upload-keystore.jks
+# android/ 기준 상대 경로 (build.gradle.kts 가 rootProject.file 로 푼다).
+storeFile=upload-keystore.jks
 storePassword=바꾼다
 keyAlias=upload
 keyPassword=바꾼다

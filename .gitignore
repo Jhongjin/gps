@@ -20,6 +20,8 @@ yarn-error.log*
 pnpm-debug.log*
 *.keystore
 *.jks
+# 출시 빌드용 키·URL. tools/release.env.example.ps1 을 복사해 채운 파일.
+tools/release.env.ps1
 *.p8
 *.p12
 *.mobileprovision

@@ -21,7 +21,7 @@
 | 개인정보 처리방침 페이지 | 🟡 **파일 완성, 호스팅 필요** | `docs/site/privacy.html` (원문 `docs/privacy-policy.md`). 법률 검토 뒤 `gyeote.app/privacy` 에 올린다 |
 | 계정 삭제 웹 페이지 | 🟡 **파일 완성, 호스팅 필요** | `docs/site/delete-account.html` → `gyeote.app/delete-account`. Google Play 데이터 안전 양식이 이 URL 을 요구한다 (§3-4) |
 | 아이콘 | ✅ 생성됨 (`docs/store-assets/`) | 디자이너 작업으로 교체 권장. Flutter 기본 아이콘은 거절 사유 |
-| Android 업로드 키 | ❌ **생성 필요** | `android/key.properties.example` 참고. 없으면 디버그 서명 → 거절 |
+| Android 업로드 키 | ✅ 생성됨 (2026-09-08) — **백업 필요** | `android/upload-keystore.jks` + `key.properties` (git 제외). 서명 확인: `CN=Gyeote Upload`. 이 둘을 잃으면 같은 앱으로 업데이트할 수 없다 |
 | iOS 서명·빌드 | 🟡 **파이프라인 준비됨, 연결 필요** | `codemagic.yaml` — 저장소를 Codemagic 에 연결하고 App Store Connect API 키와 환경변수 그룹만 채우면 Mac 러너가 TestFlight 까지 올린다. §2-2 |
 | 백그라운드 위치 선언·영상 | 초안 있음 | `docs/store-review-pack.md` |
 | 광고 SDK | 없음 (자리만) | 지금은 "광고 없음"으로 선언. AdMob 넣으면 데이터 안전·앱 개인정보 다시 |
