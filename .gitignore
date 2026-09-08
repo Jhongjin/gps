@@ -22,6 +22,8 @@ pnpm-debug.log*
 *.jks
 # 출시 빌드용 키·URL. tools/release.env.example.ps1 을 복사해 채운 파일.
 tools/release.env.ps1
+# supabase link 가 남기는 캐시. pooler-url 에 DB 접속 문자열이 들어 있다.
+supabase/.temp/
 *.p8
 *.p12
 *.mobileprovision

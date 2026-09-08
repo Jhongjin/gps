@@ -32,18 +32,21 @@ if ($Target -ne 'web' -and -not (Test-Path (Join-Path $app 'android\key.properti
   throw "android\key.properties 가 없다. 업로드 키 없이 만든 빌드는 디버그 서명이라 Play 가 거절한다."
 }
 
+# PowerShell 7 이 .bat 에 인자를 넘길 때 `{z}` 같은 중괄호와 공백이 든 값을 다시
+# 인용하면서 flutter 가 자기 경로를 명령으로 받는 일이 있었다. cmd 에 한 줄로 넘긴다.
 $defines = @(
-  "--dart-define=SUPABASE_URL=$env:SUPABASE_URL",
-  "--dart-define=SUPABASE_PUBLISHABLE_KEY=$env:SUPABASE_PUBLISHABLE_KEY",
-  "--dart-define=INVITE_BASE_URL=$env:INVITE_BASE_URL",
-  "--dart-define=PRIVACY_POLICY_URL=$env:PRIVACY_POLICY_URL",
-  "--dart-define=MAP_TILE_URL=$env:MAP_TILE_URL",
-  "--dart-define=MAP_TILE_ATTRIBUTION=$env:MAP_TILE_ATTRIBUTION"
-)
+  "SUPABASE_URL=$env:SUPABASE_URL",
+  "SUPABASE_PUBLISHABLE_KEY=$env:SUPABASE_PUBLISHABLE_KEY",
+  "INVITE_BASE_URL=$env:INVITE_BASE_URL",
+  "PRIVACY_POLICY_URL=$env:PRIVACY_POLICY_URL",
+  "MAP_TILE_URL=$env:MAP_TILE_URL",
+  "MAP_TILE_ATTRIBUTION=$env:MAP_TILE_ATTRIBUTION"
+) | ForEach-Object { '"--dart-define=' + $_ + '"' }
+$commandLine = "`"$flutter`" build $Target --release " + ($defines -join ' ')
 
 Push-Location $app
 try {
-  & $flutter build $Target --release @defines
+  cmd /c $commandLine
   if ($LASTEXITCODE -ne 0) { throw "flutter build $Target 실패" }
 
   if ($Target -eq 'appbundle') {
