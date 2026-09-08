@@ -35,9 +35,19 @@ flutter:
   fonts:
     # 한글과 라틴을 metric 이 맞춰진 한 패밀리로 그린다. 근거는
     # assets/fonts/README.md 참조. SIL OFL 1.1.
+    # OTF(CFF) 가 아니라 TTF(glyf) 인 이유도 그 README 에 있다 — 웹에서 굵은
+    # 글자 일부가 네모로 뚫렸다.
     - family: Pretendard
       fonts:
-        - asset: assets/fonts/Pretendard-Regular.otf
+        - asset: assets/fonts/Pretendard-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Pretendard-Bold.otf
+        # 코드는 400 과 700 만 쓰지만 Material 3 기본 스타일은 500(labelLarge)을
+        # 요청한다. 같은 파일을 500·600 에도 걸어 굵기 요청이 패밀리 안에서
+        # 끝나게 한다 — 패밀리 밖으로 나가면 웹은 대체 글꼴 조각을 받아 오고,
+        # 늦게 온 글자는 네모로 남는다.
+        - asset: assets/fonts/Pretendard-Regular.ttf
+          weight: 500
+        - asset: assets/fonts/Pretendard-Bold.ttf
+          weight: 600
+        - asset: assets/fonts/Pretendard-Bold.ttf
           weight: 700

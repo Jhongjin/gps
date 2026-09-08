@@ -197,3 +197,29 @@ AppWidget 서비스에 등록됨**, 알림 관리자에 패키지 등록, WIDGET
 
 준비물(sdkmanager): `cmdline-tools;latest`, `platform-tools`, `emulator`,
 `system-images;android-35;google_apis;x86_64`(약 1.2GB).
+
+## PC 에서 UI 보기 (2026-09-08 추가)
+
+```
+pwsh tools/preview-web.ps1            # 웹 릴리스 빌드 → 127.0.0.1:4174 → 브라우저
+pwsh tools/preview-web.ps1 -SkipBuild
+```
+
+데모 모드(Supabase 없음)다. 브라우저 개발자 도구의 기기 툴바(Ctrl+Shift+M)로
+폰 비율을 본다.
+
+이 화면을 브라우저 자동화로 훑다가 잡은 것 둘:
+
+- **온보딩 "시작하기"가 웹에서 넘어가지 않았다.** 완료 처리가 위치 권한 요청을
+  `await` 하는데 네이티브 브리지가 없는 플랫폼에서 `MissingPluginException` 이
+  나고, 그게 완료 `setState` 를 막았다. "본 것"은 이미 저장된 뒤라 새로고침하면
+  지도가 뜨는, 설명할 수 없는 상태. 권한 요청은 네이티브에서만 부르고, 실패해도
+  완료는 `finally` 로 한다. 회귀 테스트가 브리지가 던지는 상황을 흉내낸다.
+- **버튼·칩 글자 일부가 네모(tofu)였다.** 폰트 파일은 온전했다(한글 11,172자).
+  원인은 `styleFrom(textStyle:)` 과 `ChipThemeData.labelStyle` 이 테마 라벨
+  스타일을 **대체**하면서 `fontFamily` 를 잃은 것 — 그 컴포넌트 글자만 기본
+  글꼴로 떨어지고, 웹(CanvasKit)은 대체 글꼴 조각을 네트워크에서 받다가 늦게 온
+  글자를 네모로 남긴다. Android 는 시스템 글꼴이 대신 그려 줘서 안 보였다.
+  `test/theme_font_test.dart` 가 컴포넌트 테마마다 fontFamily 를 확인한다.
+  같은 김에 폰트를 OTF(CFF)에서 Pretendard 의 TTF 판으로 바꾸고 500·600 굵기도
+  같은 파일에 걸었다 — 굵기 요청이 패밀리 밖으로 나가지 않게.

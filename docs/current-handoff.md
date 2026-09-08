@@ -576,3 +576,15 @@ actual code turned up three things both stores refuse without:
 
 Japan is out of the release scope by decision. The design skill's locale
 order and the guide's country lists reflect that.
+
+## Final pass over the UI in a browser (2026-09-08)
+
+`tools/preview-web.ps1` builds the web release and serves it for viewing on a
+PC. Walking it with browser automation found two real defects the test suites
+had not: onboarding's "시작하기" never completed on a platform without the native
+bridge because the permission request threw and blocked the completing
+`setState`; and button and chip labels dropped their font family because
+`styleFrom(textStyle:)` replaces the theme style, so on web those glyphs came
+from a lazily fetched fallback font and rendered as boxes. Both are fixed and
+pinned by tests. Analyzer clean, `dart fix` has nothing, no stray prints or
+TODOs, and the release web build is 3.3 MB of JS.

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -44,12 +45,26 @@ class _GyeoteAppState extends State<GyeoteApp> {
 
   Future<void> _completeOnboarding({required bool wantsLocation}) async {
     await const OnboardingGate().markSeen();
-    if (wantsLocation) {
-      // 방금 이유를 읽은 직후가 물어보기 가장 좋은 때다.
-      await _locationBridge.requestWhenInUse();
+    try {
+      // 방금 이유를 읽은 직후가 물어보기 가장 좋은 때다. 네이티브 브리지가 없는
+      // 플랫폼(웹)에서는 MissingPluginException 이 나는데, 예전엔 그게 아래
+      // setState 를 막아 "시작하기"를 눌러도 화면이 넘어가지 않았다 — 본 것은
+      // 이미 저장된 뒤라 새로고침하면 지도가 뜨는, 설명할 수 없는 상태였다.
+      // 권한 요청은 실패해도 온보딩 완료를 막을 이유가 못 된다.
+      if (wantsLocation && _supportsNativeLocation) {
+        await _locationBridge.requestWhenInUse();
+      }
+    } catch (_) {
+      // 권한은 지도 화면이 다시 묻는다.
+    } finally {
+      if (mounted) setState(() => _hasSeenOnboarding = true);
     }
-    if (mounted) setState(() => _hasSeenOnboarding = true);
   }
+
+  bool get _supportsNativeLocation =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.android ||
+          defaultTargetPlatform == TargetPlatform.iOS);
 
   @override
   Widget build(BuildContext context) {

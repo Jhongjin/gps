@@ -307,6 +307,7 @@ ThemeData _buildTheme(GyeotePalette palette, Brightness brightness) {
       surfaceTintColor: Colors.transparent,
       labelTextStyle: WidgetStateProperty.resolveWith(
         (states) => TextStyle(
+          fontFamily: 'Pretendard',
           color: states.contains(WidgetState.selected)
               ? palette.brand
               : palette.muted,
@@ -321,7 +322,13 @@ ThemeData _buildTheme(GyeotePalette palette, Brightness brightness) {
         backgroundColor: palette.brand,
         foregroundColor: palette.surface,
         minimumSize: kGyeoteMinTapTarget,
-        textStyle: const TextStyle(fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(
+          // styleFrom 의 textStyle 은 테마 라벨 스타일을 **대체**한다. 여기에
+          // fontFamily 가 없으면 버튼 글자만 기본 글꼴로 떨어지고, 웹에서는
+          // 그 대체 글꼴 조각이 늦게 와서 네모로 뚫린다.
+          fontFamily: 'Pretendard',
+          fontWeight: FontWeight.w700,
+        ),
         shape: const StadiumBorder(),
       ),
     ),
@@ -330,7 +337,13 @@ ThemeData _buildTheme(GyeotePalette palette, Brightness brightness) {
         foregroundColor: palette.ink,
         backgroundColor: palette.surfaceAlt,
         minimumSize: kGyeoteMinTapTarget,
-        textStyle: const TextStyle(fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(
+          // styleFrom 의 textStyle 은 테마 라벨 스타일을 **대체**한다. 여기에
+          // fontFamily 가 없으면 버튼 글자만 기본 글꼴로 떨어지고, 웹에서는
+          // 그 대체 글꼴 조각이 늦게 와서 네모로 뚫린다.
+          fontFamily: 'Pretendard',
+          fontWeight: FontWeight.w700,
+        ),
         side: BorderSide.none,
         shape: const StadiumBorder(),
       ),
@@ -339,7 +352,13 @@ ThemeData _buildTheme(GyeotePalette palette, Brightness brightness) {
       style: TextButton.styleFrom(
         foregroundColor: palette.brand,
         minimumSize: kGyeoteMinTapTarget,
-        textStyle: const TextStyle(fontWeight: FontWeight.w700),
+        textStyle: const TextStyle(
+          // styleFrom 의 textStyle 은 테마 라벨 스타일을 **대체**한다. 여기에
+          // fontFamily 가 없으면 버튼 글자만 기본 글꼴로 떨어지고, 웹에서는
+          // 그 대체 글꼴 조각이 늦게 와서 네모로 뚫린다.
+          fontFamily: 'Pretendard',
+          fontWeight: FontWeight.w700,
+        ),
       ),
     ),
     // cardTheme은 두지 않는다. Material Card 위젯을 쓰는 곳이 없고,
@@ -359,6 +378,7 @@ ThemeData _buildTheme(GyeotePalette palette, Brightness brightness) {
       side: BorderSide.none,
       shape: const StadiumBorder(),
       labelStyle: TextStyle(
+        fontFamily: 'Pretendard',
         color: palette.ink,
         fontWeight: FontWeight.w700,
         fontSize: 13,
