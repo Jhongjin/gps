@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../core/backend/backend_contract.dart';
 import '../../../core/i18n/region_settings.dart';
+import '../../../core/map/map_tile_config.dart';
 import '../../../theme/gyeote_theme.dart';
 import '../map_models.dart';
 import '../route_playback.dart';
@@ -223,13 +224,7 @@ class _RoutePlaybackViewState extends State<RoutePlaybackView>
               ),
             ),
             children: [
-              NightTiles(
-                child: TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.gyeote.app',
-                  maxNativeZoom: 19,
-                ),
-              ),
+              NightTiles(child: gyeoteTiles.layer()),
               PolylineLayer(
                 polylines: [
                   // 전체 경로는 흐리게 깔고, 지나온 만큼만 진하게 덮는다.

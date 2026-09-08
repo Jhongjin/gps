@@ -18,15 +18,15 @@
 | 계정 삭제 (앱 안) | ✅ 안심 화면 → 내 데이터 → 계정 삭제 | 두 스토어의 필수 조건. 서버 함수 `delete_my_account` |
 | 위치 기록 즉시 삭제 | ✅ 안심 화면 | 예전엔 요청만 쌓였고 처리되지 않았다 |
 | 개인정보 처리방침 링크 (앱 안) | ✅ 안심 화면 하단 | 주소: `PRIVACY_POLICY_URL` (기본 `https://gyeote.app/privacy`) |
-| 개인정보 처리방침 페이지 | ❌ **호스팅 필요** | 초안: `docs/privacy-policy.md`. 법률 검토 뒤 게시 |
-| 계정 삭제 웹 페이지 | ❌ **호스팅 필요** | Google Play 는 앱 밖에서도 접근 가능한 URL 을 요구한다 (§3-4) |
+| 개인정보 처리방침 페이지 | 🟡 **파일 완성, 호스팅 필요** | `docs/site/privacy.html` (원문 `docs/privacy-policy.md`). 법률 검토 뒤 `gyeote.app/privacy` 에 올린다 |
+| 계정 삭제 웹 페이지 | 🟡 **파일 완성, 호스팅 필요** | `docs/site/delete-account.html` → `gyeote.app/delete-account`. Google Play 데이터 안전 양식이 이 URL 을 요구한다 (§3-4) |
 | 아이콘 | ✅ 생성됨 (`docs/store-assets/`) | 디자이너 작업으로 교체 권장. Flutter 기본 아이콘은 거절 사유 |
 | Android 업로드 키 | ❌ **생성 필요** | `android/key.properties.example` 참고. 없으면 디버그 서명 → 거절 |
-| iOS 서명·빌드 | ❌ **Mac 필요** | 이 저장소는 Windows. §4-1 |
+| iOS 서명·빌드 | 🟡 **파이프라인 준비됨, 연결 필요** | `codemagic.yaml` — 저장소를 Codemagic 에 연결하고 App Store Connect API 키와 환경변수 그룹만 채우면 Mac 러너가 TestFlight 까지 올린다. §2-2 |
 | 백그라운드 위치 선언·영상 | 초안 있음 | `docs/store-review-pack.md` |
 | 광고 SDK | 없음 (자리만) | 지금은 "광고 없음"으로 선언. AdMob 넣으면 데이터 안전·앱 개인정보 다시 |
 | 프로덕션 DB | ❌ 마이그레이션 `012`–`020` 미적용 | `tools/apply-migrations.ps1`. 로컬 체인은 통과 |
-| 지도 타일 | ⚠️ OSM 공용 타일 서버 | 출시 트래픽엔 정책 위반 가능. §5 |
+| 지도 타일 | 🟡 **코드 완료, 키 필요** | `--dart-define=MAP_TILE_URL=…` / `MAP_TILE_ATTRIBUTION=…` 로 공급자를 끼운다. 기본값(OSM 공용)은 개발용. MapTiler·Stadia 등에서 키를 받아 넣는다. §5 |
 
 ---
 
@@ -257,7 +257,7 @@ App Store Connect → 나의 앱 → + → 신규 앱. 플랫폼 iOS, 이름 "�
 | 광고 SDK 추가 뒤 양식 미갱신 | AdMob 을 넣는 PR 에 데이터 안전·앱 개인정보 변경을 필수 항목으로 |
 | 디버그 서명 AAB | `key.properties` 없이 빌드하지 않는다 |
 | Flutter 기본 아이콘 | 교체됨. 디자이너 아이콘으로 다시 교체 권장 |
-| OSM 공용 타일 | 출시 전 유료 타일(MapTiler·Stadia·Thunderforest)로 바꾼다. OSM 정책은 앱 규모 트래픽을 막고, 타일 요청에 IP 가 실린다는 사실을 처리방침에 적었다 |
+| OSM 공용 타일 | 빌드에 유료 타일을 넣는다. 예 (MapTiler): `--dart-define=MAP_TILE_URL="https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=KEY" --dart-define=MAP_TILE_ATTRIBUTION="© MapTiler © OpenStreetMap contributors"`. 표시 문구는 공급자가 정해 준 것을 쓴다. OSM 정책은 앱 규모 트래픽을 막고, 타일 요청에 IP 가 실린다는 사실을 처리방침에 적었다 |
 | 일본어 화면 없음 | 일본 제외로 해결. 국가 목록에서 빼는 것을 잊지 않는다 |
 
 ---

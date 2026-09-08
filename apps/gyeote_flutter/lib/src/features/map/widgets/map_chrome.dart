@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../core/location/location_models.dart';
+import '../../../core/map/map_tile_config.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../theme/gyeote_theme.dart';
 import '../map_models.dart';
@@ -484,7 +485,9 @@ class MapAttribution extends StatelessWidget {
           borderRadius: BorderRadius.circular(GyeoteRadius.pill),
         ),
         child: Text(
-          '© OpenStreetMap',
+          // 공급자를 바꾸면 표기도 따라 바뀐다. 문구가 여기 박혀 있으면 유료
+          // 타일로 옮긴 뒤에도 OSM 만 적혀 라이선스 표기가 틀린다.
+          gyeoteTiles.attribution,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(fontSize: 9, color: palette.muted),

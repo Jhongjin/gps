@@ -12,6 +12,7 @@ import '../../core/location/home_widget_snapshot.dart';
 import '../../core/location/location_bridge.dart';
 import '../../core/location/location_models.dart';
 import '../../core/location/place_alert_geofence_sync.dart';
+import '../../core/map/map_tile_config.dart';
 import '../../core/privacy/private_place.dart';
 import '../../core/privacy/private_place_store.dart';
 import '../../../l10n/app_localizations.dart';
@@ -1633,13 +1634,7 @@ class _MapSurface extends StatelessWidget {
             ),
             children: [
               // 타일만 야간 처리한다. 마커·경로·반경은 팔레트 색 그대로 위에 얹힌다.
-              NightTiles(
-                child: TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.gyeote.app',
-                  maxNativeZoom: 19,
-                ),
-              ),
+              NightTiles(child: gyeoteTiles.layer()),
               CircleLayer(
                 circles: [
                   if (placeDraftPoint != null)
