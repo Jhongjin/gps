@@ -594,6 +594,17 @@ class SupabasePrivacyRepository implements PrivacyRepository {
   }
 
   @override
+  Future<int> deleteLocationHistory() async {
+    final removed = await _client.rpc('delete_my_location_history');
+    return removed is num ? removed.toInt() : 0;
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    await _client.rpc('delete_my_account');
+  }
+
+  @override
   Future<void> requestData(DataRequestType requestType) async {
     await _client.from('data_requests').insert({
       'profile_id': _currentUserId(_client),

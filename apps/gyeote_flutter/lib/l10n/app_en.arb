@@ -491,5 +491,16 @@
   "playbackGapNotice": "Nothing was recorded during this stretch",
   "playbackTravelled": "{distance} travelled",
   "playbackWindow": "{start} – {end}",
-  "playbackViewerLogNote": "Replaying someone else's movement appears in their viewing record."
+  "playbackViewerLogNote": "Replaying someone else's movement appears in their viewing record.",
+  "privacyDeleteHistoryTitle": "Delete location history?",
+  "privacyDeleteHistoryBody": "Your stored location history and last position are deleted now. This cannot be undone.",
+  "privacyDeleteHistoryDone": "Deleted {count} location records.",
+  "privacyDeleteAccount": "Delete account",
+  "privacyDeleteAccountTitle": "Delete your account?",
+  "privacyDeleteAccountBody": "Your account, circle memberships, location history, check-ins and viewing records are all deleted. This cannot be undone.",
+  "privacyDeleteAccountFailed": "Could not delete the account. Please try again shortly.",
+  "privacyCancel": "Cancel",
+  "privacyExportNote": "Exports are handled by a person after you request one; we email the address on your account when it is ready.",
+  "privacyPolicyOpen": "View privacy policy",
+  "privacyPolicyOpenFailed": "Could not open the privacy policy."
 }

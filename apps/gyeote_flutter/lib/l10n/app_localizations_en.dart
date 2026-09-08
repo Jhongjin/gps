@@ -1676,4 +1676,43 @@ class AppL10nEn extends AppL10n {
   @override
   String get playbackViewerLogNote =>
       'Replaying someone else\'s movement appears in their viewing record.';
+
+  @override
+  String get privacyDeleteHistoryTitle => 'Delete location history?';
+
+  @override
+  String get privacyDeleteHistoryBody =>
+      'Your stored location history and last position are deleted now. This cannot be undone.';
+
+  @override
+  String privacyDeleteHistoryDone(int count) {
+    return 'Deleted $count location records.';
+  }
+
+  @override
+  String get privacyDeleteAccount => 'Delete account';
+
+  @override
+  String get privacyDeleteAccountTitle => 'Delete your account?';
+
+  @override
+  String get privacyDeleteAccountBody =>
+      'Your account, circle memberships, location history, check-ins and viewing records are all deleted. This cannot be undone.';
+
+  @override
+  String get privacyDeleteAccountFailed =>
+      'Could not delete the account. Please try again shortly.';
+
+  @override
+  String get privacyCancel => 'Cancel';
+
+  @override
+  String get privacyExportNote =>
+      'Exports are handled by a person after you request one; we email the address on your account when it is ready.';
+
+  @override
+  String get privacyPolicyOpen => 'View privacy policy';
+
+  @override
+  String get privacyPolicyOpenFailed => 'Could not open the privacy policy.';
 }

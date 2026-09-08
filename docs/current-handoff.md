@@ -547,3 +547,32 @@ nothing, which is how the first attempt waited two minutes in silence.
 
 Still only a phone can show the thirty-minute widget tick and the widget being
 placed on a home screen.
+
+## Store prerequisites that were missing from the code (2026-09-08)
+
+Writing the submission guide (`docs/store-submission-guide.md`) against the
+actual code turned up three things both stores refuse without:
+
+- **Account deletion did not exist in the app.** The contract had
+  `DataRequestType.deleteAccount` and the screen never offered it; "기록 삭제"
+  inserted a row into `data_requests` that nothing read. Migration `020` adds
+  `delete_my_location_history()` and `delete_my_account()` — the latter deletes
+  the `auth.users` row and lets every profile-scoped table cascade — and fixes
+  the two non-cascading foreign keys (`guardian_profile_id`, `accepted_by`) that
+  would otherwise block deletion. The 안심 screen deletes for real, with a
+  confirm step, and signs out afterwards. Export stays a request and the copy
+  says so. Ten negative-test assertions cover it, including that an
+  unauthenticated caller deletes nothing and that a member referenced as
+  someone's guardian can still delete.
+- **No privacy policy anywhere.** `BackendConfig.privacyPolicyUrl`
+  (`--dart-define=PRIVACY_POLICY_URL`) is linked from the 안심 screen; the
+  draft is `docs/privacy-policy.md` and needs legal review and hosting. It
+  discloses something nobody had written down: map tiles come from OSM's public
+  servers, so the device IP and viewed tile area reach the OSM Foundation.
+- **Release builds were debug-signed** and the launcher icons were the Flutter
+  defaults byte for byte. `key.properties`-based upload signing with a debug
+  fallback is in `build.gradle.kts`; icons are generated from the marker motif
+  (`docs/store-assets/`) and should be replaced by designed ones.
+
+Japan is out of the release scope by decision. The design skill's locale
+order and the guide's country lists reflect that.

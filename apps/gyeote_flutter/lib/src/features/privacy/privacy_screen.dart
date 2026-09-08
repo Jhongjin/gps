@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/backend/backend_contract.dart';
 import '../../core/location/location_bridge.dart';
@@ -23,12 +24,16 @@ class PrivacyScreen extends StatefulWidget {
     this.privacyRepository,
     this.locationBridge,
     this.onSignOut,
+    this.privacyPolicyUrl,
   });
 
   final CircleRepository? circleRepository;
   final PrivacyRepository? privacyRepository;
   final LocationBridge? locationBridge;
   final Future<void> Function()? onSignOut;
+
+  /// 스토어 양식에 적는 것과 같은 주소. 앱 안에서도 열 수 있어야 한다.
+  final String? privacyPolicyUrl;
 
   @override
   State<PrivacyScreen> createState() => _PrivacyScreenState();
@@ -199,6 +204,94 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         setState(() => _isPausing = false);
       }
     }
+  }
+
+  /// 기록을 지금 지운다. 확인을 한 번 받는다 — 되돌릴 수 없다.
+  Future<void> _deleteHistory() async {
+    final repository = widget.privacyRepository;
+    if (repository == null) {
+      _setStatus(_l10n.privacyDataNeedsBackend, isError: true);
+      return;
+    }
+    final confirmed = await _confirm(
+      title: _l10n.privacyDeleteHistoryTitle,
+      body: _l10n.privacyDeleteHistoryBody,
+      action: _l10n.privacyDataDelete,
+    );
+    if (!confirmed || !mounted) return;
+
+    setState(() => _isRequestingData = true);
+    try {
+      final removed = await repository.deleteLocationHistory();
+      if (mounted) _setStatus(_l10n.privacyDeleteHistoryDone(removed), isError: false);
+    } catch (_) {
+      if (mounted) _setStatus(_l10n.privacyDataRequestFailed, isError: true);
+    } finally {
+      if (mounted) setState(() => _isRequestingData = false);
+    }
+  }
+
+  /// 계정을 지금 지운다. 서클·기록·열람 기록이 함께 사라진다.
+  Future<void> _deleteAccount() async {
+    final repository = widget.privacyRepository;
+    if (repository == null) {
+      _setStatus(_l10n.privacyDataNeedsBackend, isError: true);
+      return;
+    }
+    final confirmed = await _confirm(
+      title: _l10n.privacyDeleteAccountTitle,
+      body: _l10n.privacyDeleteAccountBody,
+      action: _l10n.privacyDeleteAccount,
+    );
+    if (!confirmed || !mounted) return;
+
+    setState(() => _isRequestingData = true);
+    try {
+      await repository.deleteAccount();
+      // 서버에서 사용자가 사라졌다. 남은 세션 토큰은 더 이상 아무도 아니다.
+      await widget.onSignOut?.call();
+    } catch (_) {
+      if (mounted) _setStatus(_l10n.privacyDeleteAccountFailed, isError: true);
+    } finally {
+      if (mounted) setState(() => _isRequestingData = false);
+    }
+  }
+
+  Future<bool> _confirm({
+    required String title,
+    required String body,
+    required String action,
+  }) async {
+    final palette = context.palette;
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(body),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(_l10n.privacyCancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: palette.alert,
+              foregroundColor: palette.surface,
+            ),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(action),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
+  }
+
+  Future<void> _openPrivacyPolicy() async {
+    final url = widget.privacyPolicyUrl;
+    if (url == null || url.isEmpty) return;
+    final ok = await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    if (!ok && mounted) _setStatus(_l10n.privacyPolicyOpenFailed, isError: true);
   }
 
   Future<void> _requestData(DataRequestType type) async {
@@ -491,7 +584,10 @@ class _PrivacyScreenState extends State<PrivacyScreen> {
         _DataRequestCard(
           isLoading: _isRequestingData,
           onExport: () => _requestData(DataRequestType.export),
-          onDeleteHistory: () => _requestData(DataRequestType.deleteHistory),
+          onDeleteHistory: _deleteHistory,
+          onDeleteAccount: _deleteAccount,
+          onOpenPrivacyPolicy:
+              widget.privacyPolicyUrl == null ? null : _openPrivacyPolicy,
         ),
       ],
     );
@@ -822,14 +918,19 @@ class _DataRequestCard extends StatelessWidget {
     required this.isLoading,
     required this.onExport,
     required this.onDeleteHistory,
+    required this.onDeleteAccount,
+    this.onOpenPrivacyPolicy,
   });
 
   final bool isLoading;
   final Future<void> Function() onExport;
   final Future<void> Function() onDeleteHistory;
+  final Future<void> Function() onDeleteAccount;
+  final Future<void> Function()? onOpenPrivacyPolicy;
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     final l10n = AppL10n.of(context);
     return _PrivacyCard(
       title: l10n.privacyDataTitle,
@@ -866,6 +967,36 @@ class _DataRequestCard extends StatelessWidget {
               ),
             ],
           ),
+          const SizedBox(height: 10),
+          Text(
+            // 내보내기는 사람이 처리한다. 접수라는 사실을 숨기지 않는다.
+            l10n.privacyExportNote,
+            style: TextStyle(fontSize: 11, color: palette.muted),
+          ),
+          const SizedBox(height: 12),
+          Divider(color: palette.line, height: 1),
+          const SizedBox(height: 12),
+          Text(
+            l10n.privacyDeleteAccountBody,
+            style: TextStyle(fontSize: 12, color: palette.inkMuted),
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton(
+              style: OutlinedButton.styleFrom(foregroundColor: palette.alert),
+              onPressed: isLoading ? null : () => onDeleteAccount(),
+              child: Text(l10n.privacyDeleteAccount),
+            ),
+          ),
+          if (onOpenPrivacyPolicy != null) ...[
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: () => onOpenPrivacyPolicy!(),
+              icon: const Icon(Icons.open_in_new, size: 16),
+              label: Text(l10n.privacyPolicyOpen),
+            ),
+          ],
         ],
       ),
     );

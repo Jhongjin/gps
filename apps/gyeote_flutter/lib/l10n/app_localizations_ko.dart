@@ -1605,4 +1605,41 @@ class AppL10nKo extends AppL10n {
 
   @override
   String get playbackViewerLogNote => '다른 사람의 이동을 보면 그 사람의 열람 기록에 남습니다.';
+
+  @override
+  String get privacyDeleteHistoryTitle => '위치 기록을 지울까요?';
+
+  @override
+  String get privacyDeleteHistoryBody =>
+      '저장된 위치 기록과 마지막 위치가 지금 지워집니다. 되돌릴 수 없습니다.';
+
+  @override
+  String privacyDeleteHistoryDone(int count) {
+    return '위치 기록 $count건을 지웠습니다.';
+  }
+
+  @override
+  String get privacyDeleteAccount => '계정 삭제';
+
+  @override
+  String get privacyDeleteAccountTitle => '계정을 삭제할까요?';
+
+  @override
+  String get privacyDeleteAccountBody =>
+      '계정과 함께 서클 참여, 위치 기록, 확인 기록, 열람 기록이 모두 지워집니다. 되돌릴 수 없습니다.';
+
+  @override
+  String get privacyDeleteAccountFailed => '계정을 삭제하지 못했습니다. 잠시 뒤 다시 시도해 주세요.';
+
+  @override
+  String get privacyCancel => '취소';
+
+  @override
+  String get privacyExportNote => '내보내기는 접수 뒤 사람이 처리하며, 준비되면 가입한 이메일로 안내합니다.';
+
+  @override
+  String get privacyPolicyOpen => '개인정보 처리방침 보기';
+
+  @override
+  String get privacyPolicyOpenFailed => '개인정보 처리방침을 열지 못했습니다.';
 }

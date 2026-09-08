@@ -114,6 +114,7 @@ class _GyeoteAppState extends State<GyeoteApp> {
         onSignOut: widget.backendConfig.hasSupabase
             ? () => Supabase.instance.client.auth.signOut()
             : null,
+        privacyPolicyUrl: widget.backendConfig.privacyPolicyUrl,
       ),
     ];
 

@@ -3048,6 +3048,72 @@ abstract class AppL10n {
   /// In ko, this message translates to:
   /// **'다른 사람의 이동을 보면 그 사람의 열람 기록에 남습니다.'**
   String get playbackViewerLogNote;
+
+  /// No description provided for @privacyDeleteHistoryTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 기록을 지울까요?'**
+  String get privacyDeleteHistoryTitle;
+
+  /// No description provided for @privacyDeleteHistoryBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'저장된 위치 기록과 마지막 위치가 지금 지워집니다. 되돌릴 수 없습니다.'**
+  String get privacyDeleteHistoryBody;
+
+  /// No description provided for @privacyDeleteHistoryDone.
+  ///
+  /// In ko, this message translates to:
+  /// **'위치 기록 {count}건을 지웠습니다.'**
+  String privacyDeleteHistoryDone(int count);
+
+  /// No description provided for @privacyDeleteAccount.
+  ///
+  /// In ko, this message translates to:
+  /// **'계정 삭제'**
+  String get privacyDeleteAccount;
+
+  /// No description provided for @privacyDeleteAccountTitle.
+  ///
+  /// In ko, this message translates to:
+  /// **'계정을 삭제할까요?'**
+  String get privacyDeleteAccountTitle;
+
+  /// No description provided for @privacyDeleteAccountBody.
+  ///
+  /// In ko, this message translates to:
+  /// **'계정과 함께 서클 참여, 위치 기록, 확인 기록, 열람 기록이 모두 지워집니다. 되돌릴 수 없습니다.'**
+  String get privacyDeleteAccountBody;
+
+  /// No description provided for @privacyDeleteAccountFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'계정을 삭제하지 못했습니다. 잠시 뒤 다시 시도해 주세요.'**
+  String get privacyDeleteAccountFailed;
+
+  /// No description provided for @privacyCancel.
+  ///
+  /// In ko, this message translates to:
+  /// **'취소'**
+  String get privacyCancel;
+
+  /// No description provided for @privacyExportNote.
+  ///
+  /// In ko, this message translates to:
+  /// **'내보내기는 접수 뒤 사람이 처리하며, 준비되면 가입한 이메일로 안내합니다.'**
+  String get privacyExportNote;
+
+  /// No description provided for @privacyPolicyOpen.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보 처리방침 보기'**
+  String get privacyPolicyOpen;
+
+  /// No description provided for @privacyPolicyOpenFailed.
+  ///
+  /// In ko, this message translates to:
+  /// **'개인정보 처리방침을 열지 못했습니다.'**
+  String get privacyPolicyOpenFailed;
 }
 
 class _AppL10nDelegate extends LocalizationsDelegate<AppL10n> {

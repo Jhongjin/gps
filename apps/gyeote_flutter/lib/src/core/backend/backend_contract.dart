@@ -613,7 +613,17 @@ abstract interface class PrivacyRepository {
     required SharingPolicy policy,
   });
 
+  /// 내보내기처럼 사람이 처리해야 하는 요청. 큐에 남는다.
   Future<void> requestData(DataRequestType requestType);
+
+  /// 내 위치 기록을 지금 지운다. 지운 행 수를 돌려준다.
+  ///
+  /// 예전에는 `requestData(deleteHistory)` 로 큐에 행만 넣었고 그 행을 읽는 것은
+  /// 없었다. 스토어는 "삭제 요청 접수"가 아니라 삭제를 요구한다.
+  Future<int> deleteLocationHistory();
+
+  /// 내 계정을 지금 지운다. 성공하면 호출자가 로그아웃 상태를 정리한다.
+  Future<void> deleteAccount();
 }
 
 abstract interface class CompanionRepository {

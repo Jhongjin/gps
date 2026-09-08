@@ -19,6 +19,8 @@ dependencies:
   # 온보딩·권한 안내를 봤는지 기억한다. supabase_flutter 가 이미 끌어오지만
   # 직접 쓰므로 직접 선언한다.
   shared_preferences: ^2.3.0
+  # 안심 화면의 개인정보 처리방침 링크. 전이 의존성으로만 있던 것을 직접 선언한다.
+  url_launcher: ^6.3.0
 
 dev_dependencies:
   flutter_test:
